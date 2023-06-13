@@ -1,0 +1,33 @@
+#####################################
+#       Plugin: WorldByPlayer       #
+#           Date: 12-06-23          #
+#          Author: Kenda           #
+#####################################
+
+
+#Prefix that will be displayed in the chat
+prefix: "&c[WorldByPlayer]"
+
+#The default world that will act as a lobby
+lobby:
+  #The name of the world that will be recovered, and all players will be teleported to this world at the coordinates below
+  world: "world"
+  #The coordinates must be set manually, to avoid any conflict with the configuration (x, y, z, yaw, pitch)
+  coordinates: "0,0,0,0,0"
+
+navigation:
+  #The type of the navigation item. You can found list here https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+  item: COMPASS
+  name: "&cNavigation"
+  lores:
+    - "&cWith navigation, you"
+    - "&ccan create your world,"
+    - "&cjoin the world of one of your friends,"
+    - "&cor just play with other people without rules!"
+
+#World Configuration Section
+worlds:
+  #The world or all players can go without restriction
+  free: "&aFree-World"
+  #The maximum number of players on the world (set -1 if not limited)
+  max-players: -1

@@ -1,0 +1,7 @@
+no_permission: "&cYou don't have permission to execute this."
+world_created: "&aThe \"{world}\" world has been successfully created."
+attempt_create: "&aVerification of world information \"{world}\"..."
+creation_failure: "&cFailure to create the world. You already have a world, or that world name is already taken. Please try again or contact an administrator if you think of an error."
+delete_failure: "&cFailure to delete the world. The world may not exist? Contact an administrator."
+world_not_exist: "&cThe \"{world}\" world doesn't exist."
+deleted_world: "&aThe \"{world}\" world has been removed successfully."

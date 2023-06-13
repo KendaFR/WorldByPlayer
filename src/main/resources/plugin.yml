@@ -1,0 +1,4 @@
+name: WorldByPlayer
+version: '${project.version}'
+main: fr.kenda.worldbyplayer.WorldByPlayer
+api-version: 1.19
