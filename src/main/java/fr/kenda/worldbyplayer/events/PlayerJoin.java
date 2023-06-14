@@ -1,7 +1,9 @@
 package fr.kenda.worldbyplayer.events;
 
 import fr.kenda.worldbyplayer.WorldByPlayer;
+import fr.kenda.worldbyplayer.database.table.User;
 import fr.kenda.worldbyplayer.utils.Config;
+import fr.kenda.worldbyplayer.utils.ETable;
 import fr.kenda.worldbyplayer.utils.ItemBuilder;
 import fr.kenda.worldbyplayer.utils.LocationTransform;
 import org.bukkit.GameMode;
@@ -48,5 +50,9 @@ public class PlayerJoin implements Listener {
         player.setGameMode(GameMode.ADVENTURE);
         player.setHealth(20);
         player.setFoodLevel(20);
+
+        User user = (User) WorldByPlayer.getInstance().getTableManager().getTableByName(ETable.USER.getName());
+        if (user != null)
+            user.insertUser(player);
     }
 }

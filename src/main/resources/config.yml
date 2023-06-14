@@ -27,7 +27,32 @@ navigation:
 
 #World Configuration Section
 worlds:
-  #The world or all players can go without restriction
-  free: "&aFree-World"
+  #The world or all players can go without restriction (No special character!)
+  free: "Free-World"
   #The maximum number of players on the world (set -1 if not limited)
   max-players: -1
+
+#Gui configuration section
+gui:
+  navigation:
+    #Title of gui
+    title: "&cWorld Navigation"
+    #Window colour for menu decoration
+    color_glass: BLACK_STAINED_GLASS_PANE
+    #Text to display for decoration
+    text_glass: ""
+    free_world:
+      #Name of item
+      name: "&aFree-World"
+      #Lores to describe
+      #placeholder possible: {players} -> online | {maxplayers} -> max players
+      lores:
+        - "&aPlay with your friends"
+        - "&aNo rules"
+        - "&aHave fun !"
+        - "&c"
+        - "Current online: {players} / {maxplayers}"
+      #Materials that will represent the "free" world
+      material: DIRT
+      #Slot where item placed
+      slot: 4

@@ -1,6 +1,7 @@
 package fr.kenda.worldbyplayer.managers;
 
 import fr.kenda.worldbyplayer.WorldByPlayer;
+import fr.kenda.worldbyplayer.events.OpenInventory;
 import fr.kenda.worldbyplayer.events.PlayerJoin;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -11,5 +12,6 @@ public class EventsManager implements IManager {
         final WorldByPlayer instance = WorldByPlayer.getInstance();
         PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(new PlayerJoin(), instance);
+        pm.registerEvents(new OpenInventory(), instance);
     }
 }

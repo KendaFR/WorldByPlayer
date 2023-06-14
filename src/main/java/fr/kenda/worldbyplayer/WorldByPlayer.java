@@ -1,8 +1,6 @@
 package fr.kenda.worldbyplayer;
 
-import fr.kenda.worldbyplayer.managers.EventsManager;
-import fr.kenda.worldbyplayer.managers.FileManager;
-import fr.kenda.worldbyplayer.managers.WorldsManager;
+import fr.kenda.worldbyplayer.managers.*;
 import fr.kenda.worldbyplayer.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -14,6 +12,9 @@ public final class WorldByPlayer extends JavaPlugin {
 
     private FileManager fileManager;
     private WorldsManager worldManager;
+    private GuiManager guiManager;
+    private DatabaseManager databaseManager;
+    private TableManager tableManager;
 
     public static WorldByPlayer getInstance() {
         return instance;
@@ -34,10 +35,20 @@ public final class WorldByPlayer extends JavaPlugin {
         fileManager = new FileManager();
         fileManager.register();
 
-        new EventsManager().register();
+        databaseManager = new DatabaseManager();
+        databaseManager.register();
+
+        tableManager = new TableManager();
+        tableManager.register();
 
         worldManager = new WorldsManager();
         worldManager.register();
+
+        guiManager = new GuiManager();
+        guiManager.register();
+
+        new EventsManager().register();
+
 
 
     }
@@ -48,6 +59,8 @@ public final class WorldByPlayer extends JavaPlugin {
                 "§c\t\t#         Made By Kenda            #\n" +
                 "§c\t\t#     Thanks for buying Plugin :D ...#\n" +
                 "§c\t\t#####################################");
+
+        databaseManager.closePool();
     }
 
     public String getPrefix() {
@@ -70,5 +83,17 @@ public final class WorldByPlayer extends JavaPlugin {
      */
     public WorldsManager getWorldManager() {
         return worldManager;
+    }
+
+    public GuiManager getGuiManager() {
+        return guiManager;
+    }
+
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
+    }
+
+    public TableManager getTableManager() {
+        return tableManager;
     }
 }

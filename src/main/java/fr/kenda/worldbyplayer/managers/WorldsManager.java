@@ -1,7 +1,9 @@
 package fr.kenda.worldbyplayer.managers;
 
 import fr.kenda.worldbyplayer.WorldByPlayer;
+import fr.kenda.worldbyplayer.database.table.Worlds;
 import fr.kenda.worldbyplayer.utils.Config;
+import fr.kenda.worldbyplayer.utils.ETable;
 import fr.kenda.worldbyplayer.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -9,10 +11,13 @@ import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.util.HashMap;
 
 public class WorldsManager implements IManager {
 
     private final String prefix = WorldByPlayer.getInstance().getPrefix();
+
+    private final HashMap<String, World> worlds = new HashMap<>();
 
     /**
      * Delete folder of world if exist
@@ -41,9 +46,19 @@ public class WorldsManager implements IManager {
     @Override
     public void register() {
         String nameFreeMap = Config.getName("worlds.free");
-        nameFreeMap = nameFreeMap.replaceAll("§.", "").replaceAll("&.", "");
+        nameFreeMap = nameFreeMap.replaceAll("&.", "");
 
         createWorld(nameFreeMap);
+    }
+
+    /**
+     * Return a world by name
+     *
+     * @param name String
+     * @return World
+     */
+    public World getWorld(String name) {
+        return worlds.get(name);
     }
 
     /**
@@ -57,7 +72,15 @@ public class WorldsManager implements IManager {
         Bukkit.getConsoleSender().sendMessage(prefix, Messages.getMessage("attempt_create", "{world}", name));
         if (Bukkit.getWorld(name) == null) {
             worldCreator.createWorld();
+            worlds.put(name, Bukkit.getWorld(name));
+            Worlds worlds = (Worlds) WorldByPlayer.getInstance().getTableManager().getTableByName(ETable.WORLDS.getName());
+            worlds.insertWorld(null, name, true);
             Bukkit.getConsoleSender().sendMessage(prefix, Messages.getMessage("world_created", "{world}", name));
+        }
+        else
+        {
+            worlds.put(name, Bukkit.getWorld(name));
+            Bukkit.getConsoleSender().sendMessage(prefix, Messages.getMessage("world_loaded", "{world}", name));
         }
     }
 

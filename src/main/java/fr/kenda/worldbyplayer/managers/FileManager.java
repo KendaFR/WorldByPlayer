@@ -15,6 +15,7 @@ public class FileManager implements IManager {
     @Override
     public void register() {
         createFile("messages");
+        createFile("database");
     }
 
     /**
