@@ -4,6 +4,9 @@ import fr.kenda.worldbyplayer.WorldByPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Messages {
     private static final WorldByPlayer instance = WorldByPlayer.getInstance();
 
@@ -48,5 +51,11 @@ public class Messages {
      */
     public static String transformColor(final String message) {
         return ChatColor.translateAlternateColorCodes('&', message);
+    }
+
+    public static List<String> getColoredLines(List<String> list){
+        List<String> colored = new ArrayList<>();
+        list.forEach(str -> colored.add(transformColor(str)));
+        return colored;
     }
 }

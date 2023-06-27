@@ -25,10 +25,10 @@ navigation:
     - "&cjoin the world of one of your friends,"
     - "&cor just play with other people without rules!"
 
-#World Configuration Section
+#Free World Configuration Section
 worlds:
-  #The world or all players can go without restriction (No special character!)
-  free: "Free-World"
+  #The name of the world that will be created in the server files (No special character!)
+  nameMap: "FreeWorld"
   #The maximum number of players on the world (set -1 if not limited)
   max-players: -1
 
@@ -41,18 +41,67 @@ gui:
     color_glass: BLACK_STAINED_GLASS_PANE
     #Text to display for decoration
     text_glass: ""
-    free_world:
+    #free world configuration section
+    free:
       #Name of item
-      name: "&aFree-World"
+      name: "&aFree World"
       #Lores to describe
-      #placeholder possible: {players} -> online | {maxplayers} -> max players
+      #placeholder possible: {online} -> online | {maxplayers} -> max players
       lores:
         - "&aPlay with your friends"
         - "&aNo rules"
         - "&aHave fun !"
         - "&c"
-        - "Current online: {players} / {maxplayers}"
+        - "Current online: {online} / {maxplayers}"
       #Materials that will represent the "free" world
       material: DIRT
       #Slot where item placed
       slot: 4
+    #Section creates/ join its own world
+    ownworld:
+      #configuration if a world is already created
+      exist:
+        #Name of item
+        name: "{name_world}"
+        #Lores to describe
+        #placeholder possible: {online} -> online
+        lores:
+          - "{description}"
+          - "&c"
+          - "Current online: {online}"
+        #Materials that will represent the "free" world
+        material: DIAMOND_BLOCK
+      create:
+        #Name of item
+        name: "&aCreate your world"
+        #Lores to describe
+        lores:
+          - "&aCreate your world"
+          - "&aAnd invite your friends"
+        #Materials that will represent the "free" world
+        material: EMERALD_BLOCK
+      slot: 2
+  #Section configuration of your own world
+  world:
+    #Title of inventory
+    title_inventory: "&6World: &a'{world}'"
+    #Item that will separate configuration sections with configurations
+    separator: ORANGE_STAINED_GLASS_PANE
+    #Name of separator
+    name_separator: "&6"
+    #Material of item exit inventory
+    exit_material: IRON_DOOR
+    #Name of exit item
+    name_exit: "&cExit Menu"
+    #Material that will define the world title change
+    title_material: OAK_SIGN
+    #Name of the world name change item
+    name_title: "&aChange Title of World"
+    #Material that will define the world description change
+    description_material: OAK_SIGN
+    #Name of the world description change item
+    name_description: "&aChange Description of World"
+    #lores description of player in world
+    lores_player:
+      - "&ePV: {heal}"
+      - "&eFood: {food}"

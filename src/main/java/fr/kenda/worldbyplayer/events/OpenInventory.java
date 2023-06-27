@@ -17,10 +17,9 @@ public class OpenInventory implements Listener {
         ItemStack item = player.getInventory().getItemInMainHand();
 
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if (item.getType() == Config.getMaterial("navigation.item")) {
-                System.out.println("Je click");
+            if (item.getType() == Config.getMaterial("navigation.item"))
                 WorldByPlayer.getInstance().getGuiManager().getGui("navigation").create(player);
-            }
+
         }
     }
 }

@@ -3,18 +3,16 @@ package fr.kenda.worldbyplayer;
 import fr.kenda.worldbyplayer.managers.*;
 import fr.kenda.worldbyplayer.utils.Messages;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class WorldByPlayer extends JavaPlugin {
-
     private static WorldByPlayer instance;
     private String prefix = "";
-
     private FileManager fileManager;
     private WorldsManager worldManager;
     private GuiManager guiManager;
-    private DatabaseManager databaseManager;
-    private TableManager tableManager;
+    private CreationManager creationManager;
 
     public static WorldByPlayer getInstance() {
         return instance;
@@ -35,22 +33,19 @@ public final class WorldByPlayer extends JavaPlugin {
         fileManager = new FileManager();
         fileManager.register();
 
-        databaseManager = new DatabaseManager();
-        databaseManager.register();
-
-        tableManager = new TableManager();
-        tableManager.register();
-
         worldManager = new WorldsManager();
-        worldManager.register();
 
         guiManager = new GuiManager();
         guiManager.register();
 
+        new CommandManager().register();
+
+        creationManager = new CreationManager();
+
         new EventsManager().register();
 
-
-
+        worldManager.register();
+        Bukkit.getWorlds().forEach(World::save);
     }
 
     @Override
@@ -60,7 +55,6 @@ public final class WorldByPlayer extends JavaPlugin {
                 "§c\t\t#     Thanks for buying Plugin :D ...#\n" +
                 "§c\t\t#####################################");
 
-        databaseManager.closePool();
     }
 
     public String getPrefix() {
@@ -85,15 +79,16 @@ public final class WorldByPlayer extends JavaPlugin {
         return worldManager;
     }
 
+    /**
+     * Get the Gui Manager
+     *
+     * @return GuiManager
+     */
     public GuiManager getGuiManager() {
         return guiManager;
     }
 
-    public DatabaseManager getDatabaseManager() {
-        return databaseManager;
-    }
-
-    public TableManager getTableManager() {
-        return tableManager;
+    public CreationManager getCreationManager() {
+        return creationManager;
     }
 }

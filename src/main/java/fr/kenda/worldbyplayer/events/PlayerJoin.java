@@ -1,9 +1,7 @@
 package fr.kenda.worldbyplayer.events;
 
 import fr.kenda.worldbyplayer.WorldByPlayer;
-import fr.kenda.worldbyplayer.database.table.User;
 import fr.kenda.worldbyplayer.utils.Config;
-import fr.kenda.worldbyplayer.utils.ETable;
 import fr.kenda.worldbyplayer.utils.ItemBuilder;
 import fr.kenda.worldbyplayer.utils.LocationTransform;
 import org.bukkit.GameMode;
@@ -32,11 +30,12 @@ public class PlayerJoin implements Listener {
         //Create location to teleport player
         String worldName = config.getString("lobby.world");
         Location location = LocationTransform.deserializeCoordinate(worldName, config.getString("lobby.coordinates"));
+        location.setY(location.getWorld().getHighestBlockYAt((int) location.getX(), (int) location.getZ()) + 1.5);
         player.teleport(location);
 
         //Create item to give to player
         Material mat = Config.getMaterial("navigation.item");
-        String name = Config.getName("navigation.name");
+        String name = Config.getString("navigation.name");
         List<String> lores = Config.getList("navigation.lores");
         ItemBuilder navigation = new ItemBuilder(mat).setName(name);
         if (lores.size() > 0)
@@ -51,8 +50,5 @@ public class PlayerJoin implements Listener {
         player.setHealth(20);
         player.setFoodLevel(20);
 
-        User user = (User) WorldByPlayer.getInstance().getTableManager().getTableByName(ETable.USER.getName());
-        if (user != null)
-            user.insertUser(player);
     }
 }
