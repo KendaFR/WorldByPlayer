@@ -2,6 +2,7 @@ package fr.kenda.worldbyplayer.events;
 
 import fr.kenda.worldbyplayer.WorldByPlayer;
 import fr.kenda.worldbyplayer.datas.CreationSettings;
+import fr.kenda.worldbyplayer.datas.DataWorld;
 import fr.kenda.worldbyplayer.managers.CreationManager;
 import fr.kenda.worldbyplayer.utils.ChatUtils;
 import fr.kenda.worldbyplayer.utils.Messages;
@@ -23,19 +24,24 @@ public class ChatCreatingWorld implements Listener {
     @EventHandler
     public void onChat(AsyncPlayerChatEvent e) {
         Player player = e.getPlayer();
+        String message = e.getMessage();
+        if (creationManager.isInModification(player)) {
+            DataWorld dataWorld = WorldByPlayer.getInstance().getWorldManager().getDataWorldFromPlayerWorldOwner(player);
+            switch (creationManager.getStatusModify(player)) {
+                case NAME -> dataWorld.setName(message);
+                case DESCRIPTION -> dataWorld.setDescription(message);
+            }
+        }
         if (creationManager.isInCreation(player)) {
             e.setCancelled(true);
-            String message = e.getMessage();
             CreationSettings settings = creationManager.getSettingsCreationByPlayer(player);
             switch (creationManager.getStatusCreation(player)) {
-                case NAME:
-                    settings.setName(message);
-                    break;
-                case DESCRIPTION:
+                case NAME -> settings.setName(message);
+                case DESCRIPTION -> {
                     List<String> formattedMessage = separateString(message);
                     settings.setDescription(formattedMessage);
-                    break;
-                case SEED:
+                }
+                case SEED -> {
                     if (!message.equalsIgnoreCase("NONE")) {
                         int parsed;
                         try {
@@ -46,18 +52,16 @@ public class ChatCreatingWorld implements Listener {
                             parsed = new Random().nextInt(Integer.MAX_VALUE);
                             settings.setSeed(parsed);
                         }
-                        break;
                     } else {
                         int seed = new Random().nextInt(Integer.MAX_VALUE);
                         settings.setSeed(seed);
                     }
-                    break;
-                default:
-                    break;
+                }
             }
             Bukkit.getScheduler().runTask(WorldByPlayer.getInstance(), () -> creationManager.nextStep(player));
         }
     }
+
     private List<String> separateString(String message) {
         String separated = ChatUtils.separateLine(message, 20);
         return Arrays.asList(separated.split("\n"));

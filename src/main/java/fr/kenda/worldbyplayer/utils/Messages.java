@@ -53,9 +53,18 @@ public class Messages {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 
-    public static List<String> getColoredLines(List<String> list){
+    public static List<String> getColoredLines(List<String> list) {
         List<String> colored = new ArrayList<>();
         list.forEach(str -> colored.add(transformColor(str)));
         return colored;
+    }
+
+    public static List<String> getMessageList(String path) {
+        FileConfiguration config = instance.getFileManager().getConfigFrom("messages");
+        List<String> list = config.getStringList(path);
+        List<String> listColored = new ArrayList<>();
+        for (String str : list)
+            listColored.add(transformColor(str));
+        return listColored;
     }
 }

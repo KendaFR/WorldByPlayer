@@ -87,21 +87,40 @@ gui:
     title_inventory: "&6World: &a'{world}'"
     #Item that will separate configuration sections with configurations
     separator: ORANGE_STAINED_GLASS_PANE
+    #Material of item exit inventory
+    back_material: IRON_DOOR
+    #Name of exit item
+    name_back: "&cBack"
     #Name of separator
     name_separator: "&6"
+    #Name of memebers list icon
+    members_list_name: "&aMembers List"
     #Material of item exit inventory
     exit_material: IRON_DOOR
     #Name of exit item
     name_exit: "&cExit Menu"
     #Material that will define the world title change
     title_material: OAK_SIGN
-    #Name of the world name change item
-    name_title: "&aChange Title of World"
+    #Name of the world name
+    name_title: "&aTitle of World"
     #Material that will define the world description change
     description_material: OAK_SIGN
-    #Name of the world description change item
-    name_description: "&aChange Description of World"
+    #Name of the world description
+    name_description: "&aDescription of World"
     #lores description of player in world
     lores_player:
       - "&ePV: {heal}"
       - "&eFood: {food}"
+      - "&eGamemode: {gamemode}"
+    #material of gamerule inventory
+    gamerule_material: DIRT
+    #material of gamerule inventory
+    gamerule_name: "&aChange Gamerule"
+    #material of gamerule inventory
+    gamerule_description: "&aChange Gamerule of world"
+    #material of day inventory
+    hour_material: COMMAND_BLOCK
+    #material of day inventory
+    hour_name: "&aChange Hour of day"
+    #material of day inventory
+    hour_description: "&aCurrent Hour: {hour}"

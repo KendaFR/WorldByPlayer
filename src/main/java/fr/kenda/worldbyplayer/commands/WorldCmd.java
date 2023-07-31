@@ -18,25 +18,25 @@ public class WorldCmd implements CommandExecutor {
     private final WorldByPlayer instance = WorldByPlayer.getInstance();
     private final String prefix = instance.getPrefix();
 
-    private final WorldsManager worldsManager  = instance.getWorldManager();
-    private final GuiManager guiManager  = instance.getGuiManager();
+    private final WorldsManager worldsManager = instance.getWorldManager();
+    private final GuiManager guiManager = instance.getGuiManager();
 
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(!(sender instanceof Player player)){
+        if (!(sender instanceof Player player)) {
             sender.sendMessage(prefix + "§cYou cannot make this command here.");
             return false;
         }
         World world = player.getWorld();
-        if(world != Bukkit.getWorld(player.getName())){
+        if (world != Bukkit.getWorld(player.getName())) {
             player.sendMessage(prefix + Messages.getMessage("not_in_own_world"));
             return false;
         }
         DataWorld dataWorld = worldsManager.getDataWorldFromPlayerWorldOwner(player);
-       WorldGui worldGui = (WorldGui) guiManager.getGui("world");
-       worldGui.setTitle(Config.getString("title_world", "{world}", dataWorld.getName()));
-       worldGui.create(player);
+        WorldGui worldGui = (WorldGui) guiManager.getGui("world");
+        worldGui.setTitle(Config.getString("title_inventory", "{world}", dataWorld.getName()));
+        worldGui.create(player);
         return false;
     }
 }

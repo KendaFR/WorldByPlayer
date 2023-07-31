@@ -21,7 +21,7 @@ import java.util.List;
 public class NavigationGui extends Gui {
 
     private final String shortcutConfig = "gui.navigation.";
-    private final WorldByPlayer instance= WorldByPlayer.getInstance();
+    private final WorldByPlayer instance = WorldByPlayer.getInstance();
     private final WorldsManager worldsManager = instance.getWorldManager();
     private final FileManager fileManager = instance.getFileManager();
     private final FileConfiguration config = instance.getConfig();
@@ -31,7 +31,7 @@ public class NavigationGui extends Gui {
         super(title, size);
     }
 
-    public ItemStack[] setMenu() {
+    public ItemStack[] mainMenu() {
         ItemStack[] content = new ItemStack[9];
         for (int i = 0; i < 9; i++)
             content[i] = new ItemBuilder(Config.getMaterial(shortcutConfig + "color_glass"))
@@ -67,7 +67,7 @@ public class NavigationGui extends Gui {
             DataWorld worldPlayer = worldsManager.getDataWorldFromPlayerWorldOwner(player);
 
             String key = shortcutConfig + "ownworld.exist.";
-            String nameWorld = ChatColor.translateAlternateColorCodes('&', config.getString(key + "name").replace("{name_world}", worldPlayer.getName()));
+            String nameWorld = "§f" + ChatColor.translateAlternateColorCodes('&', config.getString(key + "name").replace("{name_world}", worldPlayer.getName()));
 
             List<String> lores = Config.getList(key + "lores",
                     "{online}", String.valueOf(online));

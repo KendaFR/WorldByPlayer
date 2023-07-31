@@ -15,7 +15,7 @@ public class GuiManager implements IManager {
     @Override
     public void register() {
         guis.put("navigation", new NavigationGui(Config.getString("gui.navigation.title"), 9));
-        guis.put("world", new WorldGui(6*9));
+        guis.put("world", new WorldGui(6 * 9));
     }
 
     public Gui getGui(final String name) {

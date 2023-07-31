@@ -16,23 +16,21 @@ public abstract class Gui implements Listener {
     protected Player owner;
     protected int size;
 
-    public Gui(String title, Player owner, int size, ItemStack[] content) {
+
+
+    public Gui(String title, int size) {
+        this(title, null, size);
+    }
+
+    public Gui(String title, Player owner, int size) {
         this.owner = owner;
         this.title = title;
         this.size = size;
 
         Bukkit.getPluginManager().registerEvents(this, WorldByPlayer.getInstance());
 
-        if(title != null)
+        if (title != null)
             inventory = Bukkit.createInventory(owner, size, title);
-    }
-
-    public Gui(String title, int size) {
-        this(title, null, size, null);
-    }
-
-    public Gui(String title, Player owner, int size) {
-        this(title, owner, size, null);
     }
 
     public Gui(int size) {
@@ -41,20 +39,22 @@ public abstract class Gui implements Listener {
 
     public void create(Player player) {
         owner = player;
-        if(inventory == null)
+        if (inventory == null)
             inventory = Bukkit.createInventory(owner, size, title);
         owner.openInventory(inventory);
-        updateContent(setMenu());
+
+        updateContent(mainMenu());
     }
 
     public void updateContent(ItemStack[] content) {
         inventory.setContents(content);
     }
 
-    public void setTitle(String title){
+    public void setTitle(String title) {
         this.title = title;
     }
-    public abstract ItemStack[] setMenu();
+
+    public abstract ItemStack[] mainMenu();
 
     @EventHandler
     public abstract void onClick(InventoryClickEvent e);

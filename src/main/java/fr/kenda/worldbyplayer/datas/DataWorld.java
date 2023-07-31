@@ -1,6 +1,7 @@
 package fr.kenda.worldbyplayer.datas;
 
 import fr.kenda.worldbyplayer.WorldByPlayer;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -8,18 +9,19 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DataWorld {
     private final World world;
-    private final Player owner;
-    private final String name;
+    private final String owner;
     private final String nameWorld;
     private final int seed;
-    private final List<String> description;
     private final List<String> playersAllowed = new ArrayList<>();
+    private String name;
+    private List<String> description;
 
-    public DataWorld(World world, Player owner, String name, int seed, List<String> description) {
+    public DataWorld(World world, String owner, String name, int seed, List<String> description) {
         this.world = world;
         this.owner = owner;
         this.name = name;
@@ -28,19 +30,20 @@ public class DataWorld {
         this.nameWorld = world.getName();
 
         if (!exist(owner))
-            createWorldInFolder();
+            saveWorldFolder();
     }
 
-    private boolean exist(Player owner) {
+    private boolean exist(String owner) {
         FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
-        return configWorld.get("worlds." + this.owner.getName()) != null;
+        return configWorld.get("worlds." + this.owner) != null;
     }
 
-    private void createWorldInFolder() {
+    private void saveWorldFolder() {
         FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
-        String key = "worlds." + owner.getName() + ".";
+        String key = "worlds." + owner + ".";
         configWorld.set(key + "name", name);
         configWorld.set(key + "description", description);
+        configWorld.set(key + "seed", seed);
         configWorld.set(key + "playersAllowed", playersAllowed);
         saveConfig(configWorld);
     }
@@ -48,7 +51,7 @@ public class DataWorld {
     private void addPlayerToJoin(Player player) {
         if (owner == null) return;
         FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
-        String key = "worlds." + owner.getName() + ".";
+        String key = "worlds." + owner + ".";
         playersAllowed.add(player.getName());
         configWorld.set(key + "playersAllowed", playersAllowed);
         saveConfig(configWorld);
@@ -68,20 +71,33 @@ public class DataWorld {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public World getWorld() {
         return world;
     }
 
-    public Player getOwner() {
+    public String getOwner() {
         return owner;
     }
 
     public List<String> getDescription() {
-        return description;
+        List<String> coloredDescription = new ArrayList<>();
+        for (String desc : description)
+            coloredDescription.add(ChatColor.translateAlternateColorCodes('&', desc));
+        return coloredDescription;
     }
-    public String getDescriptionString(){
+
+    public void setDescription(String description) {
+        this.description.clear();
+        this.description = Collections.singletonList(description);
+    }
+
+    public String getDescriptionString() {
         StringBuilder descriptionString = new StringBuilder();
-        for(String str : description)
+        for (String str : description)
             descriptionString.append(str);
         return descriptionString.toString();
     }
@@ -89,7 +105,6 @@ public class DataWorld {
     public List<String> getPlayersAllowed() {
         return playersAllowed;
     }
-
 
     public String getNameWorld() {
         return nameWorld;
