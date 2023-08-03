@@ -1,6 +1,8 @@
 package fr.kenda.worldbyplayer.utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -11,12 +13,20 @@ import java.util.List;
 public class SkullBuilder {
 
     private final Player owner;
+    private final OfflinePlayer offlinePlayer;
     private String name;
     private List<String> lores = new ArrayList<>();
 
     public SkullBuilder(Player owner) {
         this.owner = owner;
+        this.offlinePlayer = null;
         this.name = "§e" + owner.getName();
+    }
+
+    public SkullBuilder(String owner) {
+        this.owner = null;
+        this.offlinePlayer = Bukkit.getOfflinePlayer(owner);
+        this.name = "§e" + owner;
     }
 
     public SkullBuilder setName(String name) {
@@ -47,7 +57,7 @@ public class SkullBuilder {
     public ItemStack toItemStack() {
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
-        skullMeta.setOwningPlayer(owner);
+        skullMeta.setOwningPlayer(owner == null ? offlinePlayer : owner);
         if (name != null) skullMeta.setDisplayName(name);
         if (lores.size() > 0)
             skullMeta.setLore(lores);

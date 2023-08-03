@@ -16,8 +16,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
-
 public class NavigationGui extends Gui {
 
     private final String shortcutConfig = "gui.navigation.";
@@ -69,22 +67,8 @@ public class NavigationGui extends Gui {
             String key = shortcutConfig + "ownworld.exist.";
             String nameWorld = "§f" + ChatColor.translateAlternateColorCodes('&', config.getString(key + "name").replace("{name_world}", worldPlayer.getName()));
 
-            List<String> lores = Config.getList(key + "lores",
-                    "{online}", String.valueOf(online));
-
-            // Recherche de l'index du placeholder "{description}" dans la liste des lores
-            int descriptionIndex = lores.indexOf("{description}");
-            if (descriptionIndex != -1) {
-                // Suppression de l'élément "{description}" de la liste des lores
-                lores.remove(descriptionIndex);
-                // Insertion des lignes de description à l'index correspondant
-                lores.addAll(descriptionIndex, worldPlayer.getDescription());
-            }
-            List<String> formatedLores = Messages.getColoredLines(lores);
-
             content[slotOwnWorld] = new ItemBuilder(Config.getMaterial(key + "material"))
                     .setName(nameWorld)
-                    .setLore(formatedLores)
                     .toItemStack();
         } else {
             String key = shortcutConfig + "ownworld.create.";

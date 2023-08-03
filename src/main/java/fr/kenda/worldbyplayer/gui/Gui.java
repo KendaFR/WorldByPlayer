@@ -17,7 +17,6 @@ public abstract class Gui implements Listener {
     protected int size;
 
 
-
     public Gui(String title, int size) {
         this(title, null, size);
     }

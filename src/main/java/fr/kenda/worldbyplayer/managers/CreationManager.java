@@ -11,7 +11,6 @@ import java.util.HashMap;
 public class CreationManager {
 
     private static final HashMap<Player, ECreationStatus> statusCreation = new HashMap<>();
-    private static final HashMap<Player, ECreationStatus> statusModify = new HashMap<>();
     private static final HashMap<Player, CreationSettings> settingsByPlayer = new HashMap<>();
     private final String prefix = WorldByPlayer.getInstance().getPrefix();
 
@@ -22,12 +21,6 @@ public class CreationManager {
         settingsByPlayer.put(player, new CreationSettings());
     }
 
-    public void setPlayerModify(Player player, ECreationStatus status, boolean active) {
-        if (active && status != null)
-            statusModify.put(player, status);
-        else statusModify.remove(player);
-    }
-
     public void endGenerating(Player player) {
         statusCreation.remove(player);
         player.sendMessage(Messages.getMessage("end_creation", "{world_name}", settingsByPlayer.get(player).getName()));
@@ -35,10 +28,6 @@ public class CreationManager {
         WorldByPlayer.getInstance().getWorldManager().createWorld(player, settingsByPlayer.get(player));
         settingsByPlayer.remove(player);
 
-    }
-
-    public boolean isInModification(Player player) {
-        return statusModify.get(player) != null;
     }
 
     public boolean isInCreation(Player player) {
@@ -53,9 +42,6 @@ public class CreationManager {
         return statusCreation.get(player);
     }
 
-    public ECreationStatus getStatusModify(Player player) {
-        return statusModify.get(player);
-    }
 
     public void nextStep(Player player) {
         int nextStatus = statusCreation.get(player).ordinal() + 1;
@@ -66,7 +52,6 @@ public class CreationManager {
             statusCreation.put(player, nextEnum);
         switch (nextEnum) {
             case NAME -> player.sendMessage(Messages.getMessage("choose_name"));
-            case DESCRIPTION -> player.sendMessage(Messages.getMessage("choose_description"));
             case SEED -> player.sendMessage(Messages.getMessage("choose_seed"));
         }
     }

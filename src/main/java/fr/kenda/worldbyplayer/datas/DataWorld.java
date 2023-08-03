@@ -1,7 +1,10 @@
 package fr.kenda.worldbyplayer.datas;
 
 import fr.kenda.worldbyplayer.WorldByPlayer;
-import org.bukkit.ChatColor;
+import fr.kenda.worldbyplayer.utils.Config;
+import fr.kenda.worldbyplayer.utils.LocationTransform;
+import fr.kenda.worldbyplayer.utils.Messages;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -9,7 +12,6 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class DataWorld {
@@ -19,18 +21,16 @@ public class DataWorld {
     private final int seed;
     private final List<String> playersAllowed = new ArrayList<>();
     private String name;
-    private List<String> description;
 
-    public DataWorld(World world, String owner, String name, int seed, List<String> description) {
+    public DataWorld(World world, String owner, String name, int seed) {
         this.world = world;
         this.owner = owner;
         this.name = name;
         this.seed = seed;
-        this.description = description;
         this.nameWorld = world.getName();
 
         if (!exist(owner))
-            saveWorldFolder();
+            save();
     }
 
     private boolean exist(String owner) {
@@ -38,24 +38,45 @@ public class DataWorld {
         return configWorld.get("worlds." + this.owner) != null;
     }
 
-    private void saveWorldFolder() {
+    public void save() {
         FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
         String key = "worlds." + owner + ".";
         configWorld.set(key + "name", name);
-        configWorld.set(key + "description", description);
         configWorld.set(key + "seed", seed);
         configWorld.set(key + "playersAllowed", playersAllowed);
         saveConfig(configWorld);
     }
 
-    private void addPlayerToJoin(Player player) {
+    public void addPlayerToWorld(String player) {
         if (owner == null) return;
         FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
         String key = "worlds." + owner + ".";
-        playersAllowed.add(player.getName());
+        playersAllowed.add(player);
+        configWorld.set(key + "playersAllowed", playersAllowed);
+        saveConfig(configWorld);
+    }
+
+    public void removePlayerFromWorld(String target) {
+        if (owner == null) return;
+        FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
+        String key = "worlds." + owner + ".";
+        playersAllowed.remove(target);
         configWorld.set(key + "playersAllowed", playersAllowed);
         saveConfig(configWorld);
 
+        kickPlayerFromWorld(target);
+    }
+
+    public void kickPlayerFromWorld(String target) {
+        for (Player p : world.getPlayers()) {
+            if (p.getName().equalsIgnoreCase(target)) {
+                String worldName = Config.getString("lobby.world");
+                Location location = LocationTransform.deserializeCoordinate(worldName, Config.getString("lobby.coordinates"));
+                location.setY(location.getWorld().getHighestBlockYAt((int) location.getX(), (int) location.getZ()) + 1.5);
+                p.teleport(location);
+                p.sendMessage(WorldByPlayer.getInstance().getPrefix() + Messages.getMessage("removed_from_world", "{world}", getName(), "{owner}", getOwner()));
+            }
+        }
     }
 
     private void saveConfig(FileConfiguration config) {
@@ -83,25 +104,6 @@ public class DataWorld {
         return owner;
     }
 
-    public List<String> getDescription() {
-        List<String> coloredDescription = new ArrayList<>();
-        for (String desc : description)
-            coloredDescription.add(ChatColor.translateAlternateColorCodes('&', desc));
-        return coloredDescription;
-    }
-
-    public void setDescription(String description) {
-        this.description.clear();
-        this.description = Collections.singletonList(description);
-    }
-
-    public String getDescriptionString() {
-        StringBuilder descriptionString = new StringBuilder();
-        for (String str : description)
-            descriptionString.append(str);
-        return descriptionString.toString();
-    }
-
     public List<String> getPlayersAllowed() {
         return playersAllowed;
     }
@@ -109,4 +111,6 @@ public class DataWorld {
     public String getNameWorld() {
         return nameWorld;
     }
+
+
 }

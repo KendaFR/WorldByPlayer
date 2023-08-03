@@ -12,7 +12,8 @@ public class WorldChange implements Listener {
     public void onWorldChange(PlayerChangedWorldEvent e) {
         Player player = e.getPlayer();
         World from = e.getFrom();
-        player.getInventory().clear();
+        System.out.println("From -> " + from.getName());
+        //if(from == Bukkit.getWorlds().get(0)) player.getInventory().clear();
 
     }
 }

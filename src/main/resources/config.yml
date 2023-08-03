@@ -52,7 +52,7 @@ gui:
         - "&aNo rules"
         - "&aHave fun !"
         - "&c"
-        - "Current online: {online} / {maxplayers}"
+        - "&7Current online: &a{online} / &c{maxplayers}"
       #Materials that will represent the "free" world
       material: DIRT
       #Slot where item placed
@@ -66,9 +66,7 @@ gui:
         #Lores to describe
         #placeholder possible: {online} -> online
         lores:
-          - "{description}"
-          - "&c"
-          - "Current online: {online}"
+          - "&7Current online: &a{online}"
         #Materials that will represent the "free" world
         material: DIAMOND_BLOCK
       create:
@@ -124,3 +122,13 @@ gui:
     hour_name: "&aChange Hour of day"
     #material of day inventory
     hour_description: "&aCurrent Hour: {hour}"
+    #Name of category of player
+    players_allowed_name: "&aPlayers Allowed"
+    #description of category of player
+    players_allowed_description: "&aManage allowed players"
+    #Name of item when no players are allowed to your world
+    no_player_title: "&cNo players allowed"
+    #Description of item
+    no_player_description: "&7You can add player with /world add <player>"
+    #material of item
+    no_player_material: REDSTONE_BLOCK

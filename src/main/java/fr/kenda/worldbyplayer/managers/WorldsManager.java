@@ -11,7 +11,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class WorldsManager implements IManager {
@@ -43,9 +42,8 @@ public class WorldsManager implements IManager {
             WorldCreator creator = new WorldCreator(key);
             World world = creator.createWorld();
             String name = worldConfig.getString("worlds." + key + ".name");
-            List<String> description = worldConfig.getStringList("worlds." + key + ".description");
             int seed = worldConfig.getInt("worlds." + key + ".seed");
-            DataWorld dataWorld = new DataWorld(world, key, name, seed, description);
+            DataWorld dataWorld = new DataWorld(world, key, name, seed);
             worldsList.add(dataWorld);
         }
     }
@@ -116,16 +114,16 @@ public class WorldsManager implements IManager {
     public void createWorld(Player player, CreationSettings settings) {
         String playerName = player.getName();
         player.sendMessage(prefix + Messages.getMessage("attempt_create", "{world}", settings.getName()));
+
         if (Bukkit.getWorld(playerName) == null) {
             WorldCreator creator = new WorldCreator(playerName);
             creator.seed(settings.getSeed());
             World world = creator.createWorld();
-            DataWorld dataWorld = new DataWorld(world, player.getName(), settings.getName(), settings.getSeed(), settings.getDescription());
+            DataWorld dataWorld = new DataWorld(world, player.getName(), settings.getName(), settings.getSeed());
             worldsList.add(dataWorld);
             player.sendMessage(prefix + Messages.getMessage("world_created", "{world}", settings.getName()));
-            //World createdWorld = Bukkit.getWorld(playerName);
-            //player.teleport(new Location(createdWorld, 0, createdWorld.getHighestBlockYAt(0, 0), 0));
-        } else
+        } else {
             player.sendMessage(Messages.getMessage("creation_failure"));
+        }
     }
 }
