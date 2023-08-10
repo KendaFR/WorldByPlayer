@@ -7,7 +7,6 @@ import fr.kenda.worldbyplayer.utils.LocationTransform;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,15 +20,9 @@ public class PlayerJoin implements Listener {
 
     private final WorldByPlayer instance = WorldByPlayer.getInstance();
 
-    @SuppressWarnings("all")
-    @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
-        FileConfiguration config = instance.getConfig();
-        Player player = e.getPlayer();
-
-        //Create location to teleport player
-        String worldName = config.getString("lobby.world");
-        Location location = LocationTransform.deserializeCoordinate(worldName, config.getString("lobby.coordinates"));
+    public static void giveLobbyInventory(Player player) {
+        String worldName = Config.getString("lobby.world");
+        Location location = LocationTransform.deserializeCoordinate(worldName, Config.getString("lobby.coordinates"));
         location.setY(location.getWorld().getHighestBlockYAt((int) location.getX(), (int) location.getZ()) + 1.5);
         player.teleport(location);
 
@@ -49,6 +42,14 @@ public class PlayerJoin implements Listener {
         player.setGameMode(GameMode.ADVENTURE);
         player.setHealth(20);
         player.setFoodLevel(20);
+    }
+
+    @SuppressWarnings("all")
+    @EventHandler
+    public void onJoin(PlayerJoinEvent e) {
+        Player player = e.getPlayer();
+
+        giveLobbyInventory(player);
 
     }
 }

@@ -88,6 +88,11 @@ public class DataWorld {
         }
     }
 
+    /**
+     * Get the name of world when player set in creation
+     *
+     * @return String
+     */
     public String getName() {
         return name;
     }
@@ -112,5 +117,18 @@ public class DataWorld {
         return nameWorld;
     }
 
+    public int getSeed() {
+        return seed;
+    }
 
+    public String getAllowedPlayerString() {
+        StringBuilder allowedString = new StringBuilder("[");
+        int size = playersAllowed.size();
+        for (int i = 0; i < size; i++) {
+            allowedString.append(playersAllowed.get(i));
+            if (i + 1 < size) allowedString.append(",");
+        }
+        allowedString.append("]");
+        return allowedString.toString();
+    }
 }

@@ -84,4 +84,8 @@ public class Config {
             configStr = configStr.replace(args[i], args[i + 1]);
         return Messages.transformColor(configStr);
     }
+
+    public static boolean getBoolean(String path) {
+        return CONFIG.getBoolean(path);
+    }
 }

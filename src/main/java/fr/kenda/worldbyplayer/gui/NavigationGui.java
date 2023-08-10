@@ -7,6 +7,7 @@ import fr.kenda.worldbyplayer.managers.WorldsManager;
 import fr.kenda.worldbyplayer.utils.Config;
 import fr.kenda.worldbyplayer.utils.ItemBuilder;
 import fr.kenda.worldbyplayer.utils.Messages;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -40,6 +41,7 @@ public class NavigationGui extends Gui {
             return content;
 
 
+        //region FreeWorld
         World freeWorld = worldsManager.getFreeWorld();
         if (freeWorld == null)
             return content;
@@ -55,8 +57,9 @@ public class NavigationGui extends Gui {
                         "{online}", String.valueOf(online),
                         "{maxplayers}", s))
                 .toItemStack();
+        //endregion
 
-
+        //region owner
         final int slotOwnWorld = Config.getInt(shortcutConfig + "ownworld.slot");
 
         Player player = owner.getPlayer();
@@ -75,6 +78,14 @@ public class NavigationGui extends Gui {
             content[slotOwnWorld] = new ItemBuilder(Config.getMaterial(key + "material")).setName(Config.getString(key + "name"))
                     .setLore(Config.getList(key + "lores")).toItemStack();
         }
+
+        //endregion
+
+        int slotAccessWorld = Config.getInt(shortcutConfig + "access.slot");
+        String accessName = ChatColor.translateAlternateColorCodes('&', config.getString(shortcutConfig + "access.name"));
+        content[slotAccessWorld] = new ItemBuilder(Config.getMaterial(shortcutConfig + "access.material")).setName(accessName)
+                .setLore(Config.getList("access.lores")).toItemStack();
+
         return content;
     }
 
@@ -87,12 +98,15 @@ public class NavigationGui extends Gui {
 
         e.setCancelled(true);
 
-        int freeSlot = Config.getInt(shortcutConfig + "free.slot");
-        int ownSlot = Config.getInt(shortcutConfig + "ownworld.slot");
+        final int freeSlot = Config.getInt(shortcutConfig + "free.slot");
+        final int ownSlot = Config.getInt(shortcutConfig + "ownworld.slot");
+        final int accessSlot = Config.getInt(shortcutConfig + "access.slot");
 
-        /*if (clickedSlot == freeSlot) {
-
-        }*/
+        if (clickedSlot == freeSlot) {
+            World free = Bukkit.getWorld(Config.getString("worlds.nameMap"));
+            player.teleport(new Location(free, 0, free.getHighestBlockYAt(0, 0), 0));
+            player.sendMessage(prefix + Messages.getMessage("teleported_in", "{world}", Config.getString("worlds.nameMap")));
+        }
         if (clickedSlot == ownSlot) {
             if (!worldsManager.playerHasWorld(player))
                 instance.getCreationManager().setup(owner);
@@ -106,6 +120,18 @@ public class NavigationGui extends Gui {
                 player.sendMessage(prefix + Messages.getMessage("teleported_in", "{world}", dataWorld.getName()));
             }
             owner.closeInventory();
+        }
+        if (clickedSlot == accessSlot) {
+            final FileConfiguration worldsConfig = instance.getFileManager().getConfigFrom("worlds");
+            int size = worldsConfig.getConfigurationSection("worlds") != null ?
+                    worldsConfig.getConfigurationSection("worlds").getKeys(false).size() : 0;
+
+            AccessGui accessGui = (AccessGui) instance.getGuiManager().getGui("access");
+            if (accessGui != null) {
+                int newSize = Math.min((size / 9) + 1, 6 * 9);
+                accessGui.setSize(newSize * 9);
+                accessGui.create(player);
+            }
         }
     }
 }

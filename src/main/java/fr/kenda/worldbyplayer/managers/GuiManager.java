@@ -1,5 +1,6 @@
 package fr.kenda.worldbyplayer.managers;
 
+import fr.kenda.worldbyplayer.gui.AccessGui;
 import fr.kenda.worldbyplayer.gui.Gui;
 import fr.kenda.worldbyplayer.gui.NavigationGui;
 import fr.kenda.worldbyplayer.gui.WorldGui;
@@ -16,6 +17,7 @@ public class GuiManager implements IManager {
     public void register() {
         guis.put("navigation", new NavigationGui(Config.getString("gui.navigation.title"), 9));
         guis.put("world", new WorldGui(6 * 9));
+        guis.put("access", new AccessGui(Config.getString("gui.access.title"), 6 * 9));
     }
 
     public Gui getGui(final String name) {

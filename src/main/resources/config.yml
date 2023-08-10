@@ -15,6 +15,12 @@ lobby:
   #The coordinates must be set manually, to avoid any conflict with the configuration (x, y, z, yaw, pitch)
   coordinates: "0,0,0,0,0"
 
+#The chat worlds are interconnected, this means that all players see everyone's messages
+chat:
+  global-chat: true
+  #Format of chat in world
+  chat-world: "<{player}> {message}"
+
 navigation:
   #The type of the navigation item. You can found list here https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
   item: COMPASS
@@ -31,6 +37,13 @@ worlds:
   nameMap: "FreeWorld"
   #The maximum number of players on the world (set -1 if not limited)
   max-players: -1
+
+#message send when player make /world info
+world_info:
+  - "Name of world: {name}"
+  - "Owner: {owner}"
+  - "Players Allowed: {players_allowed}"
+  - "Seed: {seed}"
 
 #Gui configuration section
 gui:
@@ -79,6 +92,21 @@ gui:
         #Materials that will represent the "free" world
         material: EMERALD_BLOCK
       slot: 2
+    access:
+      #Name of item
+      name: "&aShown accessible worlds"
+      #Lores to describe
+      lores:
+        - "&aDisplay the worlds where you"
+        - "&aCan play with your friends"
+      #Materials that will represent the "free" world
+      material: NETHER_STAR
+      #Slot where item placed
+      slot: 6
+  #Section configuration of world access
+  access:
+    #Name of inventory
+    title: "&aAccessible world"
   #Section configuration of your own world
   world:
     #Title of inventory

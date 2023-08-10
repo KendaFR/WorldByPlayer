@@ -27,9 +27,6 @@ public abstract class Gui implements Listener {
         this.size = size;
 
         Bukkit.getPluginManager().registerEvents(this, WorldByPlayer.getInstance());
-
-        if (title != null)
-            inventory = Bukkit.createInventory(owner, size, title);
     }
 
     public Gui(int size) {
@@ -38,8 +35,8 @@ public abstract class Gui implements Listener {
 
     public void create(Player player) {
         owner = player;
-        if (inventory == null)
-            inventory = Bukkit.createInventory(owner, size, title);
+        System.out.println("Size Gui -> " + size);
+        inventory = Bukkit.createInventory(owner, size, title);
         owner.openInventory(inventory);
 
         updateContent(mainMenu());
@@ -59,4 +56,11 @@ public abstract class Gui implements Listener {
     public abstract void onClick(InventoryClickEvent e);
 
 
+    protected void setSize(int size) {
+        this.size = size;
+    }
+
+    public void close() {
+        owner.closeInventory();
+    }
 }
