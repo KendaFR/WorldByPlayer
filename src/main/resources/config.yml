@@ -6,7 +6,7 @@
 
 
 #Prefix that will be displayed in the chat
-prefix: "&c[WorldByPlayer]"
+prefix: "&c[WorldByPlayer] "
 
 #The default world that will act as a lobby
 lobby:
@@ -107,6 +107,22 @@ gui:
   access:
     #Name of inventory
     title: "&aAccessible world"
+    #Name of the item that will serve as a name
+    name: "&aWorld: {world_name}"
+    #description of world
+    lores:
+      - "&aOwner: % 9 "
+      - "&aSeed: {seed}"
+    no_world:
+      material: REDSTONE_BLOCK
+      name: "&cNo world available"
+      lores:
+        - "&eTry talking to other players"
+        - "&eto get invited :D"
+    #back item
+    back:
+      material: ACACIA_DOOR
+      name: "&cBack"
   #Section configuration of your own world
   world:
     #Title of inventory

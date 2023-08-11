@@ -128,10 +128,19 @@ public class NavigationGui extends Gui {
 
             AccessGui accessGui = (AccessGui) instance.getGuiManager().getGui("access");
             if (accessGui != null) {
-                int newSize = Math.min((size / 9) + 1, 6 * 9);
-                accessGui.setSize(newSize * 9);
+                int line = size / 9;
+                if (size == 0) {
+                    line = 1; // Si size est égal à 0, on ajoute une ligne
+                } else if (size % 9 != 0) {
+                    line += 1; // Ajouter une ligne si la division a un reste
+                } else {
+                    line += 2; // Si size est un multiple de 9, on ajoute deux lignes
+                }
+
+                accessGui.setSize(line * 9);
                 accessGui.create(player);
             }
         }
+
     }
 }

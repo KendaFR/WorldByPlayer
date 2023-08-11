@@ -35,7 +35,6 @@ public abstract class Gui implements Listener {
 
     public void create(Player player) {
         owner = player;
-        System.out.println("Size Gui -> " + size);
         inventory = Bukkit.createInventory(owner, size, title);
         owner.openInventory(inventory);
 
