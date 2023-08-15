@@ -11,11 +11,11 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.Objects;
 
 public class AccessGui extends Gui {
 
     private final FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
-    private final String shortcut = "gui.access.";
 
     public AccessGui(String title, int size) {
         super(title, size);
@@ -26,6 +26,7 @@ public class AccessGui extends Gui {
         ItemStack[] content = new ItemStack[size];
         final ConfigurationSection section = configWorld.getConfigurationSection("worlds");
 
+        String shortcut = "gui.access.";
         content[size - 1] = new ItemBuilder(Config.getMaterial(shortcut + "back.material")).setName(Config.getString(shortcut + "back.name")).toItemStack();
 
         if (section == null) {
@@ -36,14 +37,13 @@ public class AccessGui extends Gui {
         int index = 0;
         for (String key : section.getKeys(false)) {
             final String keyName = "worlds." + key + ".";
-            if (configWorld.getList(keyName + ".playersAllowed").contains(owner.getName())) {
+            if (Objects.requireNonNull(configWorld.getList(keyName + ".playersAllowed")).contains(owner.getName())) {
                 String nameOfWorld = Messages.transformColor(configWorld.getString(keyName + "name"));
                 List<String> lores = Config.getList(shortcut + "lores", "{owner}", key, "{seed}", configWorld.getString(keyName + "seed"));
                 content[index] = new SkullBuilder(key).setName(Config.getString(shortcut + "name", "{world_name}", nameOfWorld)).setLores(lores).toItemStack();
                 index++;
             }
         }
-
         return content;
     }
 

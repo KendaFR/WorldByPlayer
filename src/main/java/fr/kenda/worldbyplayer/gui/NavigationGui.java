@@ -2,7 +2,6 @@ package fr.kenda.worldbyplayer.gui;
 
 import fr.kenda.worldbyplayer.WorldByPlayer;
 import fr.kenda.worldbyplayer.datas.DataWorld;
-import fr.kenda.worldbyplayer.managers.FileManager;
 import fr.kenda.worldbyplayer.managers.WorldsManager;
 import fr.kenda.worldbyplayer.utils.Config;
 import fr.kenda.worldbyplayer.utils.ItemBuilder;
@@ -17,12 +16,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Objects;
+
 public class NavigationGui extends Gui {
 
     private final String shortcutConfig = "gui.navigation.";
     private final WorldByPlayer instance = WorldByPlayer.getInstance();
     private final WorldsManager worldsManager = instance.getWorldManager();
-    private final FileManager fileManager = instance.getFileManager();
     private final FileConfiguration config = instance.getConfig();
     private final String prefix = instance.getPrefix();
 
@@ -49,7 +49,7 @@ public class NavigationGui extends Gui {
         final int online = freeWorld.getPlayers().size();
         final int max = Config.getInt("worlds.max-players");
 
-        String name = ChatColor.translateAlternateColorCodes('&', config.getString(shortcutConfig + "free.name"));
+        String name = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString(shortcutConfig + "free.name")));
 
         String s = max == -1 ? "∞" : String.valueOf(max);
         content[slotFreeWorld] = new ItemBuilder(Config.getMaterial(shortcutConfig + "free.material"))
@@ -68,7 +68,7 @@ public class NavigationGui extends Gui {
             DataWorld worldPlayer = worldsManager.getDataWorldFromPlayerWorldOwner(player);
 
             String key = shortcutConfig + "ownworld.exist.";
-            String nameWorld = "§f" + ChatColor.translateAlternateColorCodes('&', config.getString(key + "name").replace("{name_world}", worldPlayer.getName()));
+            String nameWorld = "§f" + ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString(key + "name")).replace("{name_world}", worldPlayer.getName()));
 
             content[slotOwnWorld] = new ItemBuilder(Config.getMaterial(key + "material"))
                     .setName(nameWorld)
@@ -82,7 +82,7 @@ public class NavigationGui extends Gui {
         //endregion
 
         int slotAccessWorld = Config.getInt(shortcutConfig + "access.slot");
-        String accessName = ChatColor.translateAlternateColorCodes('&', config.getString(shortcutConfig + "access.name"));
+        String accessName = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString(shortcutConfig + "access.name")));
         content[slotAccessWorld] = new ItemBuilder(Config.getMaterial(shortcutConfig + "access.material")).setName(accessName)
                 .setLore(Config.getList("access.lores")).toItemStack();
 
@@ -104,6 +104,7 @@ public class NavigationGui extends Gui {
 
         if (clickedSlot == freeSlot) {
             World free = Bukkit.getWorld(Config.getString("worlds.nameMap"));
+            assert free != null;
             player.teleport(new Location(free, 0, free.getHighestBlockYAt(0, 0), 0));
             player.sendMessage(prefix + Messages.getMessage("teleported_in", "{world}", Config.getString("worlds.nameMap")));
         }
@@ -124,23 +125,21 @@ public class NavigationGui extends Gui {
         if (clickedSlot == accessSlot) {
             final FileConfiguration worldsConfig = instance.getFileManager().getConfigFrom("worlds");
             int size = worldsConfig.getConfigurationSection("worlds") != null ?
-                    worldsConfig.getConfigurationSection("worlds").getKeys(false).size() : 0;
+                    Objects.requireNonNull(worldsConfig.getConfigurationSection("worlds")).getKeys(false).size() : 0;
 
             AccessGui accessGui = (AccessGui) instance.getGuiManager().getGui("access");
             if (accessGui != null) {
                 int line = size / 9;
-                if (size == 0) {
+                if (size == 0)
                     line = 1; // Si size est égal à 0, on ajoute une ligne
-                } else if (size % 9 != 0) {
+                else if (size % 9 != 0)
                     line += 1; // Ajouter une ligne si la division a un reste
-                } else {
+                else
                     line += 2; // Si size est un multiple de 9, on ajoute deux lignes
-                }
 
                 accessGui.setSize(line * 9);
                 accessGui.create(player);
             }
         }
-
     }
 }

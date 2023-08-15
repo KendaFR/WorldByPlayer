@@ -1,10 +1,8 @@
 package fr.kenda.worldbyplayer.managers;
 
 import fr.kenda.worldbyplayer.WorldByPlayer;
-import fr.kenda.worldbyplayer.files.ProfileFile;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.util.HashMap;
@@ -13,19 +11,13 @@ public class FileManager implements IManager {
 
     private final WorldByPlayer instance = WorldByPlayer.getInstance();
     private final HashMap<String, FileConfiguration> files = new HashMap<>();
-    private final HashMap<String, ProfileFile> profiles = new HashMap<>();
 
     @Override
     public void register() {
         createFile("messages");
         createFile("worlds");
-        loadProfiles();
+        createFile("saved_players");
     }
-
-    private void loadProfiles() {
-    }
-
-
     /**
      * Create file
      *
@@ -48,10 +40,20 @@ public class FileManager implements IManager {
         return files.get(fileName);
     }
 
+/*
+    public void saveFile(String fileName) {
+        try {
+            File file = new File(WorldByPlayer.getInstance().getDataFolder(), fileName + ".yml"); // Chemin absolu du fichier
+            getConfigFrom(fileName).save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }*/
+
+/*
     private ProfileFile getProfile(String playerName) {
         return profiles.get(playerName);
     }
-
     public void createProfile(Player player) {
         if (!existProfile(player))
             profiles.put(player.getName(), new ProfileFile(player));
@@ -63,5 +65,5 @@ public class FileManager implements IManager {
 
     public boolean existProfile(Player player) {
         return profiles.get(player.getName()) != null;
-    }
+    }*/
 }
