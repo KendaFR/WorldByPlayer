@@ -2,8 +2,10 @@ package fr.kenda.worldbyplayer.datas;
 
 import fr.kenda.worldbyplayer.WorldByPlayer;
 import fr.kenda.worldbyplayer.utils.Config;
+import fr.kenda.worldbyplayer.utils.ETimeUnit;
 import fr.kenda.worldbyplayer.utils.LocationTransform;
 import fr.kenda.worldbyplayer.utils.Messages;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -13,11 +15,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class DataWorld {
     private final World world;
     private final String owner;
-    private final String nameWorld;
     private final int seed;
     private final List<String> playersAllowed = new ArrayList<>();
     private String name;
@@ -27,13 +29,30 @@ public class DataWorld {
         this.owner = owner;
         this.name = name;
         this.seed = seed;
-        this.nameWorld = world.getName();
 
-        if (!exist(owner))
+        
+        if (!exist())
             save();
+
     }
 
-    private boolean exist(String owner) {
+    private static void deleteWorldFolder(File folder) {
+        if (folder.exists()) {
+            File[] files = folder.listFiles();
+            if (files != null) {
+                for (java.io.File file : files) {
+                    if (file.isDirectory()) {
+                        deleteWorldFolder(file);
+                    } else {
+                        file.delete();
+                    }
+                }
+            }
+            folder.delete();
+        }
+    }
+
+    private boolean exist() {
         FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
         return configWorld.get("worlds." + this.owner) != null;
     }
@@ -44,6 +63,7 @@ public class DataWorld {
         configWorld.set(key + "name", name);
         configWorld.set(key + "seed", seed);
         configWorld.set(key + "playersAllowed", playersAllowed);
+        configWorld.set(key + "timeSuppressWorld", calculateDeletionTime());
         saveConfig(configWorld);
     }
 
@@ -72,11 +92,17 @@ public class DataWorld {
             if (p.getName().equalsIgnoreCase(target)) {
                 String worldName = Config.getString("lobby.world");
                 Location location = LocationTransform.deserializeCoordinate(worldName, Config.getString("lobby.coordinates"));
-                location.setY(location.getWorld().getHighestBlockYAt((int) location.getX(), (int) location.getZ()) + 1.5);
+                location.setY(Objects.requireNonNull(location.getWorld()).getHighestBlockYAt((int) location.getX(), (int) location.getZ()) + 1.5);
                 p.teleport(location);
                 p.sendMessage(WorldByPlayer.getInstance().getPrefix() + Messages.getMessage("removed_from_world", "{world}", getName(), "{owner}", getOwner()));
             }
         }
+    }
+
+    public void updateTimeLastLogin(){
+        FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
+        configWorld.set("worlds." + owner + "." + "timeSuppressWorld", calculateDeletionTime());
+        saveConfig(configWorld);
     }
 
     private void saveConfig(FileConfiguration config) {
@@ -113,10 +139,6 @@ public class DataWorld {
         return playersAllowed;
     }
 
-    public String getNameWorld() {
-        return nameWorld;
-    }
-
     public int getSeed() {
         return seed;
     }
@@ -130,5 +152,51 @@ public class DataWorld {
         }
         allowedString.append("]");
         return allowedString.toString();
+    }
+
+    public void deleteWorld(World worldToDelete) {
+        final String prefix = WorldByPlayer.getInstance().getPrefix();
+        // Exclude all players from the world and teleport them to the main world (world 0)
+        for (Player player : worldToDelete.getPlayers()) {
+            String worldName = Config.getString("lobby.world");
+            Location location = LocationTransform.deserializeCoordinate(worldName, Config.getString("lobby.coordinates"));
+            location.setY(Objects.requireNonNull(location.getWorld()).getHighestBlockYAt((int) location.getX(), (int) location.getZ()) + 1.5);
+            player.teleport(location); // Change "world" to the name of your main world
+            player.sendMessage(prefix + Messages.getMessage("returns_lobby_delete"));
+        }
+        Player owner = Bukkit.getPlayer(this.owner);
+        if (owner != null) owner.sendMessage(prefix + Messages.getMessage("world_deleted"));
+
+        WorldByPlayer.getInstance().getWorldManager().deleteWorldConfig(world);
+
+        // Unload and remove the world from Bukkit
+        Bukkit.unloadWorld(worldToDelete, false);
+        Bukkit.getWorlds().remove(worldToDelete);
+
+        // Delete the world folder from the server directory
+        File worldFolder = worldToDelete.getWorldFolder();
+        deleteWorldFolder(worldFolder);
+
+    }
+
+    private long calculateDeletionTime(){
+            long currentTimeMillis = System.currentTimeMillis();
+            long timeToAdd = Config.getInt("auto-purge") * ETimeUnit.DAYS.toMillis();
+        return currentTimeMillis + timeToAdd;
+    }
+
+    public int getTimeEnd() {
+        return ETimeUnit.remainingTimeBetween(getTimeEndToMillis(), System.currentTimeMillis());
+    }
+    public long getTimeEndToMillis() {
+        FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
+        return configWorld.getLong("worlds." + owner + "." + "timeSuppressWorld");
+    }
+
+    public boolean isInWarning(){
+        int warningDays = Config.getInt("days-warning");
+        long timeEnd = getTimeEndToMillis();
+        return ETimeUnit.remainingTimeBetween(timeEnd, System.currentTimeMillis()) < warningDays;
+
     }
 }

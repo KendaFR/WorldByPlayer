@@ -3,9 +3,7 @@ package fr.kenda.worldbyplayer.gui;
 import fr.kenda.worldbyplayer.WorldByPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -34,7 +32,7 @@ public abstract class Gui implements Listener {
     }
 
     public void create(Player player) {
-        owner = player;
+        if(owner == null) owner = player;
         inventory = Bukkit.createInventory(owner, size, title);
         owner.openInventory(inventory);
 
@@ -51,15 +49,8 @@ public abstract class Gui implements Listener {
 
     public abstract ItemStack[] mainMenu();
 
-    @EventHandler
-    public abstract void onClick(InventoryClickEvent e);
-
-
     protected void setSize(int size) {
         this.size = size;
     }
 
-    public void close() {
-        owner.closeInventory();
-    }
 }

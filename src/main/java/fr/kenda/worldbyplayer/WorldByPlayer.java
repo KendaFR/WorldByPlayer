@@ -1,6 +1,7 @@
 package fr.kenda.worldbyplayer;
 
 import fr.kenda.worldbyplayer.managers.*;
+import fr.kenda.worldbyplayer.schedulers.AutoPurgeScheduler;
 import fr.kenda.worldbyplayer.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -11,8 +12,8 @@ public final class WorldByPlayer extends JavaPlugin {
     private String prefix = "";
     private FileManager fileManager;
     private WorldsManager worldManager;
-    private GuiManager guiManager;
     private CreationManager creationManager;
+    public AutoPurgeScheduler autoPurgeScheduler = null;
 
     public static WorldByPlayer getInstance() {
         return instance;
@@ -35,9 +36,6 @@ public final class WorldByPlayer extends JavaPlugin {
 
         worldManager = new WorldsManager();
 
-        guiManager = new GuiManager();
-        guiManager.register();
-
         new CommandManager().register();
 
         creationManager = new CreationManager();
@@ -46,6 +44,7 @@ public final class WorldByPlayer extends JavaPlugin {
 
         worldManager.register();
         Bukkit.getWorlds().forEach(World::save);
+        worldManager.startAutoPurge();
     }
 
     @Override
@@ -79,14 +78,6 @@ public final class WorldByPlayer extends JavaPlugin {
         return worldManager;
     }
 
-    /**
-     * Get the Gui Manager
-     *
-     * @return GuiManager
-     */
-    public GuiManager getGuiManager() {
-        return guiManager;
-    }
 
     public CreationManager getCreationManager() {
         return creationManager;

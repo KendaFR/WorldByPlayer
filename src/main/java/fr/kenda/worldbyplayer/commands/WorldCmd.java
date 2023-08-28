@@ -3,7 +3,6 @@ package fr.kenda.worldbyplayer.commands;
 import fr.kenda.worldbyplayer.WorldByPlayer;
 import fr.kenda.worldbyplayer.datas.DataWorld;
 import fr.kenda.worldbyplayer.gui.WorldGui;
-import fr.kenda.worldbyplayer.managers.GuiManager;
 import fr.kenda.worldbyplayer.managers.WorldsManager;
 import fr.kenda.worldbyplayer.utils.Config;
 import fr.kenda.worldbyplayer.utils.Messages;
@@ -23,7 +22,6 @@ public class WorldCmd implements CommandExecutor {
     private final String prefix = instance.getPrefix();
 
     private final WorldsManager worldsManager = instance.getWorldManager();
-    private final GuiManager guiManager = instance.getGuiManager();
 
 
     @Override
@@ -44,7 +42,7 @@ public class WorldCmd implements CommandExecutor {
                     player.sendMessage(prefix + Messages.getMessage("not_in_own_world"));
                     break;
                 }
-                WorldGui worldGui = (WorldGui) guiManager.getGui("world");
+                WorldGui worldGui = new WorldGui(6*9);
                 worldGui.setTitle(Config.getString("title_inventory", "{world}", dataWorld.getName()));
                 worldGui.create(player);
             }

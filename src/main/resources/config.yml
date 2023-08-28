@@ -8,12 +8,15 @@
 #Prefix that will be displayed in the chat
 prefix: "&c[WorldByPlayer] "
 
+#Time before world deletion warning, when player logs in
+days-warning: 10
+
 #The default world that will act as a lobby
 lobby:
   #The name of the world that will be recovered, and all players will be teleported to this world at the coordinates below
   world: "world"
   #The coordinates must be set manually, to avoid any conflict with the configuration (x, y, z, yaw, pitch)
-  coordinates: "0,0,0,0,0"
+  coordinates: "0;0;0;0;0"
 
 #The chat worlds are interconnected, this means that all players see everyone's messages
 chat:
@@ -176,3 +179,51 @@ gui:
     no_player_description: "&7You can add player with /world add <player>"
     #material of item
     no_player_material: REDSTONE_BLOCK
+    #material of setspawn inventory
+    setspawn_material: CHICKEN_SPAWN_EGG
+    #material of setspawn inventory
+    setspawn_name: "&aSet the world spawn point to your location"
+    #material of setspawn inventory
+    setspawn_description: "&aCurrent Spawn: {spawn}"
+    #material of setspawn inventory
+    delete_material: BARRIER
+    #material of setspawn inventory
+    delete_name: "&aDelete your world"
+    #material of setspawn inventory
+    delete_description: "&4&lAttention ! Irreversible action when this button is clicked!"
+  members:
+    refill_heal:
+      name: "&cLeft click to regenerate health"
+      material: POTION
+      lores:
+        - "&aClick to regen"
+    refill_hunger:
+      name: "&cLeft click to regenerate hunger"
+      material: COOKED_BEEF
+      lores:
+        - "&aClick to regen"
+    gamemode:
+      name: "&cLeft click to change gamemode"
+      material: COMMAND_BLOCK
+      lores:
+        - "&aClick to change gamemode"
+    teleport_to:
+      name: "&cLeft click to teleport to player"
+      material: ENDER_PEARL
+      lores:
+        - "&aClick to teleport to player"
+    teleport_to_me:
+      name: "&cLeft click to teleport the player to me"
+      material: ENDER_PEARL
+      lores:
+        - "&aClick to teleport player to me"
+    inventory_see:
+      name: "&cLeft click to see inventory of player"
+      material: CHEST
+      lores:
+        - "&aClick to open virtual inventory of player"
+    inventory_clear:
+      name: "&cLeft click to clear inventory of player"
+      material: CHEST
+      lores:
+        - "&aClick to clear inventory of player"

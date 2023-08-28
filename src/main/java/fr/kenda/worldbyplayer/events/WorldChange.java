@@ -1,6 +1,7 @@
 package fr.kenda.worldbyplayer.events;
 
 import fr.kenda.worldbyplayer.WorldByPlayer;
+import fr.kenda.worldbyplayer.datas.DataWorld;
 import fr.kenda.worldbyplayer.managers.FileManager;
 import fr.kenda.worldbyplayer.utils.SavePlayerUtils;
 import org.bukkit.Bukkit;
@@ -24,6 +25,7 @@ public class WorldChange implements Listener {
 
         final FileConfiguration savedPlayers = fileManager.getConfigFrom("saved_players");
 
+
         //world player
         if (current != lobby) {
             player.getInventory().clear();
@@ -31,9 +33,14 @@ public class WorldChange implements Listener {
 
             if (savedPlayers != null)
                 SavePlayerUtils.loadPlayerData(player, current, savedPlayers);
-
+            if (!current.getName().equalsIgnoreCase(player.getName())) return;
+            DataWorld dw = WorldByPlayer.getInstance().getWorldManager().getDataWorldFromPlayerWorldOwner(player);
+            //is own world
+            if (dw != null && current == dw.getWorld())
+                dw.updateTimeLastLogin();
             return;
         }
+
         //Lobby
         if (savedPlayers != null) {
             SavePlayerUtils.savePlayerData(player, from, savedPlayers);

@@ -7,7 +7,6 @@ import fr.kenda.worldbyplayer.utils.Messages;
 import fr.kenda.worldbyplayer.utils.SkullBuilder;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -47,8 +46,4 @@ public class AccessGui extends Gui {
         return content;
     }
 
-    @Override
-    public void onClick(InventoryClickEvent e) {
-
-    }
 }

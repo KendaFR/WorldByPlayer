@@ -2,6 +2,7 @@ package fr.kenda.worldbyplayer.utils;
 
 import fr.kenda.worldbyplayer.WorldByPlayer;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -34,6 +35,24 @@ public class SavePlayerUtils {
         save(configuration);
     }
 
+    public static void saveLocation(Player player, World world, FileConfiguration configuration) {
+        configuration.set(player.getName() + ".worlds." + world.getName() + ".location", LocationTransform.serializeCoordinate(player.getLocation()));
+    }
+
+    public static void loadLocation(Player player, World world, FileConfiguration configuration) {
+        String locationKey = player.getName() + ".worlds." + world.getName() + ".location";
+        String loc = configuration.getString(locationKey);
+
+        Location location;
+        if (loc != null) {
+            location = LocationTransform.deserializeCoordinate(world.getName(), loc);
+        } else {
+            location = world.getSpawnLocation();
+        }
+        player.teleport(location);
+    }
+
+
     public static void loadPlayerData(final Player player, final World world, final FileConfiguration configuration) {
 
         String shortcut = player.getName() + ".worlds." + world.getName() + ".";
@@ -47,9 +66,14 @@ public class SavePlayerUtils {
 
         // Load gamemode
         String gamemode = configuration.getString(shortcut + "gamemode");
-        loadGamemode(player, GameMode.valueOf(gamemode));
+        if (gamemode != null)
+            loadGamemode(player, GameMode.valueOf(gamemode));
+        else
+            loadGamemode(player, GameMode.SURVIVAL);
 
         loadExperience(player, world, configuration);
+
+        loadLocation(player, world, configuration);
     }
 
     private static void saveArmor(final Player player, final World world, final FileConfiguration configuration) {
@@ -139,7 +163,7 @@ public class SavePlayerUtils {
     }
 
     private static void loadGamemode(final Player player, final GameMode gamemode) {
-        player.setGameMode(gamemode == null ? GameMode.SURVIVAL : gamemode);
+        player.setGameMode(gamemode);
     }
 
     private static void saveEffects(final Player player, final World world, final FileConfiguration configuration) {

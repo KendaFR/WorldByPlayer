@@ -11,6 +11,7 @@ public class EventsManager implements IManager {
         final WorldByPlayer instance = WorldByPlayer.getInstance();
         PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(new PlayerJoin(), instance);
+        pm.registerEvents(new PlayerQuit(), instance);
         pm.registerEvents(new OpenInventory(), instance);
         pm.registerEvents(new WorldChange(), instance);
         pm.registerEvents(new ChatCreatingWorld(), instance);

@@ -18,7 +18,7 @@ public class LocationTransform {
         float yaw = Math.round(location.getYaw());
         float pitch = Math.round(location.getPitch());
 
-        return String.format("%.1f, %.1f, %.1f, %.0f, %.0f", x, y, z, yaw, pitch);
+        return String.format("%.1f; %.1f; %.1f; %.0f; %.0f", x, y, z, yaw, pitch);
     }
 
     /**
@@ -29,7 +29,11 @@ public class LocationTransform {
      * @return Location
      */
     public static Location deserializeCoordinate(final String world, final String serializedLocation) {
-        String[] parts = serializedLocation.split(",");
+        String[] parts = serializedLocation.split(";");
+
+        for (int i = 0; i < parts.length; i++) {
+            parts[i] = parts[i].replace(',', '.'); // Remplace ',' par '.'
+        }
 
         double x = Double.parseDouble(parts[0]);
         double y = Double.parseDouble(parts[1]);
@@ -39,4 +43,5 @@ public class LocationTransform {
 
         return new Location((world.isEmpty() ? Bukkit.getWorld("world") : Bukkit.getWorld(world)), x, y, z, yaw, pitch);
     }
+
 }

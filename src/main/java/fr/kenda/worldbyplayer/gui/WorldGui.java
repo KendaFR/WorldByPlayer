@@ -2,11 +2,9 @@ package fr.kenda.worldbyplayer.gui;
 
 import fr.kenda.worldbyplayer.WorldByPlayer;
 import fr.kenda.worldbyplayer.datas.DataWorld;
-import fr.kenda.worldbyplayer.utils.Config;
-import fr.kenda.worldbyplayer.utils.ItemBuilder;
-import fr.kenda.worldbyplayer.utils.Messages;
-import fr.kenda.worldbyplayer.utils.SkullBuilder;
+import fr.kenda.worldbyplayer.utils.*;
 import org.bukkit.*;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.ClickType;
@@ -16,26 +14,33 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 enum EInventoryStatus {
-    MEMBER, GAMERULE, PLAYER_MODIFY, HOUR, PLAYERS_ALLOWED
+    MEMBER, GAMERULE, PLAYER_MODIFY, HOUR, PLAYERS_ALLOWED, SETSPAWN, DELETE, INVENTORY_SEE
 }
 
-@SuppressWarnings("null")
+@SuppressWarnings("all")
 public class WorldGui extends Gui {
 
     public final Map<EInventoryStatus, Integer> slotStatus = Map.of(
             EInventoryStatus.MEMBER, 0,
             EInventoryStatus.GAMERULE, 2,
             EInventoryStatus.HOUR, 3,
-            EInventoryStatus.PLAYERS_ALLOWED, 4
+            EInventoryStatus.PLAYERS_ALLOWED, 4,
+            EInventoryStatus.SETSPAWN, 5,
+            EInventoryStatus.DELETE, 6
     );
+
     private final String shortcut = "gui.world.";
     private final String prefix = WorldByPlayer.getInstance().getPrefix();
     private final int separatorLine = 2;
+    private final FileConfiguration config = WorldByPlayer.getInstance().getConfig();
     private EInventoryStatus statusInventory = EInventoryStatus.MEMBER;
     private Player playerModify = null;
+    private String playerModifyName = null;
     private DataWorld dataWorld = null;
+    private boolean isInModifyPlayer = false;
 
     public WorldGui(int size) {
         super(size);
@@ -43,6 +48,7 @@ public class WorldGui extends Gui {
 
     @Override
     public ItemStack[] mainMenu() {
+        isInModifyPlayer = false;
         statusInventory = EInventoryStatus.MEMBER;
         return memberMenu();
     }
@@ -59,7 +65,7 @@ public class WorldGui extends Gui {
 
 
         int startMember = separatorLine * 9;
-        for (Player p : Bukkit.getWorld(owner.getName()).getPlayers()) {
+        for (Player p : Objects.requireNonNull(Bukkit.getWorld(owner.getName())).getPlayers()) {
             content[startMember] = new SkullBuilder(p).setLores(Config.getList(shortcut + "lores_player", "{heal}", String.valueOf((int) p.getHealth()),
                             "{food}", String.valueOf(p.getFoodLevel()),
                             "{gamemode}", p.getGameMode().name()))
@@ -75,7 +81,7 @@ public class WorldGui extends Gui {
     /**
      * Set main menu row
      *
-     * @param content
+     * @param content ItemStack[]
      */
     private void setMenu(ItemStack[] content) {
         content[8] = new ItemBuilder(Config.getMaterial(shortcut + "exit_material"))
@@ -100,7 +106,17 @@ public class WorldGui extends Gui {
 
         content[slotStatus.get(EInventoryStatus.PLAYERS_ALLOWED)] = new ItemBuilder(Material.SKELETON_SKULL).setName(Config.getString(shortcut + "players_allowed_name"))
                 .setLore(Config.getString(shortcut + "players_allowed_description")).toItemStack();
+
+        content[slotStatus.get(EInventoryStatus.SETSPAWN)] = new ItemBuilder(Config.getMaterial(shortcut + "setspawn_material"))
+                .setName(Config.getString(shortcut + "setspawn_name"))
+                .setLore(Config.getString(shortcut + "setspawn_description", "{spawn}",
+                        LocationTransform.serializeCoordinate(dataWorld.getWorld().getSpawnLocation()))).toItemStack();
+
+        content[slotStatus.get(EInventoryStatus.DELETE)] = new ItemBuilder(Config.getMaterial(shortcut + "delete_material"))
+                .setName(Config.getString(shortcut + "delete_name"))
+                .setLore(Config.getString(shortcut + "delete_description")).toItemStack();
     }
+
 
     private ItemStack[] gameruleMenu() {
         ItemStack[] content = new ItemStack[size];
@@ -153,6 +169,30 @@ public class WorldGui extends Gui {
         return content;
     }
 
+    private ItemStack[] inventorySeeMenu(Player target) {
+        ItemStack[] content = new ItemStack[size];
+        setPatternSeparatorTemplate(content);
+        content[8] = new ItemBuilder(Config.getMaterial(shortcut + "back_material"))
+                .setName(Config.getString(shortcut + "name_back")).toItemStack();
+        content[4] = new SkullBuilder(playerModify).toItemStack();
+
+        int indexInventory = 3 * 9;
+        ItemStack[] inventory = target.getInventory().getContents();
+        for (int i = 0; i < inventory.length - 5; i++) {
+            ItemStack item = inventory[i];
+            if (item == null) continue;
+            content[indexInventory++] = item;
+        }
+
+        int indexArmor = 2 * 9;
+        ItemStack[] armor = target.getInventory().getArmorContents();
+        for (ItemStack item : armor) {
+            if (item == null) continue;
+            content[indexArmor++] = item;
+        }
+        return content;
+    }
+
     /**
      * Pattern of glass pane
      *
@@ -182,7 +222,7 @@ public class WorldGui extends Gui {
 
 
     /**
-     * Inventory Modify the playerm
+     * Inventory Modify the player
      *
      * @return
      */
@@ -190,7 +230,7 @@ public class WorldGui extends Gui {
         ItemStack[] content = new ItemStack[size];
         setPatternSeparatorTemplate(content);
         content[8] = new ItemBuilder(Config.getMaterial(shortcut + "back_material"))
-                .setName(Config.getString(shortcut + "back")).toItemStack();
+                .setName(Config.getString(shortcut + "name_back")).toItemStack();
 
         boolean isSurvival = playerModify.getGameMode() == GameMode.SURVIVAL;
         boolean isCreative = playerModify.getGameMode() == GameMode.CREATIVE;
@@ -202,16 +242,27 @@ public class WorldGui extends Gui {
             gamemodes.add(playerModify.getGameMode() == gm ? "§a" + gm : "§c" + gm);
 
 
+        int startIndex = 18;
+
         content[4] = new SkullBuilder(playerModify).toItemStack();
-        content[18] = new ItemBuilder(Material.POTION).setName(Messages.getMessage("refill_heal_gui")).toItemStack();
-        content[19] = new ItemBuilder(Material.COOKED_CHICKEN).setName(Messages.getMessage("refill_hunger_gui")).toItemStack();
-        content[20] = new ItemBuilder(Material.COMMAND_BLOCK).setName(Messages.getMessage("change_gamemode_gui"))
-                .setLore(gamemodes).toItemStack();
+
+        for (String key : config.getConfigurationSection("gui.members").getKeys(false)) {
+            if (key.equalsIgnoreCase("gamemode")) {
+                List<String> lores = Config.getList("gui.members." + key + ".lores");
+                lores.addAll(gamemodes);
+                content[startIndex++] = new ItemBuilder(Config.getMaterial("gui.members." + key + ".material"))
+                        .setName(Config.getString("gui.members." + key + ".name"))
+                        .setLore(lores).toItemStack();
+            } else
+                content[startIndex++] = new ItemBuilder(Config.getMaterial("gui.members." + key + ".material"))
+                        .setName(Config.getString("gui.members." + key + ".name"))
+                        .setLore(Config.getList("gui.members." + key + ".lores")).toItemStack();
+        }
 
         return content;
     }
 
-    @Override
+
     @EventHandler
     public void onClick(InventoryClickEvent e) {
         int clickedSlot = e.getSlot();
@@ -221,64 +272,64 @@ public class WorldGui extends Gui {
         e.setCancelled(true);
 
         switch (clickedSlot) {
-            case 0 -> statusInventory = EInventoryStatus.MEMBER;
-            case 2 -> statusInventory = EInventoryStatus.GAMERULE;
-            case 3 -> statusInventory = EInventoryStatus.HOUR;
-            case 4 -> statusInventory = EInventoryStatus.PLAYERS_ALLOWED;
+            case 0 -> {
+                if (!isInModifyPlayer) statusInventory = EInventoryStatus.MEMBER;
+            }
+            case 2 -> {
+                if (!isInModifyPlayer) statusInventory = EInventoryStatus.GAMERULE;
+            }
+            case 3 -> {
+                if (!isInModifyPlayer) statusInventory = EInventoryStatus.HOUR;
+            }
+            case 4 -> {
+                if (!isInModifyPlayer) statusInventory = EInventoryStatus.PLAYERS_ALLOWED;
+            }
             case 8 -> {
-                if (statusInventory == EInventoryStatus.PLAYER_MODIFY) {
-                    updateContent(mainMenu());
-                } else {
-                    player.closeInventory();
+                switch (statusInventory) {
+                    case PLAYER_MODIFY -> {
+                        isInModifyPlayer = false;
+                        updateContent(mainMenu());
+                    }
+                    case INVENTORY_SEE -> {
+                        statusInventory = EInventoryStatus.PLAYER_MODIFY;
+                        updateContent(playerModify());
+                    }
+                    default -> player.closeInventory();
                 }
             }
         }
 
-        refreshInventory();
-
-
-        if (!(clickedSlot >= separatorLine * 9 && clickedSlot < size)) return;
-
-
         switch (statusInventory) {
             case MEMBER -> {
+                if (isInModifyPlayer) return;
                 int clickedTarget = clickedSlot - (separatorLine * 9);
                 if (clickedTarget > Bukkit.getWorld(owner.getName()).getPlayers().size()) return;
 
                 Player clickedPlayer = Bukkit.getWorld(owner.getName()).getPlayers().get(clickedTarget);
-                if (clickedPlayer == null) return;
+                if (clickedPlayer == null) break;
 
                 ClickType action = e.getClick();
                 if (action == ClickType.LEFT || action == ClickType.RIGHT) {
                     statusInventory = EInventoryStatus.PLAYER_MODIFY;
-                    playerModify = clickedPlayer;
-                    refreshInventory();
+                    playerModify = clickedPlayer.getWorld() != Bukkit.getWorlds().get(0) ? clickedPlayer : null;
+                    if (playerModify == null) break;
+                    playerModifyName = playerModify.getName();
+                    isInModifyPlayer = true;
                 }
             }
             case PLAYER_MODIFY -> {
                 switch (clickedSlot) {
-                    case 18 -> {
-                        playerModify.setHealth(20);
-                        owner.sendMessage(prefix + Messages.getMessage("refill_heal_to", "{target}", playerModify.getName()));
-                        playerModify.sendMessage(prefix + Messages.getMessage("refill_heal"));
-
-                    }
-                    case 19 -> {
-                        playerModify.setFoodLevel(20);
-                        owner.sendMessage(prefix + Messages.getMessage("refill_hunger_to", "{target}", playerModify.getName()));
-                        playerModify.sendMessage(prefix + Messages.getMessage("refill_hunger"));
-                    }
-                    case 20 -> {
-                        int newValue = playerModify.getGameMode().ordinal() + 1;
-                        GameMode gm = GameMode.values()[newValue > GameMode.values().length - 1 ? 0 : newValue];
-                        playerModify.setGameMode(gm);
-                        playerModify.sendMessage(prefix + Messages.getMessage("change_gamemode_to", "{gamemode}", playerModify.getGameMode().toString()));
-                        owner.sendMessage(prefix + Messages.getMessage("change_gamemode", "{gamemode}", gm.toString()));
-                        updateContent(playerModify());
-                    }
+                    case 18 -> refillHealth();
+                    case 19 -> refillHunger();
+                    case 20 -> changeGamemode();
+                    case 21 -> teleportTo();
+                    case 22 -> teleportPlayerToMe();
+                    case 23 -> inventorySee();
+                    case 24 -> clearInventory();
                 }
             }
             case GAMERULE -> {
+                if (isInModifyPlayer) return;
                 World world = dataWorld.getWorld();
                 int index = world.getGameRules().length - (clickedSlot - separatorLine * 9);
                 int gameruleIndex = world.getGameRules().length - index;
@@ -306,9 +357,9 @@ public class WorldGui extends Gui {
                     }
                     world.setGameRuleValue(gameruleName, String.valueOf(valueNumeric));
                 }
-                refreshInventory();
             }
             case HOUR -> {
+                if (isInModifyPlayer) return;
                 World world = dataWorld.getWorld();
                 int clicked = (clickedSlot - (separatorLine * 9));
                 World currentWorld = player.getWorld();
@@ -316,9 +367,9 @@ public class WorldGui extends Gui {
                 currentWorld.setTime(time % 24000);
                 player.sendMessage(prefix + Messages.getMessage("hour_changed", "{hour}", clicked > 12 ? clicked - 12 + "PM" : clicked + "AM"));
 
-                refreshInventory();
             }
             case PLAYERS_ALLOWED -> {
+                if (isInModifyPlayer) return;
                 ClickType clickType = e.getClick();
                 if (clickType == ClickType.SHIFT_LEFT) {
                     int clicked = clickedSlot - 18;
@@ -326,10 +377,85 @@ public class WorldGui extends Gui {
                     dataWorld.removePlayerFromWorld(target);
                     player.sendMessage(prefix + Messages.getMessage("player_removed", "{target}", target));
                 }
-                refreshInventory();
+            }
+            default -> {
+                if (clickedSlot == EInventoryStatus.SETSPAWN.ordinal()) {
+                    Location loc = player.getLocation();
+                    dataWorld.getWorld().setSpawnLocation(loc);
+                    player.sendMessage(prefix + Messages.getMessage("set_spawn", "{location}", LocationTransform.serializeCoordinate(loc)));
+                    refreshInventory();
+                } else if (clickedSlot == EInventoryStatus.DELETE.ordinal()) {
+                    dataWorld.deleteWorld(dataWorld.getWorld());
+                    return;
+                }
+                if (!(clickedSlot >= separatorLine * 9 && clickedSlot < size)) return;
             }
         }
+        refreshInventory();
     }
+
+    private void clearInventory() {
+        if (isInWorldAndValid()) {
+            playerModify.getInventory().clear();
+            playerModify.sendMessage(prefix + Messages.getMessage("clear_inventory_player"));
+            owner.sendMessage(prefix + Messages.getMessage("clear_inventory_target", "{target}", playerModifyName));
+        } else owner.sendMessage(prefix + Messages.getMessage("offline_world_player", "{target}", playerModifyName));
+    }
+
+    private void inventorySee() {
+        statusInventory = EInventoryStatus.INVENTORY_SEE;
+        updateContent(inventorySeeMenu(playerModify));
+    }
+
+
+    private void teleportPlayerToMe() {
+        if (isInWorldAndValid()) {
+            playerModify.teleport(owner.getLocation());
+            playerModify.sendMessage(prefix + Messages.getMessage("teleported_to", "{target}", owner.getName()));
+            owner.sendMessage(prefix + Messages.getMessage("teleported_player_to_me", "{target}", playerModifyName));
+        } else
+            owner.sendMessage(prefix + Messages.getMessage("offline_player", "{target}", playerModifyName));
+    }
+
+    private void teleportTo() {
+        if (isInWorldAndValid()) {
+            owner.teleport(playerModify.getLocation());
+            owner.sendMessage(prefix + Messages.getMessage("teleported_to", "{target}", playerModifyName));
+        } else
+            owner.sendMessage(prefix + Messages.getMessage("offline_world_player", "{target}", playerModifyName));
+    }
+
+    private void changeGamemode() {
+        if (isInWorldAndValid()) {
+            int newValue = playerModify.getGameMode().ordinal() + 1;
+            GameMode gm = GameMode.values()[newValue > GameMode.values().length - 1 ? 0 : newValue];
+            playerModify.setGameMode(gm);
+            playerModify.sendMessage(prefix + Messages.getMessage("change_gamemode_to", "{gamemode}", playerModify.getGameMode().toString()));
+            owner.sendMessage(prefix + Messages.getMessage("change_gamemode", "{target}", playerModifyName, "{gamemode}", gm.toString()));
+            updateContent(playerModify());
+        } else
+            owner.sendMessage(prefix + Messages.getMessage("offline_world_player", "{target}", playerModifyName));
+    }
+
+    private void refillHunger() {
+        if (isInWorldAndValid()) {
+            playerModify.setFoodLevel(20);
+            owner.sendMessage(prefix + Messages.getMessage("refill_hunger_to", "{target}", playerModifyName));
+            playerModify.sendMessage(prefix + Messages.getMessage("refill_hunger"));
+        } else
+            owner.sendMessage(prefix + Messages.getMessage("offline_world_player", "{target}", playerModifyName));
+    }
+
+
+    private void refillHealth() {
+        if (isInWorldAndValid()) {
+            playerModify.setHealth(20);
+            owner.sendMessage(prefix + Messages.getMessage("refill_heal_to", "{target}", playerModifyName));
+            playerModify.sendMessage(prefix + Messages.getMessage("refill_heal"));
+        } else
+            owner.sendMessage(prefix + Messages.getMessage("offline_world_player", "{target}", playerModifyName));
+    }
+
 
     private boolean isNumeric(String value) {
         // Vérifie si la chaîne est numérique en essayant de la convertir en entier.
@@ -339,5 +465,12 @@ public class WorldGui extends Gui {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+
+    private boolean isInWorldAndValid() {
+        return playerModify != null &&
+                Bukkit.getPlayer(playerModifyName) != null &&
+                playerModify.getWorld().getName().equalsIgnoreCase(dataWorld.getWorld().getName());
     }
 }

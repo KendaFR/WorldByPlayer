@@ -3,13 +3,17 @@ package fr.kenda.worldbyplayer.managers;
 import fr.kenda.worldbyplayer.WorldByPlayer;
 import fr.kenda.worldbyplayer.datas.CreationSettings;
 import fr.kenda.worldbyplayer.datas.DataWorld;
+import fr.kenda.worldbyplayer.schedulers.AutoPurgeScheduler;
 import fr.kenda.worldbyplayer.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -22,6 +26,15 @@ public class WorldsManager implements IManager {
     private final String prefix = instance.getPrefix();
 
     public ArrayList<DataWorld> worldsList = new ArrayList<>();
+
+    private static void save(final FileConfiguration configuration, final String fileName) {
+        try {
+            File file = new File(WorldByPlayer.getInstance().getDataFolder(), fileName + ".yml"); // Chemin absolu du fichier
+            configuration.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void register() {
@@ -39,10 +52,12 @@ public class WorldsManager implements IManager {
         if (worldConfig.getConfigurationSection("worlds") == null) return;
 
         for (String key : worldConfig.getConfigurationSection("worlds").getKeys(false)) {
+            System.out.println("Key -> "+ key);
             WorldCreator creator = new WorldCreator(key);
             World world = creator.createWorld();
             String name = worldConfig.getString("worlds." + key + ".name");
             int seed = worldConfig.getInt("worlds." + key + ".seed");
+            assert world != null;
             DataWorld dataWorld = new DataWorld(world, key, name, seed);
             worldsList.add(dataWorld);
         }
@@ -119,11 +134,71 @@ public class WorldsManager implements IManager {
             WorldCreator creator = new WorldCreator(playerName);
             creator.seed(settings.getSeed());
             World world = creator.createWorld();
+            assert world != null;
             DataWorld dataWorld = new DataWorld(world, player.getName(), settings.getName(), settings.getSeed());
             worldsList.add(dataWorld);
             player.sendMessage(prefix + Messages.getMessage("world_created", "{world}", settings.getName()));
         } else {
             player.sendMessage(Messages.getMessage("creation_failure"));
         }
+    }
+
+    public void deleteWorldConfig(World world) {
+        FileConfiguration worldConfig = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
+        worldConfig.set("worlds." + world.getName(), null);
+        save(worldConfig, "worlds");
+
+
+        FileConfiguration saved_players = WorldByPlayer.getInstance().getFileManager().getConfigFrom("saved_players");
+        for (String key : saved_players.getKeys(false)) {
+            ConfigurationSection worlds = saved_players.getConfigurationSection(key + ".worlds");
+            if (worlds == null) return;
+            for (String worldName : worlds.getKeys(false)) {
+                if (worldName.equalsIgnoreCase(world.getName()))
+                    saved_players.set(key + ".worlds." + worldName, null);
+            }
+        }
+        save(saved_players, "saved_players");
+        worldsList.removeIf(dataWorld -> dataWorld.getWorld() == world);
+
+    }
+
+    public void startAutoPurge() {
+        autoPurge();
+        Bukkit.getScheduler().runTaskTimer(instance, new AutoPurgeScheduler(), 20, 20);
+    }
+
+    public void autoPurge() {
+        Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("auto_purge_started"));
+        Bukkit.getOnlinePlayers().forEach(p -> {
+            if (p.hasPermission("admin")) {
+                p.sendMessage(prefix + Messages.getMessage("auto_purge_started"));
+            }
+        });
+        int numberSuppressed = 0;
+        for (int i = 0; i < worldsList.size(); i++) {
+            DataWorld dataWorld = worldsList.get(i);
+            if (dataWorld == null) return;
+            if (dataWorld.getTimeEndToMillis() < System.currentTimeMillis()) {
+                World world = dataWorld.getWorld();
+                Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("purge_suppress", "{owner}", dataWorld.getOwner()));
+                Bukkit.getOnlinePlayers().forEach(p -> {
+                    if (p.hasPermission("admin")) {
+                        Messages.getMessage("purge_suppress", "{owner}", dataWorld.getOwner());
+                    }
+                });
+                dataWorld.deleteWorld(world);
+                deleteWorldConfig(world);
+                i--;
+                numberSuppressed++;
+            }
+        }
+        final int totalSuppress = numberSuppressed;
+        Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("auto_purge_end", "{number}", String.valueOf(totalSuppress)));
+        Bukkit.getOnlinePlayers().forEach(p -> {
+            if (p.hasPermission("admin")) {
+                p.sendMessage(prefix + Messages.getMessage("auto_purge_end", "{number}", String.valueOf(totalSuppress)));
+            }
+        });
     }
 }

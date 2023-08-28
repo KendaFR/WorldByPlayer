@@ -1,8 +1,11 @@
 package fr.kenda.worldbyplayer.events;
 
+import fr.kenda.worldbyplayer.WorldByPlayer;
+import fr.kenda.worldbyplayer.datas.DataWorld;
 import fr.kenda.worldbyplayer.utils.Config;
 import fr.kenda.worldbyplayer.utils.ItemBuilder;
 import fr.kenda.worldbyplayer.utils.LocationTransform;
+import fr.kenda.worldbyplayer.utils.Messages;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -43,15 +46,22 @@ public class PlayerJoin implements Listener {
         player.setFoodLevel(20);
     }
 
+    private static void setInventoryLobby(Player player) {
+        player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
+        player.setExp(0);
+        player.setLevel(0);
+        giveLobbyInventory(player);
+    }
+
     @SuppressWarnings("all")
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
 
-        player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
-        player.setExp(0);
-        player.setLevel(0);
-        giveLobbyInventory(player);
-
+        setInventoryLobby(player);
+        DataWorld dataWorld = WorldByPlayer.getInstance().getWorldManager().getDataWorldFromPlayerWorldOwner(player);
+        if (dataWorld == null) return;
+        if (dataWorld.isInWarning())
+            player.sendMessage(WorldByPlayer.getInstance().getPrefix() + Messages.getMessage("time_left", "{days}", String.valueOf(dataWorld.getTimeEnd())));
     }
 }

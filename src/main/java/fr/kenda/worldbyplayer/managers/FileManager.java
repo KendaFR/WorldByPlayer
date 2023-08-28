@@ -18,6 +18,7 @@ public class FileManager implements IManager {
         createFile("worlds");
         createFile("saved_players");
     }
+
     /**
      * Create file
      *

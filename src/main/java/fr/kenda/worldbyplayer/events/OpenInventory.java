@@ -1,6 +1,6 @@
 package fr.kenda.worldbyplayer.events;
 
-import fr.kenda.worldbyplayer.WorldByPlayer;
+import fr.kenda.worldbyplayer.gui.NavigationGui;
 import fr.kenda.worldbyplayer.utils.Config;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,9 +17,10 @@ public class OpenInventory implements Listener {
         ItemStack item = player.getInventory().getItemInMainHand();
 
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if (item.getType() == Config.getMaterial("navigation.item"))
-                WorldByPlayer.getInstance().getGuiManager().getGui("navigation").create(player);
-
+            if (item.getType() == Config.getMaterial("navigation.item")) {
+                NavigationGui navigation = new NavigationGui(player, Config.getString("gui.navigation.title"), 9);
+                navigation.create(player);
+            }
         }
     }
 }

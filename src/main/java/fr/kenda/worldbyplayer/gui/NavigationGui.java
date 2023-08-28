@@ -26,8 +26,8 @@ public class NavigationGui extends Gui {
     private final FileConfiguration config = instance.getConfig();
     private final String prefix = instance.getPrefix();
 
-    public NavigationGui(String title, int size) {
-        super(title, size);
+    public NavigationGui(Player owner, String title, int size) {
+        super(title, owner, size);
     }
 
     public ItemStack[] mainMenu() {
@@ -89,12 +89,11 @@ public class NavigationGui extends Gui {
         return content;
     }
 
-    @Override
     @EventHandler
     public void onClick(InventoryClickEvent e) {
         int clickedSlot = e.getSlot();
         Player player = (Player) e.getWhoClicked();
-        if (e.getInventory() != inventory) return;
+        if(player != owner) { System.out.println("Pas le même owner -> "); return; }
 
         e.setCancelled(true);
 
@@ -114,10 +113,7 @@ public class NavigationGui extends Gui {
             else {
                 DataWorld dataWorld = instance.getWorldManager().getDataWorldFromPlayerWorldOwner(owner);
                 World world = dataWorld.getWorld();
-                /**
-                 * TODO replace by file last location
-                 */
-                player.teleport(new Location(world, 0, world.getHighestBlockYAt(0, 0), 0));
+                player.teleport(world.getSpawnLocation());
                 player.sendMessage(prefix + Messages.getMessage("teleported_in", "{world}", dataWorld.getName()));
             }
             owner.closeInventory();
@@ -127,19 +123,17 @@ public class NavigationGui extends Gui {
             int size = worldsConfig.getConfigurationSection("worlds") != null ?
                     Objects.requireNonNull(worldsConfig.getConfigurationSection("worlds")).getKeys(false).size() : 0;
 
-            AccessGui accessGui = (AccessGui) instance.getGuiManager().getGui("access");
-            if (accessGui != null) {
-                int line = size / 9;
-                if (size == 0)
-                    line = 1; // Si size est égal à 0, on ajoute une ligne
-                else if (size % 9 != 0)
-                    line += 1; // Ajouter une ligne si la division a un reste
-                else
-                    line += 2; // Si size est un multiple de 9, on ajoute deux lignes
+            AccessGui accessGui = new AccessGui(Config.getString("gui.access.title"), 6 * 9);
+            int line = size / 9;
+            if (size == 0)
+                line = 1; // Si size est égal à 0, on ajoute une ligne
+            else if (size % 9 != 0)
+                line += 1; // Ajouter une ligne si la division a un reste
+            else
+                line += 2; // Si size est un multiple de 9, on ajoute deux lignes
 
-                accessGui.setSize(line * 9);
-                accessGui.create(player);
-            }
+            accessGui.setSize(line * 9);
+            accessGui.create(player);
         }
     }
 }
