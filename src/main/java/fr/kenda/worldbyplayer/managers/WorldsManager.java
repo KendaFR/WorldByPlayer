@@ -52,7 +52,6 @@ public class WorldsManager implements IManager {
         if (worldConfig.getConfigurationSection("worlds") == null) return;
 
         for (String key : worldConfig.getConfigurationSection("worlds").getKeys(false)) {
-            System.out.println("Key -> "+ key);
             WorldCreator creator = new WorldCreator(key);
             World world = creator.createWorld();
             String name = worldConfig.getString("worlds." + key + ".name");
@@ -116,6 +115,19 @@ public class WorldsManager implements IManager {
     public DataWorld getDataWorldFromPlayerWorldOwner(Player player) {
         for (DataWorld dataWorld : worldsList)
             if (dataWorld.getOwner() != null && dataWorld.getOwner().equals(player.getName()))
+                return dataWorld;
+        return null;
+    }
+
+    /**
+     * Return the dataWorld of player world
+     *
+     * @param playerName playerName
+     * @return DataWorld
+     */
+    public DataWorld getDataWorldFromPlayerWorldOwner(String playerName) {
+        for (DataWorld dataWorld : worldsList)
+            if (dataWorld.getOwner() != null && dataWorld.getOwner().equals(playerName))
                 return dataWorld;
         return null;
     }

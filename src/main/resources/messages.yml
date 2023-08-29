@@ -17,7 +17,7 @@ value_seed_invalid: "&cThe seed must be a valid integer. A random seed has been 
 back_to_lobby: "&cYou were sent back to the worlds lobby."
 already_in_lobby: "&cYou are already in the lobby world."
 not_in_own_world: "&cYou must be in your world to configure the settings."
-teleported_in: "&aYou have been beamed into your world. (World Name '{world}')."
+teleported_in: "&aYou have been beamed into the world &a'{world}&a'."
 refill_heal: "&cYour health has just been regenerated."
 refill_heal_to: "&cYou have just regenerated the health of {target}."
 refill_hunger: "&cYour hunger has just been regenerated."

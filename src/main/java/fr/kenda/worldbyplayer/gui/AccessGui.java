@@ -7,6 +7,9 @@ import fr.kenda.worldbyplayer.utils.Messages;
 import fr.kenda.worldbyplayer.utils.SkullBuilder;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -26,13 +29,8 @@ public class AccessGui extends Gui {
         final ConfigurationSection section = configWorld.getConfigurationSection("worlds");
 
         String shortcut = "gui.access.";
-        content[size - 1] = new ItemBuilder(Config.getMaterial(shortcut + "back.material")).setName(Config.getString(shortcut + "back.name")).toItemStack();
+        content[size - 1] = new ItemBuilder(Config.getMaterial(shortcut + "exit.material")).setName(Config.getString(shortcut + "exit.name")).toItemStack();
 
-        if (section == null) {
-            content[4] = new ItemBuilder(Config.getMaterial(shortcut + "no_world.material")).setName(Config.getString(shortcut + "no_world.name"))
-                    .setLore(Config.getList(shortcut + "no_world.lores")).toItemStack();
-            return content;
-        }
         int index = 0;
         for (String key : section.getKeys(false)) {
             final String keyName = "worlds." + key + ".";
@@ -43,7 +41,20 @@ public class AccessGui extends Gui {
                 index++;
             }
         }
+        if (index == 0)
+            content[4] = new ItemBuilder(Config.getMaterial(shortcut + "no_world.material")).setName(Config.getString(shortcut + "no_world.name"))
+                    .setLore(Config.getList(shortcut + "no_world.lores")).toItemStack();
         return content;
+    }
+
+    @EventHandler
+    public void onClick(InventoryClickEvent e) {
+        int clickedSlot = e.getSlot();
+        Player player = (Player) e.getWhoClicked();
+        if (e.getInventory() != inventory) return;
+
+        if (clickedSlot == (size - 1))
+            player.closeInventory();
     }
 
 }

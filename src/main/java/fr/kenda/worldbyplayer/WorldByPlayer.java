@@ -9,11 +9,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class WorldByPlayer extends JavaPlugin {
     private static WorldByPlayer instance;
+    public AutoPurgeScheduler autoPurgeScheduler = null;
     private String prefix = "";
     private FileManager fileManager;
     private WorldsManager worldManager;
     private CreationManager creationManager;
-    public AutoPurgeScheduler autoPurgeScheduler = null;
 
     public static WorldByPlayer getInstance() {
         return instance;

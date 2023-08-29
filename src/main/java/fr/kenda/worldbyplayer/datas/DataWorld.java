@@ -30,7 +30,7 @@ public class DataWorld {
         this.name = name;
         this.seed = seed;
 
-        
+
         if (!exist())
             save();
 
@@ -99,7 +99,7 @@ public class DataWorld {
         }
     }
 
-    public void updateTimeLastLogin(){
+    public void updateTimeLastLogin() {
         FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
         configWorld.set("worlds." + owner + "." + "timeSuppressWorld", calculateDeletionTime());
         saveConfig(configWorld);
@@ -179,21 +179,22 @@ public class DataWorld {
 
     }
 
-    private long calculateDeletionTime(){
-            long currentTimeMillis = System.currentTimeMillis();
-            long timeToAdd = Config.getInt("auto-purge") * ETimeUnit.DAYS.toMillis();
+    private long calculateDeletionTime() {
+        long currentTimeMillis = System.currentTimeMillis();
+        long timeToAdd = Config.getInt("world-life") * ETimeUnit.DAYS.toMillis();
         return currentTimeMillis + timeToAdd;
     }
 
     public int getTimeEnd() {
         return ETimeUnit.remainingTimeBetween(getTimeEndToMillis(), System.currentTimeMillis());
     }
+
     public long getTimeEndToMillis() {
         FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
         return configWorld.getLong("worlds." + owner + "." + "timeSuppressWorld");
     }
 
-    public boolean isInWarning(){
+    public boolean isInWarning() {
         int warningDays = Config.getInt("days-warning");
         long timeEnd = getTimeEndToMillis();
         return ETimeUnit.remainingTimeBetween(timeEnd, System.currentTimeMillis()) < warningDays;

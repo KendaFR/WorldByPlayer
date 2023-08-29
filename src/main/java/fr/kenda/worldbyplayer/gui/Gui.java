@@ -32,7 +32,7 @@ public abstract class Gui implements Listener {
     }
 
     public void create(Player player) {
-        if(owner == null) owner = player;
+        if (owner == null) owner = player;
         inventory = Bukkit.createInventory(owner, size, title);
         owner.openInventory(inventory);
 

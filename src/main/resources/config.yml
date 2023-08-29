@@ -8,6 +8,8 @@
 #Prefix that will be displayed in the chat
 prefix: "&c[WorldByPlayer] "
 
+#Life time of a world. It will be the lifetime of a world before being purged automatically (in days)
+world-life: 30
 #Time before world deletion warning, when player logs in
 days-warning: 10
 
@@ -123,9 +125,9 @@ gui:
         - "&eTry talking to other players"
         - "&eto get invited :D"
     #back item
-    back:
+    exit:
       material: ACACIA_DOOR
-      name: "&cBack"
+      name: "&cExit"
   #Section configuration of your own world
   world:
     #Title of inventory

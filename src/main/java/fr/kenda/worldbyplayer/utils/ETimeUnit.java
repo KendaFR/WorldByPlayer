@@ -5,15 +5,9 @@ public enum ETimeUnit {
     SECONDS(1), MINUTES(60 * SECONDS.toSecond), HOURS(60 * MINUTES.toSecond), DAYS(24 * HOURS.toSecond);
 
     private final int toSecond;
+
     ETimeUnit(int toSecond) {
         this.toSecond = toSecond;
-    }
-
-    public int getToSecond() {
-        return toSecond;
-    }
-    public long toMillis(){
-        return toSecond * 1000L;
     }
 
     public static int remainingTimeBetween(long timeReached, long currentTime) {
@@ -25,5 +19,13 @@ public enum ETimeUnit {
             days++;
         }
         return days;
+    }
+
+    public int getToSecond() {
+        return toSecond;
+    }
+
+    public long toMillis() {
+        return toSecond * 1000L;
     }
 }

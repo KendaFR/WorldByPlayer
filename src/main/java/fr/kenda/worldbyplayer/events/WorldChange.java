@@ -3,6 +3,8 @@ package fr.kenda.worldbyplayer.events;
 import fr.kenda.worldbyplayer.WorldByPlayer;
 import fr.kenda.worldbyplayer.datas.DataWorld;
 import fr.kenda.worldbyplayer.managers.FileManager;
+import fr.kenda.worldbyplayer.utils.Config;
+import fr.kenda.worldbyplayer.utils.Messages;
 import fr.kenda.worldbyplayer.utils.SavePlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -29,7 +31,10 @@ public class WorldChange implements Listener {
         //world player
         if (current != lobby) {
             player.getInventory().clear();
-
+            String worldFree = Config.getString("worlds.nameMap");
+            DataWorld currentWorld = WorldByPlayer.getInstance().getWorldManager().getDataWorldFromPlayerWorldOwner(current.getName());
+            player.sendMessage(WorldByPlayer.getInstance().getPrefix() + Messages.getMessage("teleported_in", "{world}",
+                    currentWorld == null ? worldFree : currentWorld.getName()));
 
             if (savedPlayers != null)
                 SavePlayerUtils.loadPlayerData(player, current, savedPlayers);
@@ -38,6 +43,8 @@ public class WorldChange implements Listener {
             //is own world
             if (dw != null && current == dw.getWorld())
                 dw.updateTimeLastLogin();
+
+
             return;
         }
 

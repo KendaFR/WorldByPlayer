@@ -5,7 +5,6 @@ import fr.kenda.worldbyplayer.datas.DataWorld;
 import fr.kenda.worldbyplayer.managers.WorldsManager;
 import fr.kenda.worldbyplayer.utils.Config;
 import fr.kenda.worldbyplayer.utils.ItemBuilder;
-import fr.kenda.worldbyplayer.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -93,7 +92,7 @@ public class NavigationGui extends Gui {
     public void onClick(InventoryClickEvent e) {
         int clickedSlot = e.getSlot();
         Player player = (Player) e.getWhoClicked();
-        if(player != owner) { System.out.println("Pas le même owner -> "); return; }
+        if (player != owner) return;
 
         e.setCancelled(true);
 
@@ -105,18 +104,18 @@ public class NavigationGui extends Gui {
             World free = Bukkit.getWorld(Config.getString("worlds.nameMap"));
             assert free != null;
             player.teleport(new Location(free, 0, free.getHighestBlockYAt(0, 0), 0));
-            player.sendMessage(prefix + Messages.getMessage("teleported_in", "{world}", Config.getString("worlds.nameMap")));
+            return;
         }
         if (clickedSlot == ownSlot) {
-            if (!worldsManager.playerHasWorld(player))
+            if (!worldsManager.playerHasWorld(player)) {
                 instance.getCreationManager().setup(owner);
-            else {
+            } else {
                 DataWorld dataWorld = instance.getWorldManager().getDataWorldFromPlayerWorldOwner(owner);
                 World world = dataWorld.getWorld();
                 player.teleport(world.getSpawnLocation());
-                player.sendMessage(prefix + Messages.getMessage("teleported_in", "{world}", dataWorld.getName()));
             }
-            owner.closeInventory();
+            player.closeInventory();
+            return;
         }
         if (clickedSlot == accessSlot) {
             final FileConfiguration worldsConfig = instance.getFileManager().getConfigFrom("worlds");

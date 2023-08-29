@@ -42,8 +42,8 @@ public class WorldCmd implements CommandExecutor {
                     player.sendMessage(prefix + Messages.getMessage("not_in_own_world"));
                     break;
                 }
-                WorldGui worldGui = new WorldGui(6*9);
-                worldGui.setTitle(Config.getString("title_inventory", "{world}", dataWorld.getName()));
+                WorldGui worldGui = new WorldGui(6 * 9);
+                worldGui.setTitle(Config.getString("gui.world.title_inventory", "{world}", dataWorld.getName()));
                 worldGui.create(player);
             }
             case 1 -> {
