@@ -92,7 +92,7 @@ public class NavigationGui extends Gui {
     public void onClick(InventoryClickEvent e) {
         int clickedSlot = e.getSlot();
         Player player = (Player) e.getWhoClicked();
-        if (player != owner) return;
+        if(e.getInventory() != inventory) return;
 
         e.setCancelled(true);
 
@@ -114,7 +114,7 @@ public class NavigationGui extends Gui {
                 World world = dataWorld.getWorld();
                 player.teleport(world.getSpawnLocation());
             }
-            player.closeInventory();
+            close();
             return;
         }
         if (clickedSlot == accessSlot) {

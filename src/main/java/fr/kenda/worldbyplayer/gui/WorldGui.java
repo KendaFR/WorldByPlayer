@@ -301,6 +301,18 @@ public class WorldGui extends Gui {
                         return;
                     }
                 }
+                case 5 -> {
+                        Location loc = player.getLocation();
+                        dataWorld.getWorld().setSpawnLocation(loc);
+                        player.sendMessage(prefix + Messages.getMessage("set_spawn", "{location}", LocationTransform.serializeCoordinate(loc)));
+                        refreshInventory();
+                        return;
+                }
+                case 6 -> {
+                    dataWorld.deleteWorld(dataWorld.getWorld());
+                    close();
+                    return;
+                }
                 case 8 -> {
                     switch (statusInventory) {
                         case PLAYER_MODIFY -> {
@@ -314,107 +326,101 @@ public class WorldGui extends Gui {
                             return;
                         }
                         default -> {
-                            player.closeInventory();
+                            close();
                             return;
                         }
                     }
                 }
             }
-        } else {
-            switch (statusInventory) {
-                case MEMBER -> {
-                    if (isInModifyPlayer) return;
-                    int clickedTarget = clickedSlot - (separatorLine * 9);
-                    if (clickedTarget >= Bukkit.getWorld(owner.getName()).getPlayers().size()) return;
-
-                    Player clickedPlayer = Bukkit.getWorld(owner.getName()).getPlayers().get(clickedTarget);
-                    if (clickedPlayer == null) break;
-
-                    ClickType action = e.getClick();
-                    if (action == ClickType.LEFT || action == ClickType.RIGHT) {
-                        statusInventory = EInventoryStatus.PLAYER_MODIFY;
-                        playerModify = clickedPlayer.getWorld() != Bukkit.getWorlds().get(0) ? clickedPlayer : null;
-                        if (playerModify == null) break;
-                        playerModifyName = playerModify.getName();
-                        isInModifyPlayer = true;
-                    }
-                }
-                case PLAYER_MODIFY -> {
-                    switch (clickedSlot) {
-                        case 18 -> refillHealth();
-                        case 19 -> refillHunger();
-                        case 20 -> changeGamemode();
-                        case 21 -> teleportTo();
-                        case 22 -> teleportPlayerToMe();
-                        case 23 -> inventorySee();
-                        case 24 -> clearInventory();
-                    }
-                }
-                case GAMERULE -> {
-                    if (isInModifyPlayer) return;
-                    World world = dataWorld.getWorld();
-                    int index = world.getGameRules().length - (clickedSlot - separatorLine * 9);
-                    int gameruleIndex = world.getGameRules().length - index;
-
-                    String gameruleName = world.getGameRules()[gameruleIndex];
-
-                    String value = world.getGameRuleValue(gameruleName);
-                    if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
-                        if (value.equalsIgnoreCase("true")) world.setGameRuleValue(gameruleName, "false");
-                        else world.setGameRuleValue(gameruleName, "true");
-                    }
-                    //Faire une condition si la variable "value" est numérique
-                    else if (isNumeric(value)) {
-                        int valueNumeric = Integer.parseInt(value);
-                        ClickType clickType = e.getClick();
-                        switch (clickType) {
-                            case LEFT -> valueNumeric++;
-                            case RIGHT -> valueNumeric--;
-                            case SHIFT_LEFT -> valueNumeric += 10;
-                            case SHIFT_RIGHT -> valueNumeric -= 10;
-                        }
-                        if (gameruleName.equalsIgnoreCase("randomTickSpeed") && valueNumeric >= 1000) {
-                            valueNumeric = 1000;
-                            player.sendMessage(Messages.getMessage("gamerule_tick_speed", "{limit}", String.valueOf(valueNumeric)));
-                        }
-                        world.setGameRuleValue(gameruleName, String.valueOf(valueNumeric));
-                    }
-                }
-                case HOUR -> {
-                    if (isInModifyPlayer) return;
-                    World world = dataWorld.getWorld();
-                    int clicked = (clickedSlot - (separatorLine * 9));
-                    World currentWorld = player.getWorld();
-                    long time = 18000 + (clicked * 1000L);
-                    currentWorld.setTime(time % 24000);
-                    player.sendMessage(prefix + Messages.getMessage("hour_changed", "{hour}", clicked > 12 ? clicked - 12 + "PM" : clicked + "AM"));
-
-                }
-                case PLAYERS_ALLOWED -> {
-                    if (isInModifyPlayer) return;
-                    ClickType clickType = e.getClick();
-                    if (clickType == ClickType.SHIFT_LEFT) {
-                        int clicked = clickedSlot - 18;
-                        String target = dataWorld.getPlayersAllowed().get(clicked);
-                        dataWorld.removePlayerFromWorld(target);
-                        player.sendMessage(prefix + Messages.getMessage("player_removed", "{target}", target));
-                    }
-                }
-                default -> {
-                    if (clickedSlot == EInventoryStatus.SETSPAWN.ordinal()) {
-                        Location loc = player.getLocation();
-                        dataWorld.getWorld().setSpawnLocation(loc);
-                        player.sendMessage(prefix + Messages.getMessage("set_spawn", "{location}", LocationTransform.serializeCoordinate(loc)));
-                        refreshInventory();
-                    } else if (clickedSlot == EInventoryStatus.DELETE.ordinal()) {
-                        dataWorld.deleteWorld(dataWorld.getWorld());
-                        return;
-                    }
-                    if (!(clickedSlot >= separatorLine * 9 && clickedSlot < size)) return;
-                }
-            }
-            refreshInventory();
         }
+
+        switch (statusInventory) {
+            case MEMBER -> {
+                if (isInModifyPlayer) return;
+                int clickedTarget = clickedSlot - (separatorLine * 9);
+                if (clickedTarget >= Bukkit.getWorld(owner.getName()).getPlayers().size()) return;
+
+                Player clickedPlayer = Bukkit.getWorld(owner.getName()).getPlayers().get(clickedTarget);
+                if (clickedPlayer == null) break;
+
+                ClickType action = e.getClick();
+                if (action == ClickType.LEFT || action == ClickType.RIGHT) {
+                    statusInventory = EInventoryStatus.PLAYER_MODIFY;
+                    playerModify = clickedPlayer.getWorld() != Bukkit.getWorlds().get(0) ? clickedPlayer : null;
+                    if (playerModify == null) break;
+                    playerModifyName = playerModify.getName();
+                    isInModifyPlayer = true;
+                }
+                return;
+            }
+            case PLAYER_MODIFY -> {
+                switch (clickedSlot) {
+                    case 18 -> refillHealth();
+                    case 19 -> refillHunger();
+                    case 20 -> changeGamemode();
+                    case 21 -> teleportTo();
+                    case 22 -> teleportPlayerToMe();
+                    case 23 -> inventorySee();
+                    case 24 -> clearInventory();
+                }
+                return;
+            }
+            case GAMERULE -> {
+                if (isInModifyPlayer) return;
+                World world = dataWorld.getWorld();
+                int index = world.getGameRules().length - (clickedSlot - separatorLine * 9);
+                int gameruleIndex = world.getGameRules().length - index;
+
+                String gameruleName = world.getGameRules()[gameruleIndex];
+
+                String value = world.getGameRuleValue(gameruleName);
+                if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
+                    if (value.equalsIgnoreCase("true")) world.setGameRuleValue(gameruleName, "false");
+                    else world.setGameRuleValue(gameruleName, "true");
+                    return;
+                }
+                //Faire une condition si la variable "value" est numérique
+                else if (isNumeric(value)) {
+                    int valueNumeric = Integer.parseInt(value);
+                    ClickType clickType = e.getClick();
+                    switch (clickType) {
+                        case LEFT -> valueNumeric++;
+                        case RIGHT -> valueNumeric--;
+                        case SHIFT_LEFT -> valueNumeric += 10;
+                        case SHIFT_RIGHT -> valueNumeric -= 10;
+                    }
+                    if (gameruleName.equalsIgnoreCase("randomTickSpeed") && valueNumeric >= 1000) {
+                        valueNumeric = 1000;
+                        player.sendMessage(Messages.getMessage("gamerule_tick_speed", "{limit}", String.valueOf(valueNumeric)));
+                    }
+                    world.setGameRuleValue(gameruleName, String.valueOf(valueNumeric));
+                }
+                return;
+            }
+            case HOUR -> {
+                if (isInModifyPlayer) return;
+                World world = dataWorld.getWorld();
+                int clicked = (clickedSlot - (separatorLine * 9));
+                World currentWorld = player.getWorld();
+                long time = 18000 + (clicked * 1000L);
+                currentWorld.setTime(time % 24000);
+                player.sendMessage(prefix + Messages.getMessage("hour_changed", "{hour}", clicked > 12 ? clicked - 12 + "PM" : clicked + "AM"));
+                return;
+            }
+            case PLAYERS_ALLOWED -> {
+                if (isInModifyPlayer) return;
+                ClickType clickType = e.getClick();
+                if (clickType == ClickType.SHIFT_LEFT) {
+                    int clicked = clickedSlot - 18;
+                    String target = dataWorld.getPlayersAllowed().get(clicked);
+                    dataWorld.removePlayerFromWorld(target);
+                    player.sendMessage(prefix + Messages.getMessage("player_removed", "{target}", target));
+                }
+                return;
+            }
+        }
+        refreshInventory();
+        return;
     }
 
     private void clearInventory() {

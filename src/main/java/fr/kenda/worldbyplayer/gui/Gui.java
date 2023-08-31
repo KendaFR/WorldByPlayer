@@ -49,6 +49,10 @@ public abstract class Gui implements Listener {
 
     public abstract ItemStack[] mainMenu();
 
+    public void close(){
+        owner.closeInventory();
+    }
+
     protected void setSize(int size) {
         this.size = size;
     }
