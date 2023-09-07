@@ -13,22 +13,22 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.text.DateFormat;
+import java.util.*;
 
 public class DataWorld {
     private final World world;
     private final String owner;
     private final int seed;
-    private final List<String> playersAllowed = new ArrayList<>();
+    private final List<String> playersAllowed;
     private String name;
 
-    public DataWorld(World world, String owner, String name, int seed) {
+    public DataWorld(World world, String owner, String name, int seed, List<String> playersAllowed) {
         this.world = world;
         this.owner = owner;
         this.name = name;
         this.seed = seed;
+        this.playersAllowed = playersAllowed == null ? new ArrayList<>() : playersAllowed;
 
 
         if (!exist())
@@ -44,13 +44,22 @@ public class DataWorld {
                     if (file.isDirectory()) {
                         deleteWorldFolder(file);
                     } else {
-                        file.delete();
+                        boolean deleted = file.delete();
+                        if (!deleted) {
+                            // Gérer le cas où la suppression du fichier a échoué.
+                            System.err.println("La suppression du fichier " + file.getAbsolutePath() + " a échoué.");
+                        }
                     }
                 }
             }
-            folder.delete();
+            boolean deletedFolder = folder.delete();
+            if (!deletedFolder) {
+                // Gérer le cas où la suppression du dossier a échoué.
+                System.err.println("La suppression du dossier " + folder.getAbsolutePath() + " a échoué.");
+            }
         }
     }
+
 
     private boolean exist() {
         FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
@@ -63,8 +72,28 @@ public class DataWorld {
         configWorld.set(key + "name", name);
         configWorld.set(key + "seed", seed);
         configWorld.set(key + "playersAllowed", playersAllowed);
+        configWorld.set(key + "date_creation", System.currentTimeMillis());
         configWorld.set(key + "timeSuppressWorld", calculateDeletionTime());
         saveConfig(configWorld);
+    }
+
+    public String getDateOfCreation() {
+        FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
+        String key = "worlds." + owner + ".";
+        long millis = configWorld.getLong(key + "date_creation");
+
+        String[] countryShortcut = Config.getString("country-reference").split("-");
+        String country = countryShortcut[1].toUpperCase();
+        String language = countryShortcut[0].replace("-", "");
+
+        // Créez un objet Date à partir du timestamp en millisecondes
+        Date date = new Date(millis);
+
+        // Créez un objet DateFormat avec le Locale approprié
+        Locale locale = new Locale(language, country);
+        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, locale);
+
+        return dateFormat.format(date);
     }
 
     public void addPlayerToWorld(String player) {
@@ -145,6 +174,7 @@ public class DataWorld {
 
     public String getAllowedPlayerString() {
         StringBuilder allowedString = new StringBuilder("[");
+        if (playersAllowed == null) return "[]";
         int size = playersAllowed.size();
         for (int i = 0; i < size; i++) {
             allowedString.append(playersAllowed.get(i));

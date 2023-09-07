@@ -36,7 +36,7 @@ public class Messages {
         if (message == null) return "[Messages] Path '" + path + "' not found in messages.yml";
 
         int size = args.length - 1;
-        for (int i = 0; i < size; i++)
+        for (int i = 0; i < size; i += 2)
             message = message.replace(args[i], args[i + 1]);
 
         return transformColor(message);
@@ -53,11 +53,6 @@ public class Messages {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 
-    public static List<String> getColoredLines(List<String> list) {
-        List<String> colored = new ArrayList<>();
-        list.forEach(str -> colored.add(transformColor(str)));
-        return colored;
-    }
 
     public static List<String> getMessageList(String path) {
         FileConfiguration config = instance.getFileManager().getConfigFrom("messages");

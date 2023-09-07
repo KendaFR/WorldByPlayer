@@ -18,7 +18,7 @@ public class OpenInventory implements Listener {
 
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (item.getType() == Config.getMaterial("navigation.item")) {
-                NavigationGui navigation = new NavigationGui(player, Config.getString("gui.navigation.title"), 9);
+                NavigationGui navigation = new NavigationGui(player, Config.getString("gui.navigation.title"), 1);
                 navigation.create(player);
             }
         }

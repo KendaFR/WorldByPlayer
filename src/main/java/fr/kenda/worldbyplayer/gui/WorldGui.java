@@ -14,7 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 enum EInventoryStatus {
     MEMBER, GAMERULE, PLAYER_MODIFY, HOUR, PLAYERS_ALLOWED, SETSPAWN, DELETE, INVENTORY_SEE
@@ -32,18 +31,19 @@ public class WorldGui extends Gui {
             EInventoryStatus.DELETE, 6
     );
 
+    private final WorldByPlayer instance = WorldByPlayer.getInstance();
     private final String shortcut = "gui.world.";
-    private final String prefix = WorldByPlayer.getInstance().getPrefix();
+    private final String prefix = instance.getPrefix();
     private final int separatorLine = 2;
-    private final FileConfiguration config = WorldByPlayer.getInstance().getConfig();
+    private final FileConfiguration config = instance.getConfig();
     private EInventoryStatus statusInventory = EInventoryStatus.MEMBER;
     private Player playerModify = null;
     private String playerModifyName = null;
     private DataWorld dataWorld = null;
     private boolean isInModifyPlayer = false;
 
-    public WorldGui(int size) {
-        super(size);
+    public WorldGui(int row) {
+        super(row);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class WorldGui extends Gui {
     private ItemStack[] memberMenu() {
         ItemStack[] content = new ItemStack[size];
 
-        dataWorld = WorldByPlayer.getInstance().getWorldManager().getDataWorldFromPlayerWorldOwner(owner);
+        dataWorld = instance.getWorldManager().getDataWorldFromPlayerWorldOwner(owner);
         if (dataWorld == null)
             return new ItemStack[size];
 
@@ -65,7 +65,9 @@ public class WorldGui extends Gui {
 
 
         int startMember = separatorLine * 9;
-        for (Player p : Objects.requireNonNull(Bukkit.getWorld(owner.getName())).getPlayers()) {
+        World world = Bukkit.getWorld(owner.getName());
+        for (Player p : world.getPlayers()) {
+            if (instance.getAdminManager().isInModeAdmin(p)) continue;
             content[startMember] = new SkullBuilder(p).setLores(Config.getList(shortcut + "lores_player", "{heal}", String.valueOf((int) p.getHealth()),
                             "{food}", String.valueOf(p.getFoodLevel()),
                             "{gamemode}", p.getGameMode().name()))
@@ -124,7 +126,8 @@ public class WorldGui extends Gui {
         setPatternSeparatorTemplate(content);
 
         int index = separatorLine * 9;
-        for (String gameruleName : Bukkit.getWorld(owner.getName()).getGameRules()) {
+        World world = Bukkit.getWorld(owner.getName());
+        for (String gameruleName : world.getGameRules()) {
             String value = Bukkit.getWorld(owner.getName()).getGameRuleValue(gameruleName);
             if (isNumeric(value)) {
                 List<String> lores = new ArrayList<>(List.of("§fValue: §a" + value));
@@ -132,6 +135,7 @@ public class WorldGui extends Gui {
                 content[index] = new ItemBuilder(Material.GRASS_BLOCK).setName("§c" + gameruleName).setLore(lores).toItemStack();
             } else
                 content[index] = new ItemBuilder(Material.GRASS_BLOCK).setName("§c" + gameruleName).setLore("§fValue: " + (value.equalsIgnoreCase("true") ? "§a" : "§c") + value, Messages.getMessage("change_value_gamerule")).toItemStack();
+
             index++;
         }
         return content;
@@ -267,76 +271,70 @@ public class WorldGui extends Gui {
     public void onClick(InventoryClickEvent e) {
         int clickedSlot = e.getSlot();
         Player player = (Player) e.getWhoClicked();
-        if (e.getInventory() != inventory) return;
+        if (e.getInventory() != inventory || e.getInventory() == owner.getInventory()) return;
 
         e.setCancelled(true);
 
+        if (e.getCurrentItem() == null) return;
+
         if (clickedSlot >= 0 && clickedSlot <= 8) {
             switch (clickedSlot) {
-                case 0 -> {
+                case 0:
                     if (!isInModifyPlayer) {
                         statusInventory = EInventoryStatus.MEMBER;
                         refreshInventory();
-                        return;
                     }
-                }
-                case 2 -> {
+                    break;
+                case 2:
                     if (!isInModifyPlayer) {
                         statusInventory = EInventoryStatus.GAMERULE;
                         refreshInventory();
-                        return;
                     }
-                }
-                case 3 -> {
+                    break;
+                case 3:
                     if (!isInModifyPlayer) {
                         statusInventory = EInventoryStatus.HOUR;
                         refreshInventory();
-                        return;
                     }
-                }
-                case 4 -> {
+                    break;
+                case 4:
                     if (!isInModifyPlayer) {
                         statusInventory = EInventoryStatus.PLAYERS_ALLOWED;
                         refreshInventory();
-                        return;
                     }
-                }
-                case 5 -> {
-                        Location loc = player.getLocation();
-                        dataWorld.getWorld().setSpawnLocation(loc);
-                        player.sendMessage(prefix + Messages.getMessage("set_spawn", "{location}", LocationTransform.serializeCoordinate(loc)));
-                        refreshInventory();
-                        return;
-                }
-                case 6 -> {
+                    break;
+                case 5:
+                    Location loc = player.getLocation();
+                    dataWorld.getWorld().setSpawnLocation(loc);
+                    player.sendMessage(prefix + Messages.getMessage("set_spawn", "{location}", LocationTransform.serializeCoordinate(loc)));
+                    refreshInventory();
+                    break;
+                case 6:
                     dataWorld.deleteWorld(dataWorld.getWorld());
                     close();
-                    return;
-                }
-                case 8 -> {
+                    break;
+                case 8:
                     switch (statusInventory) {
-                        case PLAYER_MODIFY -> {
+                        case PLAYER_MODIFY:
                             isInModifyPlayer = false;
                             updateContent(mainMenu());
-                            return;
-                        }
-                        case INVENTORY_SEE -> {
+                            break;
+                        case INVENTORY_SEE:
                             statusInventory = EInventoryStatus.PLAYER_MODIFY;
                             updateContent(playerModify());
-                            return;
-                        }
-                        default -> {
+                            break;
+                        default:
                             close();
-                            return;
-                        }
+                            break;
                     }
-                }
+                    break;
             }
+            return;
         }
+
 
         switch (statusInventory) {
             case MEMBER -> {
-                if (isInModifyPlayer) return;
                 int clickedTarget = clickedSlot - (separatorLine * 9);
                 if (clickedTarget >= Bukkit.getWorld(owner.getName()).getPlayers().size()) return;
 
@@ -351,7 +349,7 @@ public class WorldGui extends Gui {
                     playerModifyName = playerModify.getName();
                     isInModifyPlayer = true;
                 }
-                return;
+                break;
             }
             case PLAYER_MODIFY -> {
                 switch (clickedSlot) {
@@ -363,26 +361,26 @@ public class WorldGui extends Gui {
                     case 23 -> inventorySee();
                     case 24 -> clearInventory();
                 }
-                return;
+                break;
             }
             case GAMERULE -> {
-                if (isInModifyPlayer) return;
                 World world = dataWorld.getWorld();
-                int index = world.getGameRules().length - (clickedSlot - separatorLine * 9);
-                int gameruleIndex = world.getGameRules().length - index;
+                int clicked = clickedSlot - separatorLine * 9;
 
-                String gameruleName = world.getGameRules()[gameruleIndex];
+
+                String[] gameRules = world.getGameRules(); // Obtenez la liste des règles du jeu une seule fois
+                String gameruleName = gameRules[clicked];
 
                 String value = world.getGameRuleValue(gameruleName);
+
                 if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
-                    if (value.equalsIgnoreCase("true")) world.setGameRuleValue(gameruleName, "false");
-                    else world.setGameRuleValue(gameruleName, "true");
-                    return;
-                }
-                //Faire une condition si la variable "value" est numérique
-                else if (isNumeric(value)) {
+                    // Utilisez les valeurs boolean plutôt que de comparer des chaînes
+                    boolean currentValue = Boolean.parseBoolean(value);
+                    world.setGameRuleValue(gameruleName, String.valueOf(!currentValue));
+                } else if (isNumeric(value)) {
                     int valueNumeric = Integer.parseInt(value);
                     ClickType clickType = e.getClick();
+                    // Utilisez un switch pour clarifier le traitement des différents cas
                     switch (clickType) {
                         case LEFT -> valueNumeric++;
                         case RIGHT -> valueNumeric--;
@@ -395,32 +393,32 @@ public class WorldGui extends Gui {
                     }
                     world.setGameRuleValue(gameruleName, String.valueOf(valueNumeric));
                 }
-                return;
+                break;
             }
             case HOUR -> {
-                if (isInModifyPlayer) return;
                 World world = dataWorld.getWorld();
                 int clicked = (clickedSlot - (separatorLine * 9));
                 World currentWorld = player.getWorld();
                 long time = 18000 + (clicked * 1000L);
                 currentWorld.setTime(time % 24000);
                 player.sendMessage(prefix + Messages.getMessage("hour_changed", "{hour}", clicked > 12 ? clicked - 12 + "PM" : clicked + "AM"));
-                return;
+                break;
             }
             case PLAYERS_ALLOWED -> {
-                if (isInModifyPlayer) return;
                 ClickType clickType = e.getClick();
                 if (clickType == ClickType.SHIFT_LEFT) {
                     int clicked = clickedSlot - 18;
                     String target = dataWorld.getPlayersAllowed().get(clicked);
                     dataWorld.removePlayerFromWorld(target);
                     player.sendMessage(prefix + Messages.getMessage("player_removed", "{target}", target));
+                    Player p = Bukkit.getPlayer(target);
+                    if (p != null)
+                        p.sendMessage(prefix + Messages.getMessage("removed_from_world", "{world}", dataWorld.getName(), "{owner}", owner.getName()));
                 }
-                return;
+                break;
             }
         }
         refreshInventory();
-        return;
     }
 
     private void clearInventory() {

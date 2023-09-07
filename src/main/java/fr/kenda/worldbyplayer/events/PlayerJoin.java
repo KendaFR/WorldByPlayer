@@ -21,7 +21,6 @@ import java.util.Objects;
 
 public class PlayerJoin implements Listener {
 
-
     public static void giveLobbyInventory(Player player) {
         String worldName = Config.getString("lobby.world");
         Location location = LocationTransform.deserializeCoordinate(worldName, Config.getString("lobby.coordinates"));
@@ -39,18 +38,6 @@ public class PlayerJoin implements Listener {
         ItemStack nav = navigation.toItemStack();
         player.getInventory().clear();
         player.getInventory().setItem(4, nav);
-
-        //"Clear" player (remove effect, clear inventory, set life ...)
-        player.setGameMode(GameMode.ADVENTURE);
-        player.setHealth(20);
-        player.setFoodLevel(20);
-    }
-
-    private static void setInventoryLobby(Player player) {
-        player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
-        player.setExp(0);
-        player.setLevel(0);
-        giveLobbyInventory(player);
     }
 
     @SuppressWarnings("all")
@@ -58,7 +45,17 @@ public class PlayerJoin implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
 
-        setInventoryLobby(player);
+        player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
+        player.setExp(0);
+        player.setLevel(0);
+
+        giveLobbyInventory(player);
+
+        //"Clear" player (remove effect, clear inventory, set life ...)
+        player.setGameMode(GameMode.ADVENTURE);
+        player.setHealth(20);
+        player.setFoodLevel(20);
+
         DataWorld dataWorld = WorldByPlayer.getInstance().getWorldManager().getDataWorldFromPlayerWorldOwner(player);
         if (dataWorld == null) return;
         if (dataWorld.isInWarning())

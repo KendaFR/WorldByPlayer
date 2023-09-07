@@ -12,6 +12,8 @@ prefix: "&c[WorldByPlayer] "
 world-life: 30
 #Time before world deletion warning, when player logs in
 days-warning: 10
+#Option allowing the player to appear in the world where he died
+respawn_in_lobby: true
 
 #The default world that will act as a lobby
 lobby:
@@ -22,9 +24,11 @@ lobby:
 
 #The chat worlds are interconnected, this means that all players see everyone's messages
 chat:
-  global-chat: true
+  global-chat-active: true
   #Format of chat in world
   chat-world: "<{player}> {message}"
+  #Format of chat in global world if option "global-chat" is on 'true'
+  global-chat: "[{world}] <{player}> {message}"
 
 navigation:
   #The type of the navigation item. You can found list here https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
@@ -49,9 +53,40 @@ world_info:
   - "Owner: {owner}"
   - "Players Allowed: {players_allowed}"
   - "Seed: {seed}"
+  - "Date Of Creation: {dateCreation}"
+
+#Country of reference for the date to display
+country-reference: "en-US"
 
 #Gui configuration section
 gui:
+  admin:
+    title: "&cAdministrator World"
+    auto-purge:
+      material: ENDER_PEARL
+      name: "&cAuto-Purge"
+      lores:
+        - "&cForce auto-purge"
+    worldList:
+      material: GRASS_BLOCK
+      name: "&cWorld List"
+      lores:
+        - "&7Shows the list of all worlds"
+        - "&7You can teleport there"
+        - "&7or remove the world by force"
+    world:
+      name: "&cWorld Name: {worldName}"
+      lores:
+        - "&7Owner: &a{owner}"
+        - "&7Current Online: {online}"
+        - "&7Date Of Creation: &a{dateCreation}"
+        - "&7"
+        - "&7Left Click to teleport"
+        - "&cSHIFT + Right Click to delete"
+        - "&4(Warning, irreversible action!)"
+    back:
+      material: IRON_DOOR
+      name: "&cBack"
   navigation:
     #Title of gui
     title: "&cWorld Navigation"
@@ -116,8 +151,10 @@ gui:
     name: "&aWorld: {world_name}"
     #description of world
     lores:
-      - "&aOwner: % 9 "
+      - "&aOwner: {owner}"
       - "&aSeed: {seed}"
+      - "&aCreation Date: {creation}"
+      - "&aOnline: &a{online}"
     no_world:
       material: REDSTONE_BLOCK
       name: "&cNo world available"

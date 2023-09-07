@@ -10,7 +10,7 @@ public class AutoPurgeScheduler implements Runnable {
     @Override
     public void run() {
         if (timer == 0) {
-            WorldByPlayer.getInstance().getWorldManager().autoPurge();
+            WorldByPlayer.getInstance().getWorldManager().autoPurge(null);
             timer = ETimeUnit.DAYS.getToSecond();
         }
         timer--;

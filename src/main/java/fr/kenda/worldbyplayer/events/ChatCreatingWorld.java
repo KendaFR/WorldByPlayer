@@ -7,6 +7,7 @@ import fr.kenda.worldbyplayer.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
@@ -17,7 +18,7 @@ public class ChatCreatingWorld implements Listener {
     private final CreationManager creationManager = WorldByPlayer.getInstance().getCreationManager();
 
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onChat(AsyncPlayerChatEvent e) {
         Player player = e.getPlayer();
         String message = e.getMessage();

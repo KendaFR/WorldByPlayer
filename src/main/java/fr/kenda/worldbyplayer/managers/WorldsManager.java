@@ -5,27 +5,29 @@ import fr.kenda.worldbyplayer.datas.CreationSettings;
 import fr.kenda.worldbyplayer.datas.DataWorld;
 import fr.kenda.worldbyplayer.schedulers.AutoPurgeScheduler;
 import fr.kenda.worldbyplayer.utils.Messages;
+import fr.kenda.worldbyplayer.utils.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class WorldsManager implements IManager {
 
     private final WorldByPlayer instance = WorldByPlayer.getInstance();
     private final FileConfiguration config = instance.getConfig();
-    private final FileConfiguration messageConfig = instance.getFileManager().getConfigFrom("messages");
 
     private final String prefix = instance.getPrefix();
 
-    public ArrayList<DataWorld> worldsList = new ArrayList<>();
+    private final ArrayList<DataWorld> worldsList = new ArrayList<>();
 
     private static void save(final FileConfiguration configuration, final String fileName) {
         try {
@@ -34,6 +36,10 @@ public class WorldsManager implements IManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public ArrayList<DataWorld> getWorldsList() {
+        return worldsList;
     }
 
     @Override
@@ -51,13 +57,15 @@ public class WorldsManager implements IManager {
 
         if (worldConfig.getConfigurationSection("worlds") == null) return;
 
-        for (String key : worldConfig.getConfigurationSection("worlds").getKeys(false)) {
+
+        for (String key : Objects.requireNonNull(worldConfig.getConfigurationSection("worlds")).getKeys(false)) {
             WorldCreator creator = new WorldCreator(key);
             World world = creator.createWorld();
             String name = worldConfig.getString("worlds." + key + ".name");
+            List<String> playersAllowed = worldConfig.getStringList("worlds." + key + ".playersAllowed");
             int seed = worldConfig.getInt("worlds." + key + ".seed");
             assert world != null;
-            DataWorld dataWorld = new DataWorld(world, key, name, seed);
+            DataWorld dataWorld = new DataWorld(world, key, name, seed, playersAllowed);
             worldsList.add(dataWorld);
         }
     }
@@ -71,13 +79,9 @@ public class WorldsManager implements IManager {
         Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("attempt_create", "{world}", freeWorldName));
         if (getFreeWorld() == null) {
             Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("creating_world", "{world}", freeWorldName));
-            WorldCreator creator = new WorldCreator(freeWorldName);
-            World world = creator.createWorld();
-            //DataWorld dataWorld = new DataWorld(world, null, config.getString("worlds.name"), true);
-            //worldsList.add(dataFreeWorld);
+            new WorldCreator(freeWorldName);
             Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("world_created", "{world}", freeWorldName));
         } else {
-            //worldsList.add(new DataFreeWorld(freeWorldName, WorldByPlayer.SECURITYNAME));
             Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("world_loaded", "{world}", freeWorldName));
         }
     }
@@ -119,6 +123,14 @@ public class WorldsManager implements IManager {
         return null;
     }
 
+    public DataWorld getDataWorldFromWorld(World world) {
+        return worldsList.stream()
+                .filter(dataWorld -> dataWorld.getWorld() == world)
+                .findFirst()
+                .orElse(null);
+    }
+
+
     /**
      * Return the dataWorld of player world
      *
@@ -147,7 +159,7 @@ public class WorldsManager implements IManager {
             creator.seed(settings.getSeed());
             World world = creator.createWorld();
             assert world != null;
-            DataWorld dataWorld = new DataWorld(world, player.getName(), settings.getName(), settings.getSeed());
+            DataWorld dataWorld = new DataWorld(world, player.getName(), settings.getName(), settings.getSeed(), null);
             worldsList.add(dataWorld);
             player.sendMessage(prefix + Messages.getMessage("world_created", "{world}", settings.getName()));
         } else {
@@ -176,26 +188,32 @@ public class WorldsManager implements IManager {
     }
 
     public void startAutoPurge() {
-        autoPurge();
+        autoPurge(null);
         Bukkit.getScheduler().runTaskTimer(instance, new AutoPurgeScheduler(), 20, 20);
     }
 
-    public void autoPurge() {
-        Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("auto_purge_started"));
+    public void autoPurge(String playerStarted) {
+        try {
+            FileConfiguration worldConfig = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
+            worldConfig.load(new File(instance.getDataFolder(), "worlds.yml"));
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
+        Bukkit.getConsoleSender().sendMessage(prefix + (playerStarted == null ? Messages.getMessage("auto_purge_started") : Messages.getMessage("auto_purge_forced_by", "{player}", playerStarted)));
         Bukkit.getOnlinePlayers().forEach(p -> {
-            if (p.hasPermission("admin")) {
-                p.sendMessage(prefix + Messages.getMessage("auto_purge_started"));
+            if (!p.getName().equalsIgnoreCase(playerStarted) && p.hasPermission(Permission.PERMISSION)) {
+                p.sendMessage(prefix + (playerStarted == null ? Messages.getMessage("auto_purge_started") : Messages.getMessage("auto_purge_forced_by", "{player}", playerStarted)));
             }
         });
         int numberSuppressed = 0;
         for (int i = 0; i < worldsList.size(); i++) {
             DataWorld dataWorld = worldsList.get(i);
-            if (dataWorld == null) return;
+            if (dataWorld == null) continue;
             if (dataWorld.getTimeEndToMillis() < System.currentTimeMillis()) {
                 World world = dataWorld.getWorld();
                 Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("purge_suppress", "{owner}", dataWorld.getOwner()));
                 Bukkit.getOnlinePlayers().forEach(p -> {
-                    if (p.hasPermission("admin")) {
+                    if (p.hasPermission(Permission.PERMISSION)) {
                         Messages.getMessage("purge_suppress", "{owner}", dataWorld.getOwner());
                     }
                 });
@@ -208,7 +226,7 @@ public class WorldsManager implements IManager {
         final int totalSuppress = numberSuppressed;
         Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("auto_purge_end", "{number}", String.valueOf(totalSuppress)));
         Bukkit.getOnlinePlayers().forEach(p -> {
-            if (p.hasPermission("admin")) {
+            if (p.hasPermission(Permission.PERMISSION)) {
                 p.sendMessage(prefix + Messages.getMessage("auto_purge_end", "{number}", String.valueOf(totalSuppress)));
             }
         });

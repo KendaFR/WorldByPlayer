@@ -1,38 +1,38 @@
 package fr.kenda.worldbyplayer.gui;
 
 import fr.kenda.worldbyplayer.WorldByPlayer;
+import fr.kenda.worldbyplayer.datas.DataWorld;
+import fr.kenda.worldbyplayer.managers.WorldsManager;
 import fr.kenda.worldbyplayer.utils.Config;
 import fr.kenda.worldbyplayer.utils.ItemBuilder;
-import fr.kenda.worldbyplayer.utils.Messages;
 import fr.kenda.worldbyplayer.utils.SkullBuilder;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class AccessGui extends Gui {
 
-    private final FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
+    private final WorldsManager worldsManager = WorldByPlayer.getInstance().getWorldManager();
+    private final List<DataWorld> dataWorlds = new ArrayList<>();
 
-    public AccessGui(String title, int size) {
-        super(title, size);
+    public AccessGui(String title, Player player, int row) {
+        super(title, player, row);
     }
 
     @Override
     public ItemStack[] mainMenu() {
         ItemStack[] content = new ItemStack[size];
-        final ConfigurationSection section = configWorld.getConfigurationSection("worlds");
+        //final ConfigurationSection section = configWorld.getConfigurationSection("worlds");
 
         String shortcut = "gui.access.";
         content[size - 1] = new ItemBuilder(Config.getMaterial(shortcut + "exit.material")).setName(Config.getString(shortcut + "exit.name")).toItemStack();
 
         int index = 0;
-        for (String key : section.getKeys(false)) {
+        /*for (String key : section.getKeys(false)) {
             final String keyName = "worlds." + key + ".";
             if (Objects.requireNonNull(configWorld.getList(keyName + ".playersAllowed")).contains(owner.getName())) {
                 String nameOfWorld = Messages.transformColor(configWorld.getString(keyName + "name"));
@@ -40,7 +40,18 @@ public class AccessGui extends Gui {
                 content[index] = new SkullBuilder(key).setName(Config.getString(shortcut + "name", "{world_name}", nameOfWorld)).setLores(lores).toItemStack();
                 index++;
             }
+        }*/
+        for (DataWorld dataWorld : worldsManager.getWorldsList()) {
+            if (dataWorld.getPlayersAllowed().contains(owner.getName())) {
+                String nameOfWorld = dataWorld.getName();
+                String ownerData = dataWorld.getOwner();
+                List<String> lores = Config.getList(shortcut + "lores", "{owner}", ownerData, "{seed}", String.valueOf(dataWorld.getSeed()), "{creation}", dataWorld.getDateOfCreation(), "{online}", String.valueOf(dataWorld.getWorld().getPlayers().size()));
+                content[index] = new SkullBuilder(ownerData).setName(Config.getString(shortcut + "name", "{world_name}", nameOfWorld)).setLores(lores).toItemStack();
+                index++;
+                dataWorlds.add(dataWorld);
+            }
         }
+
         if (index == 0)
             content[4] = new ItemBuilder(Config.getMaterial(shortcut + "no_world.material")).setName(Config.getString(shortcut + "no_world.name"))
                     .setLore(Config.getList(shortcut + "no_world.lores")).toItemStack();
@@ -51,10 +62,21 @@ public class AccessGui extends Gui {
     public void onClick(InventoryClickEvent e) {
         int clickedSlot = e.getSlot();
         Player player = (Player) e.getWhoClicked();
-        if (e.getInventory() != inventory) return;
+        if (e.getInventory() != inventory || e.getInventory() == owner.getInventory()) return;
 
-        if (clickedSlot == (size - 1))
-            player.closeInventory();
+        if (e.getCurrentItem() == null) return;
+
+        e.setCancelled(true);
+
+        if (clickedSlot == (size - 1)) {
+            close();
+            return;
+        }
+        if (dataWorlds.size() > 0) {
+            DataWorld worldOfPlayer = dataWorlds.get(clickedSlot);
+            if (worldOfPlayer == null) return;
+            player.teleport(worldOfPlayer.getWorld().getSpawnLocation());
+        }
     }
 
 }

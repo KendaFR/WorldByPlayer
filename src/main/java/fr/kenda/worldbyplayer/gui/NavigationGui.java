@@ -23,10 +23,9 @@ public class NavigationGui extends Gui {
     private final WorldByPlayer instance = WorldByPlayer.getInstance();
     private final WorldsManager worldsManager = instance.getWorldManager();
     private final FileConfiguration config = instance.getConfig();
-    private final String prefix = instance.getPrefix();
 
-    public NavigationGui(Player owner, String title, int size) {
-        super(title, owner, size);
+    public NavigationGui(Player owner, String title, int row) {
+        super(title, owner, row);
     }
 
     public ItemStack[] mainMenu() {
@@ -92,9 +91,11 @@ public class NavigationGui extends Gui {
     public void onClick(InventoryClickEvent e) {
         int clickedSlot = e.getSlot();
         Player player = (Player) e.getWhoClicked();
-        if(e.getInventory() != inventory) return;
+        if (e.getInventory() != inventory || e.getInventory() == owner.getInventory()) return;
 
         e.setCancelled(true);
+
+        if (e.getCurrentItem() == null) return;
 
         final int freeSlot = Config.getInt(shortcutConfig + "free.slot");
         final int ownSlot = Config.getInt(shortcutConfig + "ownworld.slot");
@@ -122,7 +123,7 @@ public class NavigationGui extends Gui {
             int size = worldsConfig.getConfigurationSection("worlds") != null ?
                     Objects.requireNonNull(worldsConfig.getConfigurationSection("worlds")).getKeys(false).size() : 0;
 
-            AccessGui accessGui = new AccessGui(Config.getString("gui.access.title"), 6 * 9);
+            AccessGui accessGui = new AccessGui(Config.getString("gui.access.title"), player, 6);
             int line = size / 9;
             if (size == 0)
                 line = 1; // Si size est égal à 0, on ajoute une ligne
@@ -131,8 +132,8 @@ public class NavigationGui extends Gui {
             else
                 line += 2; // Si size est un multiple de 9, on ajoute deux lignes
 
-            accessGui.setSize(line * 9);
-            accessGui.create(player);
+            accessGui.setSize(line);
+            accessGui.create();
         }
     }
 }

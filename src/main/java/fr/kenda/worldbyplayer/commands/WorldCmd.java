@@ -13,6 +13,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,7 @@ public class WorldCmd implements CommandExecutor {
 
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage(prefix + "§cYou cannot make this command here.");
             return true;
@@ -35,14 +36,14 @@ public class WorldCmd implements CommandExecutor {
                 DataWorld dataWorld = worldsManager.getDataWorldFromPlayerWorldOwner(player);
                 if (dataWorld == null) {
                     player.sendMessage(prefix + Messages.getMessage("no_world"));
-                    break;
+                    return false;
                 }
                 World world = player.getWorld();
                 if (world != Bukkit.getWorld(player.getName())) {
                     player.sendMessage(prefix + Messages.getMessage("not_in_own_world"));
-                    break;
+                    return false;
                 }
-                WorldGui worldGui = new WorldGui(6 * 9);
+                WorldGui worldGui = new WorldGui(6);
                 worldGui.setTitle(Config.getString("gui.world.title_inventory", "{world}", dataWorld.getName()));
                 worldGui.create(player);
             }
@@ -57,35 +58,43 @@ public class WorldCmd implements CommandExecutor {
                         String stringBuilder = s.replace("{name}", ChatColor.translateAlternateColorCodes('&', dataWorld.getName()))
                                 .replace("{owner}", ChatColor.translateAlternateColorCodes('&', dataWorld.getOwner()))
                                 .replace("{seed}", ChatColor.translateAlternateColorCodes('&', String.valueOf(dataWorld.getSeed())))
-                                .replace("{players_allowed}", ChatColor.translateAlternateColorCodes('&', dataWorld.getAllowedPlayerString()));
+                                .replace("{players_allowed}", ChatColor.translateAlternateColorCodes('&', dataWorld.getAllowedPlayerString()))
+                                .replace("{dateCreation}", ChatColor.translateAlternateColorCodes('&', dataWorld.getDateOfCreation()));
                         replacedList.add(stringBuilder);
                     }
                     player.sendMessage("§f======================");
                     replacedList.forEach(player::sendMessage);
                     player.sendMessage("§f======================");
-                }
+                } else sendHelp(player);
+                return false;
             }
             case 2 -> {
                 DataWorld dataWorld = worldsManager.getDataWorldFromPlayerWorldOwner(player);
                 if (dataWorld == null) {
                     player.sendMessage(prefix + Messages.getMessage("no_world"));
-                    return true;
+                    return false;
                 }
                 String target = args[1];
                 if (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("invite")) {
                     if (target.equalsIgnoreCase(player.getName())) {
                         player.sendMessage(prefix + Messages.getMessage("not_invite_yourself"));
-                        break;
+                        return false;
                     }
                     if (!dataWorld.getPlayersAllowed().contains(target)) {
                         dataWorld.addPlayerToWorld(target);
                         player.sendMessage(prefix + Messages.getMessage("player_add_to_world", "{player}", target));
+                        Player p = Bukkit.getPlayer(target);
+                        if (p != null)
+                            p.sendMessage(prefix + Messages.getMessage("invited_by", "{player}", player.getName(), "{name}", dataWorld.getName()));
+                        return false;
                     } else
                         player.sendMessage(prefix + Messages.getMessage("player_already_invited", "{player}", target));
+                    return false;
                 }
-                if (args[0].equalsIgnoreCase("remove")) {
+                if (args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("kick")) {
                     dataWorld.removePlayerFromWorld(target);
                     player.sendMessage(prefix + Messages.getMessage("player_remove_to_world", "{player}", target));
+                    return false;
                 }
             }
             default -> sendHelp(player);
@@ -97,7 +106,8 @@ public class WorldCmd implements CommandExecutor {
     private void sendHelp(Player player) {
         player.sendMessage("§c============ " + prefix.trim() + " ===========");
         player.sendMessage("§c/world: §7Shows the world customization menu.");
-        player.sendMessage("§c/world <add/remove> <player>: §7Add or remove a member to join the world.");
+        player.sendMessage("§c/world <add/invite> <player>: §7Add a member to join the world.");
+        player.sendMessage("§c/world <remove/kick> <player>: §7Remove a member to your world.");
         player.sendMessage("§c/world help: §7Displays plugin help commands.");
         player.sendMessage("§c/world info: §7Show world informations.");
         player.sendMessage("§c============ " + prefix.trim() + " ===========");

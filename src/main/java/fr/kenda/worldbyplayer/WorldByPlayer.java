@@ -1,7 +1,6 @@
 package fr.kenda.worldbyplayer;
 
 import fr.kenda.worldbyplayer.managers.*;
-import fr.kenda.worldbyplayer.schedulers.AutoPurgeScheduler;
 import fr.kenda.worldbyplayer.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -9,11 +8,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class WorldByPlayer extends JavaPlugin {
     private static WorldByPlayer instance;
-    public AutoPurgeScheduler autoPurgeScheduler = null;
     private String prefix = "";
     private FileManager fileManager;
     private WorldsManager worldManager;
     private CreationManager creationManager;
+    private AdminManager adminManager;
 
     public static WorldByPlayer getInstance() {
         return instance;
@@ -38,6 +37,9 @@ public final class WorldByPlayer extends JavaPlugin {
 
         new CommandManager().register();
 
+        adminManager = new AdminManager();
+        adminManager.register();
+
         creationManager = new CreationManager();
 
         new EventsManager().register();
@@ -49,10 +51,11 @@ public final class WorldByPlayer extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        Bukkit.getConsoleSender().sendMessage("§c##################################### \n" +
-                "§c\t\t#         Made By Kenda            #\n" +
-                "§c\t\t#     Thanks for buying Plugin :D ...#\n" +
-                "§c\t\t#####################################");
+        Bukkit.getConsoleSender().sendMessage("""
+                §c#####################################\s
+                §c\t\t#         Made By Kenda            #
+                §c\t\t#     Thanks for buying Plugin :D ...#
+                §c\t\t#####################################""");
 
     }
 
@@ -81,5 +84,9 @@ public final class WorldByPlayer extends JavaPlugin {
 
     public CreationManager getCreationManager() {
         return creationManager;
+    }
+
+    public AdminManager getAdminManager() {
+        return adminManager;
     }
 }

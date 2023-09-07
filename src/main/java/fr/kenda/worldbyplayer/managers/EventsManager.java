@@ -15,7 +15,7 @@ public class EventsManager implements IManager {
         pm.registerEvents(new OpenInventory(), instance);
         pm.registerEvents(new WorldChange(), instance);
         pm.registerEvents(new ChatCreatingWorld(), instance);
-        pm.registerEvents(new ItemProtect(), instance);
+        pm.registerEvents(new EventProtect(), instance);
         pm.registerEvents(new PlayerChat(), instance);
     }
 }
