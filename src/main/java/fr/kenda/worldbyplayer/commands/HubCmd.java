@@ -11,12 +11,23 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class HubCmd implements CommandExecutor {
     private final String prefix = WorldByPlayer.getInstance().getPrefix();
 
+    /**
+     * Command /hub
+     * Teleport player to hub, save data and restore heal and hunger
+     *
+     * @param sender  Source of the command
+     * @param command Command which was executed
+     * @param label   Alias of the command which was used
+     * @param args    Passed command arguments
+     * @return Boolean
+     */
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage(prefix + "§cYou cannot make this command here.");
             return false;

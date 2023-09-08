@@ -59,6 +59,10 @@ public final class WorldByPlayer extends JavaPlugin {
 
     }
 
+    /**
+     * Get prefix of plugin
+     * @return String
+     */
     public String getPrefix() {
         return prefix;
     }
@@ -81,11 +85,18 @@ public final class WorldByPlayer extends JavaPlugin {
         return worldManager;
     }
 
-
+    /**
+     * Get CreationManager class
+     * @return CreationManager
+     */
     public CreationManager getCreationManager() {
         return creationManager;
     }
 
+    /**
+     * Get AdminManager class
+     * @return AdminManager
+     */
     public AdminManager getAdminManager() {
         return adminManager;
     }

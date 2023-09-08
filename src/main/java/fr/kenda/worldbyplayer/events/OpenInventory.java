@@ -11,6 +11,10 @@ import org.bukkit.inventory.ItemStack;
 
 public class OpenInventory implements Listener {
 
+    /**
+     * Opens navigation menu based on click and item
+     * @param event PlayerInteractEvent
+     */
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
@@ -19,7 +23,7 @@ public class OpenInventory implements Listener {
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (item.getType() == Config.getMaterial("navigation.item")) {
                 NavigationGui navigation = new NavigationGui(player, Config.getString("gui.navigation.title"), 1);
-                navigation.create(player);
+                navigation.create();
             }
         }
     }

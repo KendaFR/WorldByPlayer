@@ -21,8 +21,18 @@ public class DataWorld {
     private final String owner;
     private final int seed;
     private final List<String> playersAllowed;
-    private String name;
+    private final String name;
 
+    /**
+     * Create a Data World with the world, the owner's name, the world seed, and a list of authorized players.
+     * After, the world is saved in file "worlds.yml"
+     *
+     * @param world          World in Bukkit
+     * @param owner          String of owner
+     * @param name           Name of world
+     * @param seed           Seed of world
+     * @param playersAllowed List of players Allowed
+     */
     public DataWorld(World world, String owner, String name, int seed, List<String> playersAllowed) {
         this.world = world;
         this.owner = owner;
@@ -30,12 +40,15 @@ public class DataWorld {
         this.seed = seed;
         this.playersAllowed = playersAllowed == null ? new ArrayList<>() : playersAllowed;
 
-
         if (!exist())
             save();
-
     }
 
+    /**
+     * Delete world in config file and folder
+     *
+     * @param folder Folder of world
+     */
     private static void deleteWorldFolder(File folder) {
         if (folder.exists()) {
             File[] files = folder.listFiles();
@@ -61,11 +74,19 @@ public class DataWorld {
     }
 
 
+    /**
+     * Get if world exist in file
+     *
+     * @return Boolean
+     */
     private boolean exist() {
         FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
         return configWorld.get("worlds." + this.owner) != null;
     }
 
+    /**
+     * Saves data in the "worlds.yml" configuration file
+     */
     public void save() {
         FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
         String key = "worlds." + owner + ".";
@@ -77,6 +98,11 @@ public class DataWorld {
         saveConfig(configWorld);
     }
 
+    /**
+     * Get the date of creation of world
+     *
+     * @return String a date formatted according to the language chosen in the config
+     */
     public String getDateOfCreation() {
         FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
         String key = "worlds." + owner + ".";
@@ -96,6 +122,11 @@ public class DataWorld {
         return dateFormat.format(date);
     }
 
+    /**
+     * Adds a player to the list of allowed players
+     *
+     * @param player Player Name
+     */
     public void addPlayerToWorld(String player) {
         if (owner == null) return;
         FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
@@ -105,6 +136,11 @@ public class DataWorld {
         saveConfig(configWorld);
     }
 
+    /**
+     * Remove a player from allowed players
+     *
+     * @param target Player Name
+     */
     public void removePlayerFromWorld(String target) {
         if (owner == null) return;
         FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
@@ -116,6 +152,11 @@ public class DataWorld {
         kickPlayerFromWorld(target);
     }
 
+    /**
+     * Kick a player from world (after removed player)
+     *
+     * @param target Player Name
+     */
     public void kickPlayerFromWorld(String target) {
         for (Player p : world.getPlayers()) {
             if (p.getName().equalsIgnoreCase(target)) {
@@ -128,12 +169,20 @@ public class DataWorld {
         }
     }
 
+    /**
+     * Updates the world deletion time by adding the current time in current millis + the time set in configuration
+     */
     public void updateTimeLastLogin() {
         FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
         configWorld.set("worlds." + owner + "." + "timeSuppressWorld", calculateDeletionTime());
         saveConfig(configWorld);
     }
 
+    /**
+     * Save configuration in file
+     *
+     * @param config configuration of file
+     */
     private void saveConfig(FileConfiguration config) {
         try {
             File file = new File(WorldByPlayer.getInstance().getDataFolder(), "worlds.yml"); // Chemin absolu du fichier
@@ -152,26 +201,47 @@ public class DataWorld {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
+    /**
+     * Get World
+     *
+     * @return World
+     */
     public World getWorld() {
         return world;
     }
 
+    /**
+     * Get the name of owner
+     *
+     * @return String
+     */
     public String getOwner() {
         return owner;
     }
 
+    /**
+     * Get the list of players allowed to player
+     *
+     * @return List<String>
+     */
     public List<String> getPlayersAllowed() {
         return playersAllowed;
     }
 
+    /**
+     * Get the seed of world
+     *
+     * @return Integer
+     */
     public int getSeed() {
         return seed;
     }
 
+    /**
+     * Get all authorized players in the list, and create a string to put them online as a string
+     *
+     * @return String formated with Allowed Players
+     */
     public String getAllowedPlayerString() {
         StringBuilder allowedString = new StringBuilder("[");
         if (playersAllowed == null) return "[]";
@@ -184,6 +254,11 @@ public class DataWorld {
         return allowedString.toString();
     }
 
+    /**
+     * Delete World and kick all players
+     *
+     * @param worldToDelete World to delete (current world)
+     */
     public void deleteWorld(World worldToDelete) {
         final String prefix = WorldByPlayer.getInstance().getPrefix();
         // Exclude all players from the world and teleport them to the main world (world 0)
@@ -209,21 +284,41 @@ public class DataWorld {
 
     }
 
+    /**
+     * Calculates the current time in millis + the time to add in the config
+     *
+     * @return Time in total millis
+     */
     private long calculateDeletionTime() {
         long currentTimeMillis = System.currentTimeMillis();
         long timeToAdd = Config.getInt("world-life") * ETimeUnit.DAYS.toMillis();
         return currentTimeMillis + timeToAdd;
     }
 
+    /**
+     * Retrieves the remaining time between the config file time and the current time
+     *
+     * @return Number of Days
+     */
     public int getTimeEnd() {
         return ETimeUnit.remainingTimeBetween(getTimeEndToMillis(), System.currentTimeMillis());
     }
 
+    /**
+     * Get the time in millis in the configuration file
+     *
+     * @return time in millis
+     */
     public long getTimeEndToMillis() {
         FileConfiguration configWorld = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
         return configWorld.getLong("worlds." + owner + "." + "timeSuppressWorld");
     }
 
+    /**
+     * Check if the remaining time in days is less than that set in configuration
+     *
+     * @return Boolean
+     */
     public boolean isInWarning() {
         int warningDays = Config.getInt("days-warning");
         long timeEnd = getTimeEndToMillis();

@@ -20,6 +20,12 @@ import java.io.IOException;
 import java.util.*;
 
 public class SavePlayerUtils {
+    /**
+     * Save all data of player in config file
+     * @param player Player
+     * @param world World where he played
+     * @param configuration Configuration file
+     */
     public static void savePlayerData(final Player player, final World world, final FileConfiguration configuration) {
         // Save inventory
         saveInventory(player, world, configuration);
@@ -35,10 +41,22 @@ public class SavePlayerUtils {
         save(configuration);
     }
 
+    /**
+     * Save a location of player
+     * @param player Player
+     * @param world world where he played
+     * @param configuration config file
+     */
     public static void saveLocation(Player player, World world, FileConfiguration configuration) {
         configuration.set(player.getName() + ".worlds." + world.getName() + ".location", LocationTransform.serializeCoordinate(player.getLocation()));
     }
 
+    /**
+     * Load a location from file
+     * @param player Player
+     * @param world World where he played
+     * @param configuration copnfig file
+     */
     public static void loadLocation(Player player, World world, FileConfiguration configuration) {
         String locationKey = player.getName() + ".worlds." + world.getName() + ".location";
         String loc = configuration.getString(locationKey);
@@ -53,6 +71,12 @@ public class SavePlayerUtils {
     }
 
 
+    /**
+     * Load all player data from file
+     * @param player Player
+     * @param world World where he played
+     * @param configuration config file
+     */
     public static void loadPlayerData(final Player player, final World world, final FileConfiguration configuration) {
 
         String shortcut = player.getName() + ".worlds." + world.getName() + ".";
@@ -76,6 +100,12 @@ public class SavePlayerUtils {
         loadLocation(player, world, configuration);
     }
 
+    /**
+     * Save armor data
+     * @param player Player
+     * @param world world where he played
+     * @param configuration config file
+     */
     private static void saveArmor(final Player player, final World world, final FileConfiguration configuration) {
         ItemStack[] armorContents = player.getInventory().getArmorContents();
         try (final ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
@@ -98,6 +128,11 @@ public class SavePlayerUtils {
         }
     }
 
+    /**
+     * Load armor data
+     * @param player Player
+     * @param encodedString an encoded string from config file
+     */
     private static void loadArmor(final Player player, final String encodedString) {
         if (encodedString == null) return;
         try (final BukkitObjectInputStream data = new BukkitObjectInputStream(new ByteArrayInputStream(Base64.getDecoder().decode(encodedString)))) {
@@ -112,6 +147,12 @@ public class SavePlayerUtils {
         }
     }
 
+    /**
+     * Save inventory of player
+     * @param player Player
+     * @param world world where he played
+     * @param configuration config file
+     */
     private static void saveInventory(final Player player, final World world, final FileConfiguration configuration) {
         Inventory inventory = player.getInventory();
         try (final ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
@@ -136,6 +177,11 @@ public class SavePlayerUtils {
         }
     }
 
+    /**
+     * Load inventory from config file
+     * @param inventory Inventory of player
+     * @param encodedString encoded string in config file
+     */
     private static void loadInventory(final Inventory inventory, final String encodedString) {
         if (encodedString == null) return;
         try (final BukkitObjectInputStream data = new BukkitObjectInputStream(new ByteArrayInputStream(Base64.getDecoder().decode(encodedString)))) {
@@ -148,6 +194,10 @@ public class SavePlayerUtils {
         }
     }
 
+    /**
+     * Save config in file
+     * @param configuration config file
+     */
     private static void save(final FileConfiguration configuration) {
         try {
             File file = new File(WorldByPlayer.getInstance().getDataFolder(), "saved_players.yml"); // Chemin absolu du fichier
@@ -157,15 +207,32 @@ public class SavePlayerUtils {
         }
     }
 
+    /**
+     * Save gamemode of player
+     * @param player OPlayer
+     * @param from World
+     * @param configuration config file
+     */
     private static void saveGamemode(final Player player, final World from, final FileConfiguration configuration) {
         configuration.set(player.getName() + ".worlds." + from.getName() + ".gamemode", player.getGameMode().toString());
         save(configuration);
     }
 
+    /**
+     * Load gamemode to player
+     * @param player Player
+     * @param gamemode Gamemode
+     */
     private static void loadGamemode(final Player player, final GameMode gamemode) {
         player.setGameMode(gamemode);
     }
 
+    /**
+     * Save effects of player
+     * @param player Player
+     * @param world world where he played
+     * @param configuration config file
+     */
     private static void saveEffects(final Player player, final World world, final FileConfiguration configuration) {
         Collection<PotionEffect> effects = player.getActivePotionEffects();
 
@@ -186,6 +253,12 @@ public class SavePlayerUtils {
         save(configuration);
     }
 
+    /**
+     * Load all effects to player
+     * @param player Player
+     * @param world world where he played
+     * @param configuration config file
+     */
     private static void loadEffects(final Player player, final World world, final FileConfiguration configuration) {
         List<Map<?, ?>> serializedEffects = configuration.getMapList(player.getName() + ".worlds." + world.getName() + ".effects");
 
@@ -203,12 +276,24 @@ public class SavePlayerUtils {
         }
     }
 
+    /**
+     * Save experience of player
+     * @param player Player
+     * @param world world where he played
+     * @param configuration config file
+     */
     private static void saveExperience(final Player player, final World world, final FileConfiguration configuration) {
         configuration.set(player.getName() + ".worlds." + world.getName() + ".experience", player.getExp());
         configuration.set(player.getName() + ".worlds." + world.getName() + ".level", player.getLevel());
         save(configuration);
     }
 
+    /**
+     * Load experience to player
+     * @param player Player
+     * @param world world where he played
+     * @param configuration config file
+     */
     private static void loadExperience(final Player player, final World world, final FileConfiguration configuration) {
         float experience = (float) configuration.getDouble(player.getName() + ".worlds." + world.getName() + ".experience", 0.0);
         int level = configuration.getInt(player.getName() + ".worlds." + world.getName() + ".level", 0);

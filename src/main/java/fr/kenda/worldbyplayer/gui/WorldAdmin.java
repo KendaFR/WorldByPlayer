@@ -28,10 +28,20 @@ public class WorldAdmin extends Gui {
     private final String prefix = instance.getPrefix();
     private WorldAdminStatus status = WorldAdminStatus.MAIN_MENU;
 
+    /**
+     * Create World Admin menu
+     * @param title title of inventory
+     * @param owner owner of inventory
+     * @param row number of row
+     */
     public WorldAdmin(String title, Player owner, int row) {
         super(title, owner, row);
     }
 
+    /**
+     * Main Menu in inventory
+     * @return content of inventory
+     */
     @Override
     public ItemStack[] mainMenu() {
         status = WorldAdminStatus.MAIN_MENU;
@@ -54,6 +64,10 @@ public class WorldAdmin extends Gui {
         return content;
     }
 
+    /**
+     * Worlds menu
+     * @return content of inventory
+     */
     public ItemStack[] worldListMenu() {
         status = WorldAdminStatus.WORLDLIST;
         ItemStack[] content = new ItemStack[size];
@@ -77,6 +91,10 @@ public class WorldAdmin extends Gui {
         return content;
     }
 
+    /**
+     * Manage click events in inventory
+     * @param e InventoryClickEvent
+     */
     @Override
     @EventHandler
     public void onClick(InventoryClickEvent e) {

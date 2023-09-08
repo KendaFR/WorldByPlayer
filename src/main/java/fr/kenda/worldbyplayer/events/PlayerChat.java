@@ -13,6 +13,10 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class PlayerChat implements Listener {
 
+    /**
+     * Event that manages the chat and its display depending on the configuration
+     * @param e AsyncPlayerChatEvent
+     */
     @EventHandler
     public void onChat(AsyncPlayerChatEvent e) {
         String msg = e.getMessage();

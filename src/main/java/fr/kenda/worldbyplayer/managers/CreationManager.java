@@ -14,6 +14,10 @@ public class CreationManager {
     private static final HashMap<Player, CreationSettings> settingsByPlayer = new HashMap<>();
     private final String prefix = WorldByPlayer.getInstance().getPrefix();
 
+    /**
+     * Setup a creation managing
+     * @param player Player
+     */
     public void setup(Player player) {
         statusCreation.put(player, ECreationStatus.NAME);
         player.sendMessage(prefix + "§a§m===========================");
@@ -21,6 +25,10 @@ public class CreationManager {
         settingsByPlayer.put(player, new CreationSettings());
     }
 
+    /**
+     * Complete world generation
+     * @param player Player
+     */
     public void endGenerating(Player player) {
         statusCreation.remove(player);
         player.sendMessage(Messages.getMessage("end_creation", "{world_name}", settingsByPlayer.get(player).getName()));
@@ -30,19 +38,38 @@ public class CreationManager {
 
     }
 
+    /**
+     * Check if player is in creation mode
+     * @param player Player
+     * @return Boolean
+     */
     public boolean isInCreation(Player player) {
         return statusCreation.get(player) != null;
     }
 
+    /**
+     * Get the settings of creation world
+     * @param player Player
+     * @return CreationSettings
+     */
     public CreationSettings getSettingsCreationByPlayer(Player player) {
         return settingsByPlayer.get(player);
     }
 
+    /**
+     * Get the status of creation of world
+     * @param player Player
+     * @return ECreationStatus
+     */
     public ECreationStatus getStatusCreation(Player player) {
         return statusCreation.get(player);
     }
 
 
+    /**
+     * Set the next step of creation
+     * @param player Player
+     */
     public void nextStep(Player player) {
         int nextStatus = statusCreation.get(player).ordinal() + 1;
         ECreationStatus nextEnum = ECreationStatus.values()[nextStatus];

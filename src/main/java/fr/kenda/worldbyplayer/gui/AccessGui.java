@@ -19,10 +19,20 @@ public class AccessGui extends Gui {
     private final WorldsManager worldsManager = WorldByPlayer.getInstance().getWorldManager();
     private final List<DataWorld> dataWorlds = new ArrayList<>();
 
+    /**
+     * Create a gui with title, owner, and number of row
+     * @param title Title of inventory
+     * @param player owner of inventory
+     * @param row row need in inventory
+     */
     public AccessGui(String title, Player player, int row) {
         super(title, player, row);
     }
 
+    /**
+     * Main inventory menu
+     * @return ItemStack in inventory
+     */
     @Override
     public ItemStack[] mainMenu() {
         ItemStack[] content = new ItemStack[size];
@@ -58,6 +68,10 @@ public class AccessGui extends Gui {
         return content;
     }
 
+    /**
+     * Manage click events in inventory
+     * @param e InventoryClickEvent
+     */
     @EventHandler
     public void onClick(InventoryClickEvent e) {
         int clickedSlot = e.getSlot();

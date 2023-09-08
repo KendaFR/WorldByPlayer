@@ -21,6 +21,10 @@ import java.util.Objects;
 
 public class PlayerJoin implements Listener {
 
+    /**
+     * Gives lobby inventory when player joins
+     * @param player Player who joins
+     */
     public static void giveLobbyInventory(Player player) {
         String worldName = Config.getString("lobby.world");
         Location location = LocationTransform.deserializeCoordinate(worldName, Config.getString("lobby.coordinates"));
@@ -41,6 +45,9 @@ public class PlayerJoin implements Listener {
     }
 
     @SuppressWarnings("all")
+    /**
+     * Manages the player when he joins the server. (teleports to hub, manages inventory, resets life, etc.)
+     */
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();

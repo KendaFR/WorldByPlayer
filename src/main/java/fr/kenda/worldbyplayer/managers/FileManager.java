@@ -12,6 +12,9 @@ public class FileManager implements IManager {
     private final WorldByPlayer instance = WorldByPlayer.getInstance();
     private final HashMap<String, FileConfiguration> files = new HashMap<>();
 
+    /**
+     * Register and create all files
+     */
     @Override
     public void register() {
         createFile("messages");
@@ -40,31 +43,4 @@ public class FileManager implements IManager {
     public FileConfiguration getConfigFrom(String fileName) {
         return files.get(fileName);
     }
-
-/*
-    public void saveFile(String fileName) {
-        try {
-            File file = new File(WorldByPlayer.getInstance().getDataFolder(), fileName + ".yml"); // Chemin absolu du fichier
-            getConfigFrom(fileName).save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
-
-/*
-    private ProfileFile getProfile(String playerName) {
-        return profiles.get(playerName);
-    }
-    public void createProfile(Player player) {
-        if (!existProfile(player))
-            profiles.put(player.getName(), new ProfileFile(player));
-    }
-
-    public ProfileFile getProfile(Player player) {
-        return profiles.get(player.getName());
-    }
-
-    public boolean existProfile(Player player) {
-        return profiles.get(player.getName()) != null;
-    }*/
 }

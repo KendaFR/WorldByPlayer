@@ -15,6 +15,16 @@ public class WorldAdminCmd implements CommandExecutor {
     private final WorldByPlayer instance = WorldByPlayer.getInstance();
     private final String prefix = instance.getPrefix();
 
+    /**
+     * Command /worldadmin (wadmin, worlda)
+     * Displays management inventory for administrators
+     *
+     * @param sender  Source of the command
+     * @param command Command which was executed
+     * @param label   Alias of the command which was used
+     * @param args    Passed command arguments
+     * @return Boolean
+     */
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (!(sender instanceof Player player)) {

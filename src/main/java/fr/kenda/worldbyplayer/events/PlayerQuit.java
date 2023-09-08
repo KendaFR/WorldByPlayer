@@ -12,6 +12,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerQuit implements Listener {
 
+    /**
+     * Saves player information when leaving the server
+     * @param e PlayerQuitEvent
+     */
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
         final Player player = e.getPlayer();

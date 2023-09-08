@@ -5,6 +5,9 @@ import org.bukkit.Bukkit;
 
 @SuppressWarnings("all")
 public class CommandManager implements IManager {
+    /**
+     * Register all command
+     */
     @Override
     public void register() {
         Bukkit.getPluginCommand("hub").setExecutor(new HubCmd());

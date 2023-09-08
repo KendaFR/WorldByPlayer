@@ -43,10 +43,18 @@ public class WorldGui extends Gui {
     private DataWorld dataWorld = null;
     private boolean isInModifyPlayer = false;
 
+    /**
+     * Create world menu
+     * @param row number of row
+     */
     public WorldGui(int row) {
         super(row);
     }
 
+    /**
+     * Main Menu
+     * @return content of inventory
+     */
     @Override
     public ItemStack[] mainMenu() {
         isInModifyPlayer = false;
@@ -54,6 +62,10 @@ public class WorldGui extends Gui {
         return memberMenu();
     }
 
+    /**
+     * Member Menu
+     * @return content of inventory
+     */
     private ItemStack[] memberMenu() {
         ItemStack[] content = new ItemStack[size];
 
@@ -125,6 +137,10 @@ public class WorldGui extends Gui {
     }
 
 
+    /**
+     * Menu of gamerule
+     * @return content of inventory
+     */
     private ItemStack[] gameruleMenu() {
         ItemStack[] content = new ItemStack[size];
         setMenu(content);
@@ -146,6 +162,10 @@ public class WorldGui extends Gui {
         return content;
     }
 
+    /**
+     * Hour Menu
+     * @return content of inventory
+     */
     private ItemStack[] hourMenu() {
         ItemStack[] content = new ItemStack[size];
         setMenu(content);
@@ -160,6 +180,10 @@ public class WorldGui extends Gui {
         return content;
     }
 
+    /**
+     * Menu of players allowed
+     * @return content of inventory
+     */
     private ItemStack[] playersAllowedMenu() {
         ItemStack[] content = new ItemStack[size];
         setMenu(content);
@@ -178,6 +202,11 @@ public class WorldGui extends Gui {
         return content;
     }
 
+    /**
+     * Menu of inventory see
+     * @param target target player
+     * @return content of inventory
+     */
     private ItemStack[] inventorySeeMenu(Player target) {
         ItemStack[] content = new ItemStack[size];
         setPatternSeparatorTemplate(content);
@@ -272,6 +301,10 @@ public class WorldGui extends Gui {
     }
 
 
+    /**
+     * Manage click events in inventory
+     * @param e  InventoryClickEvent
+     */
     @EventHandler
     public void onClick(InventoryClickEvent e) {
         int clickedSlot = e.getSlot();
@@ -432,6 +465,9 @@ public class WorldGui extends Gui {
         refreshInventory();
     }
 
+    /**
+     * Clear inventory of player modify
+     */
     private void clearInventory() {
         if (isInWorldAndValid()) {
             playerModify.getInventory().clear();
@@ -440,12 +476,18 @@ public class WorldGui extends Gui {
         } else owner.sendMessage(prefix + Messages.getMessage("offline_world_player", "{target}", playerModifyName));
     }
 
+    /**
+     * See inventory of player modify
+     */
     private void inventorySee() {
         statusInventory = EInventoryStatus.INVENTORY_SEE;
         updateContent(inventorySeeMenu(playerModify));
     }
 
 
+    /**
+     * teleport target to player
+     */
     private void teleportPlayerToMe() {
         if (isInWorldAndValid()) {
             playerModify.teleport(owner.getLocation());
@@ -455,6 +497,9 @@ public class WorldGui extends Gui {
             owner.sendMessage(prefix + Messages.getMessage("offline_player", "{target}", playerModifyName));
     }
 
+    /**
+     * Teleport to target
+     */
     private void teleportTo() {
         if (isInWorldAndValid()) {
             owner.teleport(playerModify.getLocation());
@@ -463,6 +508,9 @@ public class WorldGui extends Gui {
             owner.sendMessage(prefix + Messages.getMessage("offline_world_player", "{target}", playerModifyName));
     }
 
+    /**
+     * Change gamemode of player modify
+     */
     private void changeGamemode() {
         if (isInWorldAndValid()) {
             int newValue = playerModify.getGameMode().ordinal() + 1;
@@ -475,6 +523,9 @@ public class WorldGui extends Gui {
             owner.sendMessage(prefix + Messages.getMessage("offline_world_player", "{target}", playerModifyName));
     }
 
+    /**
+     * Refill hunger of target
+     */
     private void refillHunger() {
         if (isInWorldAndValid()) {
             playerModify.setFoodLevel(20);
@@ -485,6 +536,9 @@ public class WorldGui extends Gui {
     }
 
 
+    /**
+     * Refill health of target
+     */
     private void refillHealth() {
         if (isInWorldAndValid()) {
             playerModify.setHealth(20);
@@ -494,7 +548,11 @@ public class WorldGui extends Gui {
             owner.sendMessage(prefix + Messages.getMessage("offline_world_player", "{target}", playerModifyName));
     }
 
-
+    /**
+     * Checks if the string is numeric
+     * @param value String
+     * @return Boolean
+     */
     private boolean isNumeric(String value) {
         // Vérifie si la chaîne est numérique en essayant de la convertir en entier.
         try {
@@ -506,6 +564,10 @@ public class WorldGui extends Gui {
     }
 
 
+    /**
+     * Check if target is in world and if is valid when action making on it
+     * @return
+     */
     private boolean isInWorldAndValid() {
         return playerModify != null &&
                 Bukkit.getPlayer(playerModifyName) != null &&

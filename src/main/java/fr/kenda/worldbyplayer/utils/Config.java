@@ -13,10 +13,19 @@ public class Config {
     private static final WorldByPlayer INSTANCE = WorldByPlayer.getInstance();
     private static final FileConfiguration CONFIG = INSTANCE.getConfig();
 
+    /**
+     * get an int from config
+     * @param path path in file
+     * @return Integer
+     */
     public static int getInt(String path) {
         return INSTANCE.getConfig().getInt(path);
     }
 
+    /**
+     * Get the location of lobby in file
+     * @return Location
+     */
     public static Location getLocationLobby() {
         String world = getString("lobby.world");
         String coordinate = getString("lobby.coordinates");
@@ -85,6 +94,11 @@ public class Config {
         return Messages.transformColor(configStr);
     }
 
+    /**
+     * Get a boolean from config file
+     * @param path path in file
+     * @return Boolean
+     */
     public static boolean getBoolean(String path) {
         return CONFIG.getBoolean(path);
     }

@@ -18,6 +18,10 @@ public class ChatCreatingWorld implements Listener {
     private final CreationManager creationManager = WorldByPlayer.getInstance().getCreationManager();
 
 
+    /**
+     * Event in chat to avoid sending messages, but retrieves messages when creating the world
+     * @param e AsyncPlayerChatEvent
+     */
     @EventHandler(priority = EventPriority.HIGH)
     public void onChat(AsyncPlayerChatEvent e) {
         Player player = e.getPlayer();

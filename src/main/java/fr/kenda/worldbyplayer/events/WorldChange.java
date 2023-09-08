@@ -23,6 +23,10 @@ public class WorldChange implements Listener {
     private final FileManager fileManager = instance.getFileManager();
     private final WorldsManager worldsManager = instance.getWorldManager();
 
+    /**
+     * Manages player information when changing worlds (hub world different from player world)
+     * @param e PlayerChangedWorldEvent
+     */
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent e) {
         final Player player = e.getPlayer();

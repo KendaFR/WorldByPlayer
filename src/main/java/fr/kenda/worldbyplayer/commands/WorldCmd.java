@@ -25,6 +25,16 @@ public class WorldCmd implements CommandExecutor {
     private final WorldsManager worldsManager = instance.getWorldManager();
 
 
+    /**
+     * Command /world
+     * Displays the player's world management inventory
+     *
+     * @param sender  Source of the command
+     * @param command Command which was executed
+     * @param label   Alias of the command which was used
+     * @param args    Passed command arguments
+     * @return Boolean
+     */
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (!(sender instanceof Player player)) {
@@ -103,13 +113,19 @@ public class WorldCmd implements CommandExecutor {
 
     }
 
-    private void sendHelp(Player player) {
+    /**
+     * Send the help message
+     *
+     * @param player Player who executes the command
+     */
+    private void sendHelp(@NotNull Player player) {
         player.sendMessage("§c============ " + prefix.trim() + " ===========");
         player.sendMessage("§c/world: §7Shows the world customization menu.");
         player.sendMessage("§c/world <add/invite> <player>: §7Add a member to join the world.");
         player.sendMessage("§c/world <remove/kick> <player>: §7Remove a member to your world.");
         player.sendMessage("§c/world help: §7Displays plugin help commands.");
         player.sendMessage("§c/world info: §7Show world informations.");
+        player.sendMessage("§c/world spawn: §7Teleport to world spawn.");
         player.sendMessage("§c============ " + prefix.trim() + " ===========");
     }
 }

@@ -5,7 +5,11 @@ import fr.kenda.worldbyplayer.events.*;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 
-public class EventsManager implements IManager {
+public class
+EventsManager implements IManager {
+    /**
+     * Register all events
+     */
     @Override
     public void register() {
         final WorldByPlayer instance = WorldByPlayer.getInstance();

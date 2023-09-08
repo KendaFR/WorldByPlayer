@@ -23,6 +23,7 @@ public class SkullBuilder {
         this.name = "§e" + owner.getName();
     }
 
+    @SuppressWarnings("all")
     public SkullBuilder(String owner) {
         this.owner = null;
         this.offlinePlayer = Bukkit.getOfflinePlayer(owner);
@@ -44,11 +45,6 @@ public class SkullBuilder {
         return this;
     }
 
-    public SkullBuilder addLine(String line, int index) {
-        lores.add(index, line);
-        return this;
-    }
-
     public SkullBuilder addLine(String line) {
         lores.add(line);
         return this;
@@ -57,6 +53,7 @@ public class SkullBuilder {
     public ItemStack toItemStack() {
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+        assert skullMeta != null;
         skullMeta.setOwningPlayer(owner == null ? offlinePlayer : owner);
         if (name != null) skullMeta.setDisplayName(name);
         if (lores.size() > 0)

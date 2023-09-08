@@ -24,10 +24,20 @@ public class NavigationGui extends Gui {
     private final WorldsManager worldsManager = instance.getWorldManager();
     private final FileConfiguration config = instance.getConfig();
 
+    /**
+     * Create Navigation Menu
+     * @param owner Owner of inventory
+     * @param title Title of inventory
+     * @param row number of row
+     */
     public NavigationGui(Player owner, String title, int row) {
         super(title, owner, row);
     }
 
+    /**
+     * Main Menu
+     * @return content of inventory
+     */
     public ItemStack[] mainMenu() {
         ItemStack[] content = new ItemStack[size];
         for (int i = 0; i < 9; i++)
@@ -87,6 +97,10 @@ public class NavigationGui extends Gui {
         return content;
     }
 
+    /**
+     * Manage click events in inventory
+     * @param e InventoryClickEvent
+     */
     @EventHandler
     public void onClick(InventoryClickEvent e) {
         int clickedSlot = e.getSlot();

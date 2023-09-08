@@ -29,6 +29,11 @@ public class WorldsManager implements IManager {
 
     private final ArrayList<DataWorld> worldsList = new ArrayList<>();
 
+    /**
+     * Save configuration in file
+     * @param configuration FileConfiguration
+     * @param fileName  String
+     */
     private static void save(final FileConfiguration configuration, final String fileName) {
         try {
             File file = new File(WorldByPlayer.getInstance().getDataFolder(), fileName + ".yml"); // Chemin absolu du fichier
@@ -38,10 +43,17 @@ public class WorldsManager implements IManager {
         }
     }
 
+    /**
+     * Get all dataWorld
+     * @return ArrayList<DataWorld>
+     */
     public ArrayList<DataWorld> getWorldsList() {
         return worldsList;
     }
 
+    /**
+     * Create free world and load all worlds register in files
+     */
     @Override
     public void register() {
 
@@ -70,6 +82,9 @@ public class WorldsManager implements IManager {
         }
     }
 
+    /**
+     * Create free world
+     */
     private void createFreeWorld() {
         String freeWorldName = config.getString("worlds.nameMap");
         if (freeWorldName == null) {
@@ -124,6 +139,11 @@ public class WorldsManager implements IManager {
         return null;
     }
 
+    /**
+     * Get the Data world from a world
+     * @param world World to check
+     * @return DataWorld found or null
+     */
     public DataWorld getDataWorldFromWorld(World world) {
         return worldsList.stream()
                 .filter(dataWorld -> dataWorld.getWorld() == world)
@@ -168,6 +188,10 @@ public class WorldsManager implements IManager {
         }
     }
 
+    /**
+     * Delete the world in config file
+     * @param world World to delete
+     */
     public void deleteWorldConfig(World world) {
         FileConfiguration worldConfig = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
         worldConfig.set("worlds." + world.getName(), null);
@@ -188,11 +212,18 @@ public class WorldsManager implements IManager {
 
     }
 
+    /**
+     * Start the system of auto purge, every day (24 hours before plugin started)
+     */
     public void startAutoPurge() {
         autoPurge(null);
         Bukkit.getScheduler().runTaskTimer(instance, new AutoPurgeScheduler(), 20, 20);
     }
 
+    /**
+     * Starts a purge of worlds not played for X days (configurable)
+     * @param playerStarted A player name if it's a forced purge, or empty if it's console
+     */
     public void autoPurge(String playerStarted) {
         try {
             FileConfiguration worldConfig = WorldByPlayer.getInstance().getFileManager().getConfigFrom("worlds");
