@@ -38,7 +38,7 @@ public class EventProtect implements Listener {
         Entity entity = e.getEntity();
         if (!(entity instanceof Player player)) return;
         World lobbyWorld = Bukkit.getWorld("world");
-        e.setCancelled(player.getWorld() == lobbyWorld);
+        e.setCancelled(player.getWorld() == lobbyWorld || !player.getWorld().getPVP());
     }
 
     @EventHandler

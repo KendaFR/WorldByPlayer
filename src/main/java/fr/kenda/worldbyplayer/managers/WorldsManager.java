@@ -79,7 +79,8 @@ public class WorldsManager implements IManager {
         Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("attempt_create", "{world}", freeWorldName));
         if (getFreeWorld() == null) {
             Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("creating_world", "{world}", freeWorldName));
-            new WorldCreator(freeWorldName);
+            WorldCreator creator = new WorldCreator(freeWorldName);
+            creator.createWorld();
             Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("world_created", "{world}", freeWorldName));
         } else {
             Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("world_loaded", "{world}", freeWorldName));

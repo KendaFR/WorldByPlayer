@@ -69,6 +69,8 @@ public class WorldChange implements Listener {
             player.setExp(0);
             player.setLevel(0);
             player.setGameMode(GameMode.ADVENTURE);
+            player.setHealth(20);
+            player.setFoodLevel(20);
             if (player.hasPermission(Permission.PERMISSION))
                 instance.getAdminManager().getAdminModeList().remove(player);
 

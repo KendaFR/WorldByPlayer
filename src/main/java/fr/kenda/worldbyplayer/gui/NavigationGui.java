@@ -29,7 +29,7 @@ public class NavigationGui extends Gui {
     }
 
     public ItemStack[] mainMenu() {
-        ItemStack[] content = new ItemStack[9];
+        ItemStack[] content = new ItemStack[size];
         for (int i = 0; i < 9; i++)
             content[i] = new ItemBuilder(Config.getMaterial(shortcutConfig + "color_glass"))
                     .setName(Config.getString(shortcutConfig + "text_glass")).toItemStack();

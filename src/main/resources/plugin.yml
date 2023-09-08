@@ -19,3 +19,9 @@ commands:
     aliases:
     - worlda
     - wadmin
+  menu:
+    description: Command to show menu in hub
+    aliases:
+      - navigation
+  spawn:
+    description: Go back to spawn of world

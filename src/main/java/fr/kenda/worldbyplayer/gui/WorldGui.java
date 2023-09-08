@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 enum EInventoryStatus {
-    MEMBER, GAMERULE, PLAYER_MODIFY, HOUR, PLAYERS_ALLOWED, SETSPAWN, DELETE, INVENTORY_SEE
+    MEMBER, GAMERULE, PLAYER_MODIFY, HOUR, PLAYERS_ALLOWED, SETSPAWN, DELETE, INVENTORY_SEE, PVP
 }
 
 @SuppressWarnings("all")
@@ -28,7 +28,8 @@ public class WorldGui extends Gui {
             EInventoryStatus.HOUR, 3,
             EInventoryStatus.PLAYERS_ALLOWED, 4,
             EInventoryStatus.SETSPAWN, 5,
-            EInventoryStatus.DELETE, 6
+            EInventoryStatus.DELETE, 6,
+            EInventoryStatus.PVP, 7
     );
 
     private final WorldByPlayer instance = WorldByPlayer.getInstance();
@@ -117,6 +118,10 @@ public class WorldGui extends Gui {
         content[slotStatus.get(EInventoryStatus.DELETE)] = new ItemBuilder(Config.getMaterial(shortcut + "delete_material"))
                 .setName(Config.getString(shortcut + "delete_name"))
                 .setLore(Config.getString(shortcut + "delete_description")).toItemStack();
+
+        content[slotStatus.get(EInventoryStatus.PVP)] = new ItemBuilder(Config.getMaterial(shortcut + "pvp_material"))
+                .setName(Config.getString(shortcut + "pvp_name"))
+                .setLore(Config.getString(shortcut + "pvp_description", "{value}", String.valueOf(owner.getWorld().getPVP()))).toItemStack();
     }
 
 
@@ -312,6 +317,12 @@ public class WorldGui extends Gui {
                 case 6:
                     dataWorld.deleteWorld(dataWorld.getWorld());
                     close();
+                    break;
+                case 7:
+                    World world = owner.getWorld();
+                    world.setPVP(!world.getPVP());
+                    owner.sendMessage(prefix + Messages.getMessage("pvp_in_world", "{value}", String.valueOf(world.getPVP())));
+                    refreshInventory();
                     break;
                 case 8:
                     switch (statusInventory) {

@@ -224,12 +224,18 @@ gui:
     setspawn_name: "&aSet the world spawn point to your location"
     #material of setspawn inventory
     setspawn_description: "&aCurrent Spawn: {spawn}"
-    #material of setspawn inventory
+    #material of delete inventory
     delete_material: BARRIER
-    #material of setspawn inventory
+    #material of delete inventory
     delete_name: "&aDelete your world"
-    #material of setspawn inventory
+    #material of delete inventory
     delete_description: "&4&lAttention ! Irreversible action when this button is clicked!"
+    #material of pvp inventory
+    pvp_material: IRON_SWORD
+    #material of pvp inventory
+    pvp_name: "&aEnable or disable PvP"
+    #material of pvp inventory
+    pvp_description: "&7PvP enable: {value}"
   members:
     refill_heal:
       name: "&cLeft click to regenerate health"
