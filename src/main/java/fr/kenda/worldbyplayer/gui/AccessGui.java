@@ -8,6 +8,7 @@ import fr.kenda.worldbyplayer.utils.ItemBuilder;
 import fr.kenda.worldbyplayer.utils.SkullBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -21,9 +22,10 @@ public class AccessGui extends Gui {
 
     /**
      * Create a gui with title, owner, and number of row
-     * @param title Title of inventory
+     *
+     * @param title  Title of inventory
      * @param player owner of inventory
-     * @param row row need in inventory
+     * @param row    row need in inventory
      */
     public AccessGui(String title, Player player, int row) {
         super(title, player, row);
@@ -31,6 +33,7 @@ public class AccessGui extends Gui {
 
     /**
      * Main inventory menu
+     *
      * @return ItemStack in inventory
      */
     @Override
@@ -70,9 +73,11 @@ public class AccessGui extends Gui {
 
     /**
      * Manage click events in inventory
+     *
      * @param e InventoryClickEvent
      */
-    @EventHandler
+    @Override
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onClick(InventoryClickEvent e) {
         int clickedSlot = e.getSlot();
         Player player = (Player) e.getWhoClicked();

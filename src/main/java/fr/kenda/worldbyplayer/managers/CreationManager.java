@@ -16,6 +16,7 @@ public class CreationManager {
 
     /**
      * Setup a creation managing
+     *
      * @param player Player
      */
     public void setup(Player player) {
@@ -27,6 +28,7 @@ public class CreationManager {
 
     /**
      * Complete world generation
+     *
      * @param player Player
      */
     public void endGenerating(Player player) {
@@ -40,6 +42,7 @@ public class CreationManager {
 
     /**
      * Check if player is in creation mode
+     *
      * @param player Player
      * @return Boolean
      */
@@ -49,6 +52,7 @@ public class CreationManager {
 
     /**
      * Get the settings of creation world
+     *
      * @param player Player
      * @return CreationSettings
      */
@@ -58,6 +62,7 @@ public class CreationManager {
 
     /**
      * Get the status of creation of world
+     *
      * @param player Player
      * @return ECreationStatus
      */
@@ -68,6 +73,7 @@ public class CreationManager {
 
     /**
      * Set the next step of creation
+     *
      * @param player Player
      */
     public void nextStep(Player player) {

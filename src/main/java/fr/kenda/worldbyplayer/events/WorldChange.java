@@ -25,6 +25,7 @@ public class WorldChange implements Listener {
 
     /**
      * Manages player information when changing worlds (hub world different from player world)
+     *
      * @param e PlayerChangedWorldEvent
      */
     @EventHandler

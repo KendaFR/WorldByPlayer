@@ -20,6 +20,7 @@ public class ChatCreatingWorld implements Listener {
 
     /**
      * Event in chat to avoid sending messages, but retrieves messages when creating the world
+     *
      * @param e AsyncPlayerChatEvent
      */
     @EventHandler(priority = EventPriority.HIGH)

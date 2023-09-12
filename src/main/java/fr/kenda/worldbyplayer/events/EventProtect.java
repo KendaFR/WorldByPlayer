@@ -20,6 +20,7 @@ public class EventProtect implements Listener {
 
     /**
      * Remove item drop in the hub
+     *
      * @param e PlayerDropItemEvent
      */
     @EventHandler
@@ -31,6 +32,7 @@ public class EventProtect implements Listener {
 
     /**
      * Remove pickup item in the hub
+     *
      * @param e EntityPickupItemEvent
      */
     @EventHandler
@@ -43,6 +45,7 @@ public class EventProtect implements Listener {
 
     /**
      * Remove damage between entities if the player is in the hub, or in a world where pvp is enabled
+     *
      * @param e EntityDamageByEntityEvent
      */
     @EventHandler
@@ -55,6 +58,7 @@ public class EventProtect implements Listener {
 
     /**
      * Remove damage if the player is in the hub
+     *
      * @param e EntityDamageEvent
      */
     @EventHandler
@@ -67,6 +71,7 @@ public class EventProtect implements Listener {
 
     /**
      * Remove level change in hunger
+     *
      * @param e FoodLevelChangeEvent
      */
     @EventHandler
@@ -79,6 +84,7 @@ public class EventProtect implements Listener {
 
     /**
      * Remove block breaking in hub
+     *
      * @param e BlockBreakEvent
      */
     @EventHandler
@@ -90,6 +96,7 @@ public class EventProtect implements Listener {
 
     /**
      * Delete block pose in hub
+     *
      * @param e BlockPlaceEvent
      */
     @EventHandler
@@ -101,6 +108,7 @@ public class EventProtect implements Listener {
 
     /**
      * Manages the player's spawn system, whether it's in the hub, or in the world where he died
+     *
      * @param e PlayerRespawnEvent
      */
     @EventHandler

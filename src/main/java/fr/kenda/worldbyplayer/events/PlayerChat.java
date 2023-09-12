@@ -15,6 +15,7 @@ public class PlayerChat implements Listener {
 
     /**
      * Event that manages the chat and its display depending on the configuration
+     *
      * @param e AsyncPlayerChatEvent
      */
     @EventHandler

@@ -15,6 +15,7 @@ public class Config {
 
     /**
      * get an int from config
+     *
      * @param path path in file
      * @return Integer
      */
@@ -24,12 +25,12 @@ public class Config {
 
     /**
      * Get the location of lobby in file
+     *
      * @return Location
      */
     public static Location getLocationLobby() {
-        String world = getString("lobby.world");
         String coordinate = getString("lobby.coordinates");
-        return LocationTransform.deserializeCoordinate(world, coordinate);
+        return LocationTransform.deserializeCoordinate("", coordinate);
     }
 
     /**
@@ -96,6 +97,7 @@ public class Config {
 
     /**
      * Get a boolean from config file
+     *
      * @param path path in file
      * @return Boolean
      */

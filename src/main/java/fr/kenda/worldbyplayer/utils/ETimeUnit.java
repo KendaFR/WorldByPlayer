@@ -12,6 +12,7 @@ public enum ETimeUnit {
 
     /**
      * Calculates and returns the time remaining between two beats in millis
+     *
      * @param timeReached Time to reach (in file of world)
      * @param currentTime current time
      * @return The number of days between
@@ -29,6 +30,7 @@ public enum ETimeUnit {
 
     /**
      * Get a time to seconds
+     *
      * @return Integer
      */
     public int getToSecond() {
@@ -37,6 +39,7 @@ public enum ETimeUnit {
 
     /**
      * Get a time to millis
+     *
      * @return second * 1000
      */
     public long toMillis() {

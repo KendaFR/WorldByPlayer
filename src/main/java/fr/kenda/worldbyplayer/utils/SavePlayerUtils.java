@@ -22,8 +22,9 @@ import java.util.*;
 public class SavePlayerUtils {
     /**
      * Save all data of player in config file
-     * @param player Player
-     * @param world World where he played
+     *
+     * @param player        Player
+     * @param world         World where he played
      * @param configuration Configuration file
      */
     public static void savePlayerData(final Player player, final World world, final FileConfiguration configuration) {
@@ -43,8 +44,9 @@ public class SavePlayerUtils {
 
     /**
      * Save a location of player
-     * @param player Player
-     * @param world world where he played
+     *
+     * @param player        Player
+     * @param world         world where he played
      * @param configuration config file
      */
     public static void saveLocation(Player player, World world, FileConfiguration configuration) {
@@ -53,8 +55,9 @@ public class SavePlayerUtils {
 
     /**
      * Load a location from file
-     * @param player Player
-     * @param world World where he played
+     *
+     * @param player        Player
+     * @param world         World where he played
      * @param configuration copnfig file
      */
     public static void loadLocation(Player player, World world, FileConfiguration configuration) {
@@ -73,8 +76,9 @@ public class SavePlayerUtils {
 
     /**
      * Load all player data from file
-     * @param player Player
-     * @param world World where he played
+     *
+     * @param player        Player
+     * @param world         World where he played
      * @param configuration config file
      */
     public static void loadPlayerData(final Player player, final World world, final FileConfiguration configuration) {
@@ -102,8 +106,9 @@ public class SavePlayerUtils {
 
     /**
      * Save armor data
-     * @param player Player
-     * @param world world where he played
+     *
+     * @param player        Player
+     * @param world         world where he played
      * @param configuration config file
      */
     private static void saveArmor(final Player player, final World world, final FileConfiguration configuration) {
@@ -130,7 +135,8 @@ public class SavePlayerUtils {
 
     /**
      * Load armor data
-     * @param player Player
+     *
+     * @param player        Player
      * @param encodedString an encoded string from config file
      */
     private static void loadArmor(final Player player, final String encodedString) {
@@ -149,8 +155,9 @@ public class SavePlayerUtils {
 
     /**
      * Save inventory of player
-     * @param player Player
-     * @param world world where he played
+     *
+     * @param player        Player
+     * @param world         world where he played
      * @param configuration config file
      */
     private static void saveInventory(final Player player, final World world, final FileConfiguration configuration) {
@@ -179,7 +186,8 @@ public class SavePlayerUtils {
 
     /**
      * Load inventory from config file
-     * @param inventory Inventory of player
+     *
+     * @param inventory     Inventory of player
      * @param encodedString encoded string in config file
      */
     private static void loadInventory(final Inventory inventory, final String encodedString) {
@@ -196,6 +204,7 @@ public class SavePlayerUtils {
 
     /**
      * Save config in file
+     *
      * @param configuration config file
      */
     private static void save(final FileConfiguration configuration) {
@@ -209,8 +218,9 @@ public class SavePlayerUtils {
 
     /**
      * Save gamemode of player
-     * @param player OPlayer
-     * @param from World
+     *
+     * @param player        OPlayer
+     * @param from          World
      * @param configuration config file
      */
     private static void saveGamemode(final Player player, final World from, final FileConfiguration configuration) {
@@ -220,7 +230,8 @@ public class SavePlayerUtils {
 
     /**
      * Load gamemode to player
-     * @param player Player
+     *
+     * @param player   Player
      * @param gamemode Gamemode
      */
     private static void loadGamemode(final Player player, final GameMode gamemode) {
@@ -229,8 +240,9 @@ public class SavePlayerUtils {
 
     /**
      * Save effects of player
-     * @param player Player
-     * @param world world where he played
+     *
+     * @param player        Player
+     * @param world         world where he played
      * @param configuration config file
      */
     private static void saveEffects(final Player player, final World world, final FileConfiguration configuration) {
@@ -255,8 +267,9 @@ public class SavePlayerUtils {
 
     /**
      * Load all effects to player
-     * @param player Player
-     * @param world world where he played
+     *
+     * @param player        Player
+     * @param world         world where he played
      * @param configuration config file
      */
     private static void loadEffects(final Player player, final World world, final FileConfiguration configuration) {
@@ -278,8 +291,9 @@ public class SavePlayerUtils {
 
     /**
      * Save experience of player
-     * @param player Player
-     * @param world world where he played
+     *
+     * @param player        Player
+     * @param world         world where he played
      * @param configuration config file
      */
     private static void saveExperience(final Player player, final World world, final FileConfiguration configuration) {
@@ -290,8 +304,9 @@ public class SavePlayerUtils {
 
     /**
      * Load experience to player
-     * @param player Player
-     * @param world world where he played
+     *
+     * @param player        Player
+     * @param world         world where he played
      * @param configuration config file
      */
     private static void loadExperience(final Player player, final World world, final FileConfiguration configuration) {

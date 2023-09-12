@@ -41,7 +41,7 @@ public class LocationTransform {
         float yaw = Float.parseFloat(parts[3]);
         float pitch = Float.parseFloat(parts[4]);
 
-        return new Location((world.isEmpty() ? Bukkit.getWorld("world") : Bukkit.getWorld(world)), x, y, z, yaw, pitch);
+        return new Location((world.isEmpty() ? Bukkit.getWorlds().get(0) : Bukkit.getWorld(world)), x, y, z, yaw, pitch);
     }
 
 }

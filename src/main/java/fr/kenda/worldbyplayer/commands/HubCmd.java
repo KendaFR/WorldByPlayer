@@ -32,8 +32,8 @@ public class HubCmd implements CommandExecutor {
             sender.sendMessage(prefix + "§cYou cannot make this command here.");
             return false;
         }
-        World main = Bukkit.getWorlds().get(0);
-        if (player.getWorld() == main) {
+        World hub = Bukkit.getWorlds().get(0);
+        if (player.getWorld() == hub) {
             player.sendMessage(prefix + Messages.getMessage("already_in_lobby"));
             return false;
         }

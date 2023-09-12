@@ -7,6 +7,7 @@ import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -42,9 +43,11 @@ public class WorldGui extends Gui {
     private String playerModifyName = null;
     private DataWorld dataWorld = null;
     private boolean isInModifyPlayer = false;
+    private int page = 1;
 
     /**
      * Create world menu
+     *
      * @param row number of row
      */
     public WorldGui(int row) {
@@ -53,6 +56,7 @@ public class WorldGui extends Gui {
 
     /**
      * Main Menu
+     *
      * @return content of inventory
      */
     @Override
@@ -64,6 +68,7 @@ public class WorldGui extends Gui {
 
     /**
      * Member Menu
+     *
      * @return content of inventory
      */
     private ItemStack[] memberMenu() {
@@ -139,6 +144,7 @@ public class WorldGui extends Gui {
 
     /**
      * Menu of gamerule
+     *
      * @return content of inventory
      */
     private ItemStack[] gameruleMenu() {
@@ -146,9 +152,12 @@ public class WorldGui extends Gui {
         setMenu(content);
         setPatternSeparatorTemplate(content);
 
-        int index = separatorLine * 9;
         World world = Bukkit.getWorld(owner.getName());
-        for (String gameruleName : world.getGameRules()) {
+
+        int index = separatorLine * 9;
+
+        for (int i = (page == 1 ? 0 : 35); i < (page == 1 ? size - (separatorLine * 9) - 1 : world.getGameRules().length); i++) {
+            String gameruleName = world.getGameRules()[i];
             String value = Bukkit.getWorld(owner.getName()).getGameRuleValue(gameruleName);
             if (isNumeric(value)) {
                 List<String> lores = new ArrayList<>(List.of("§fValue: §a" + value));
@@ -159,11 +168,17 @@ public class WorldGui extends Gui {
 
             index++;
         }
+        String skullName = (page == 1) ? "MHF_ArrowRight" : "MHF_ArrowLeft";
+        String buttonName = (page == 1) ? "next_page" : "prev_page";
+        int slot = (page == 1) ? 35 : 27;
+        content[slot + (separatorLine * 9)] = new SkullBuilder(skullName).setName(Messages.getMessage(buttonName)).toItemStack();
+
         return content;
     }
 
     /**
      * Hour Menu
+     *
      * @return content of inventory
      */
     private ItemStack[] hourMenu() {
@@ -182,6 +197,7 @@ public class WorldGui extends Gui {
 
     /**
      * Menu of players allowed
+     *
      * @return content of inventory
      */
     private ItemStack[] playersAllowedMenu() {
@@ -204,6 +220,7 @@ public class WorldGui extends Gui {
 
     /**
      * Menu of inventory see
+     *
      * @param target target player
      * @return content of inventory
      */
@@ -303,9 +320,11 @@ public class WorldGui extends Gui {
 
     /**
      * Manage click events in inventory
-     * @param e  InventoryClickEvent
+     *
+     * @param e InventoryClickEvent
      */
-    @EventHandler
+    @Override
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onClick(InventoryClickEvent e) {
         int clickedSlot = e.getSlot();
         Player player = (Player) e.getWhoClicked();
@@ -411,6 +430,14 @@ public class WorldGui extends Gui {
                 World world = dataWorld.getWorld();
                 int clicked = clickedSlot - separatorLine * 9;
 
+                if (clicked == 35 && page == 1) {
+                    page++;
+                    break;
+                } else if (clicked == 27 && page == 2) {
+                    page--;
+                    break;
+                }
+                clicked = page == 2 ? clicked + 35 : clicked;
 
                 String[] gameRules = world.getGameRules(); // Obtenez la liste des règles du jeu une seule fois
                 String gameruleName = gameRules[clicked];
@@ -550,6 +577,7 @@ public class WorldGui extends Gui {
 
     /**
      * Checks if the string is numeric
+     *
      * @param value String
      * @return Boolean
      */
@@ -566,6 +594,7 @@ public class WorldGui extends Gui {
 
     /**
      * Check if target is in world and if is valid when action making on it
+     *
      * @return
      */
     private boolean isInWorldAndValid() {

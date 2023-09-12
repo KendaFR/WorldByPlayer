@@ -61,6 +61,7 @@ public final class WorldByPlayer extends JavaPlugin {
 
     /**
      * Get prefix of plugin
+     *
      * @return String
      */
     public String getPrefix() {
@@ -87,6 +88,7 @@ public final class WorldByPlayer extends JavaPlugin {
 
     /**
      * Get CreationManager class
+     *
      * @return CreationManager
      */
     public CreationManager getCreationManager() {
@@ -95,6 +97,7 @@ public final class WorldByPlayer extends JavaPlugin {
 
     /**
      * Get AdminManager class
+     *
      * @return AdminManager
      */
     public AdminManager getAdminManager() {

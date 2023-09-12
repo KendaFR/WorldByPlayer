@@ -13,6 +13,7 @@ public class OpenInventory implements Listener {
 
     /**
      * Opens navigation menu based on click and item
+     *
      * @param event PlayerInteractEvent
      */
     @EventHandler

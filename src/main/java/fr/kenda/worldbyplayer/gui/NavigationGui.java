@@ -12,6 +12,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -26,9 +27,10 @@ public class NavigationGui extends Gui {
 
     /**
      * Create Navigation Menu
+     *
      * @param owner Owner of inventory
      * @param title Title of inventory
-     * @param row number of row
+     * @param row   number of row
      */
     public NavigationGui(Player owner, String title, int row) {
         super(title, owner, row);
@@ -36,6 +38,7 @@ public class NavigationGui extends Gui {
 
     /**
      * Main Menu
+     *
      * @return content of inventory
      */
     public ItemStack[] mainMenu() {
@@ -99,9 +102,11 @@ public class NavigationGui extends Gui {
 
     /**
      * Manage click events in inventory
+     *
      * @param e InventoryClickEvent
      */
-    @EventHandler
+    @Override
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onClick(InventoryClickEvent e) {
         int clickedSlot = e.getSlot();
         Player player = (Player) e.getWhoClicked();

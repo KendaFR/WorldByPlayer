@@ -61,7 +61,7 @@ public class WorldCmd implements CommandExecutor {
                 String sub = args[0];
                 if (sub.equalsIgnoreCase("info")) {
                     DataWorld dataWorld = worldsManager.getDataWorldFromPlayerWorldOwner(player);
-                    if(dataWorld == null) {
+                    if (dataWorld == null) {
                         player.sendMessage(prefix + Messages.getMessage("no_world"));
                         return false;
                     }

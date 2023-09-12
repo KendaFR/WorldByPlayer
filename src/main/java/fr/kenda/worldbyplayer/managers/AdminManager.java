@@ -18,6 +18,7 @@ public class AdminManager implements IManager {
 
     /**
      * Check if player is in admin mode
+     *
      * @param player Player
      * @return Boolean
      */
@@ -27,6 +28,7 @@ public class AdminManager implements IManager {
 
     /**
      * Return the list of player is in admin
+     *
      * @return ArrayList<Player></Player>
      */
     public ArrayList<Player> getAdminModeList() {

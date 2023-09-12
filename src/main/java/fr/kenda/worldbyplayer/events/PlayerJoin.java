@@ -11,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
@@ -23,11 +24,11 @@ public class PlayerJoin implements Listener {
 
     /**
      * Gives lobby inventory when player joins
+     *
      * @param player Player who joins
      */
     public static void giveLobbyInventory(Player player) {
-        String worldName = Config.getString("lobby.world");
-        Location location = LocationTransform.deserializeCoordinate(worldName, Config.getString("lobby.coordinates"));
+        Location location = LocationTransform.deserializeCoordinate("", Config.getString("lobby.coordinates"));
         location.setY(Objects.requireNonNull(location.getWorld()).getHighestBlockYAt((int) location.getX(), (int) location.getZ()) + 1.5);
         player.teleport(location);
 
@@ -48,7 +49,7 @@ public class PlayerJoin implements Listener {
     /**
      * Manages the player when he joins the server. (teleports to hub, manages inventory, resets life, etc.)
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
 

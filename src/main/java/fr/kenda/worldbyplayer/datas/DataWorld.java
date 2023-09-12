@@ -160,8 +160,7 @@ public class DataWorld {
     public void kickPlayerFromWorld(String target) {
         for (Player p : world.getPlayers()) {
             if (p.getName().equalsIgnoreCase(target)) {
-                String worldName = Config.getString("lobby.world");
-                Location location = LocationTransform.deserializeCoordinate(worldName, Config.getString("lobby.coordinates"));
+                Location location = LocationTransform.deserializeCoordinate("", Config.getString("lobby.coordinates"));
                 location.setY(Objects.requireNonNull(location.getWorld()).getHighestBlockYAt((int) location.getX(), (int) location.getZ()) + 1.5);
                 p.teleport(location);
                 p.sendMessage(WorldByPlayer.getInstance().getPrefix() + Messages.getMessage("removed_from_world", "{world}", getName(), "{owner}", getOwner()));
@@ -263,8 +262,7 @@ public class DataWorld {
         final String prefix = WorldByPlayer.getInstance().getPrefix();
         // Exclude all players from the world and teleport them to the main world (world 0)
         for (Player player : worldToDelete.getPlayers()) {
-            String worldName = Config.getString("lobby.world");
-            Location location = LocationTransform.deserializeCoordinate(worldName, Config.getString("lobby.coordinates"));
+            Location location = LocationTransform.deserializeCoordinate("", Config.getString("lobby.coordinates"));
             location.setY(Objects.requireNonNull(location.getWorld()).getHighestBlockYAt((int) location.getX(), (int) location.getZ()) + 1.5);
             player.teleport(location); // Change "world" to the name of your main world
             player.sendMessage(prefix + Messages.getMessage("returns_lobby_delete"));

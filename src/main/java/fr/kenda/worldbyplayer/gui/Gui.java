@@ -19,8 +19,9 @@ public abstract class Gui implements Listener {
 
     /**
      * Create gui with title and number of row
+     *
      * @param title Title of inventory
-     * @param row Row need in inventory
+     * @param row   Row need in inventory
      */
     public Gui(String title, int row) {
         this(title, null, row);
@@ -28,9 +29,10 @@ public abstract class Gui implements Listener {
 
     /**
      * Create gui with title and number of row
+     *
      * @param title Title of inventory
      * @param owner owner of inventory
-     * @param row Row need in inventory
+     * @param row   Row need in inventory
      */
     public Gui(String title, Player owner, int row) {
         this.owner = owner;
@@ -42,6 +44,7 @@ public abstract class Gui implements Listener {
 
     /**
      * Create inventory with row
+     *
      * @param row number of row
      */
     public Gui(int row) {
@@ -50,6 +53,7 @@ public abstract class Gui implements Listener {
 
     /**
      * create inventory for player
+     *
      * @param player Owner of inventory
      */
     public void create(Player player) {
@@ -72,6 +76,7 @@ public abstract class Gui implements Listener {
 
     /**
      * Update inventory with a content given
+     *
      * @param content ItemStack[] given
      */
     public void updateContent(ItemStack[] content) {
@@ -80,6 +85,7 @@ public abstract class Gui implements Listener {
 
     /**
      * Set the title of inventory
+     *
      * @param title title of inventory
      */
     public void setTitle(String title) {
@@ -100,6 +106,7 @@ public abstract class Gui implements Listener {
 
     /**
      * Set the size of inventory
+     *
      * @param row number of row
      */
     protected void setSize(int row) {

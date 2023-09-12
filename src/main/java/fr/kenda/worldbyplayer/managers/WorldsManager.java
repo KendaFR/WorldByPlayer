@@ -31,8 +31,9 @@ public class WorldsManager implements IManager {
 
     /**
      * Save configuration in file
+     *
      * @param configuration FileConfiguration
-     * @param fileName  String
+     * @param fileName      String
      */
     private static void save(final FileConfiguration configuration, final String fileName) {
         try {
@@ -45,6 +46,7 @@ public class WorldsManager implements IManager {
 
     /**
      * Get all dataWorld
+     *
      * @return ArrayList<DataWorld>
      */
     public ArrayList<DataWorld> getWorldsList() {
@@ -141,6 +143,7 @@ public class WorldsManager implements IManager {
 
     /**
      * Get the Data world from a world
+     *
      * @param world World to check
      * @return DataWorld found or null
      */
@@ -190,6 +193,7 @@ public class WorldsManager implements IManager {
 
     /**
      * Delete the world in config file
+     *
      * @param world World to delete
      */
     public void deleteWorldConfig(World world) {
@@ -222,6 +226,7 @@ public class WorldsManager implements IManager {
 
     /**
      * Starts a purge of worlds not played for X days (configurable)
+     *
      * @param playerStarted A player name if it's a forced purge, or empty if it's console
      */
     public void autoPurge(String playerStarted) {

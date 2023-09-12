@@ -14,6 +14,7 @@ public class PlayerQuit implements Listener {
 
     /**
      * Saves player information when leaving the server
+     *
      * @param e PlayerQuitEvent
      */
     @EventHandler

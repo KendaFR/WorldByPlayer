@@ -17,8 +17,6 @@ respawn_in_lobby: true
 
 #The default world that will act as a lobby
 lobby:
-  #The name of the world that will be recovered, and all players will be teleported to this world at the coordinates below
-  world: "world"
   #The coordinates must be set manually, to avoid any conflict with the configuration (x, y, z, yaw, pitch)
   coordinates: "0;0;0;0;0"
 

@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -30,9 +31,10 @@ public class WorldAdmin extends Gui {
 
     /**
      * Create World Admin menu
+     *
      * @param title title of inventory
      * @param owner owner of inventory
-     * @param row number of row
+     * @param row   number of row
      */
     public WorldAdmin(String title, Player owner, int row) {
         super(title, owner, row);
@@ -40,6 +42,7 @@ public class WorldAdmin extends Gui {
 
     /**
      * Main Menu in inventory
+     *
      * @return content of inventory
      */
     @Override
@@ -66,6 +69,7 @@ public class WorldAdmin extends Gui {
 
     /**
      * Worlds menu
+     *
      * @return content of inventory
      */
     public ItemStack[] worldListMenu() {
@@ -93,10 +97,11 @@ public class WorldAdmin extends Gui {
 
     /**
      * Manage click events in inventory
+     *
      * @param e InventoryClickEvent
      */
     @Override
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onClick(InventoryClickEvent e) {
         int clickedSlot = e.getSlot();
         if (e.getInventory() != inventory || e.getInventory() == owner.getInventory()) return;
