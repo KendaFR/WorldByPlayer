@@ -5,7 +5,9 @@ import fr.kenda.worldbyplayer.datas.DataWorld;
 import fr.kenda.worldbyplayer.managers.WorldsManager;
 import fr.kenda.worldbyplayer.utils.Config;
 import fr.kenda.worldbyplayer.utils.ItemBuilder;
+import fr.kenda.worldbyplayer.utils.SavePlayerUtils;
 import fr.kenda.worldbyplayer.utils.SkullBuilder;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -94,7 +96,8 @@ public class AccessGui extends Gui {
         if (dataWorlds.size() > 0) {
             DataWorld worldOfPlayer = dataWorlds.get(clickedSlot);
             if (worldOfPlayer == null) return;
-            player.teleport(worldOfPlayer.getWorld().getSpawnLocation());
+            final FileConfiguration savedPlayers = WorldByPlayer.getInstance().getFileManager().getConfigFrom("saved_players");
+            SavePlayerUtils.loadLocationInDimension(player, worldOfPlayer.getWorld(), savedPlayers);
         }
     }
 

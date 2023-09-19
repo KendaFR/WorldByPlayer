@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 public class WorldsManager implements IManager {
 
@@ -73,15 +74,30 @@ public class WorldsManager implements IManager {
 
 
         for (String key : Objects.requireNonNull(worldConfig.getConfigurationSection("worlds")).getKeys(false)) {
-            WorldCreator creator = new WorldCreator(key);
-            World world = creator.createWorld();
+
+            String keyWorld = key.replaceAll("[^a-zA-Z0-9]", "");
+            int seed = worldConfig.getInt("worlds." + key + ".seed");
+            World world = createWorld(keyWorld, World.Environment.NORMAL, seed);
+            World nether = createWorld(keyWorld, World.Environment.NETHER, seed);
+            World end = createWorld(keyWorld, World.Environment.THE_END, seed);
+
             String name = worldConfig.getString("worlds." + key + ".name");
             List<String> playersAllowed = worldConfig.getStringList("worlds." + key + ".playersAllowed");
-            int seed = worldConfig.getInt("worlds." + key + ".seed");
-            assert world != null;
-            DataWorld dataWorld = new DataWorld(world, key, name, seed, playersAllowed);
+            DataWorld dataWorld = new DataWorld(world, nether, end, key, name, seed, playersAllowed);
             worldsList.add(dataWorld);
         }
+    }
+    private World createWorld(String name, World.Environment environment, int seed) {
+        String worldName = switch (environment) {
+            case THE_END -> name + "_end";
+            case NETHER -> name + "_nether";
+            default -> name;
+        };
+
+        return new WorldCreator(worldName)
+                .environment(environment)
+                .seed(seed)
+                .createWorld();
     }
 
     /**
@@ -95,9 +111,11 @@ public class WorldsManager implements IManager {
         }
         Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("attempt_create", "{world}", freeWorldName));
         if (getFreeWorld() == null) {
+            int seed = new Random().nextInt();
             Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("creating_world", "{world}", freeWorldName));
-            WorldCreator creator = new WorldCreator(freeWorldName);
-            creator.createWorld();
+             createWorld(freeWorldName, World.Environment.NORMAL, seed);
+             createWorld(freeWorldName, World.Environment.NETHER, seed);
+             createWorld(freeWorldName, World.Environment.THE_END, seed);
             Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("world_created", "{world}", freeWorldName));
         } else {
             Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("world_loaded", "{world}", freeWorldName));
@@ -153,6 +171,18 @@ public class WorldsManager implements IManager {
                 .findFirst()
                 .orElse(null);
     }
+    /**
+     * Get the Data world from a world name
+     *
+     * @param worldName  world name to check
+     * @return DataWorld found or null
+     */
+    public DataWorld getDataWorldFromWorldName(String worldName) {
+        return worldsList.stream()
+                .filter(dataWorld -> dataWorld.getWorld().getName().equalsIgnoreCase(worldName))
+                .findFirst()
+                .orElse(null);
+    }
 
 
     /**
@@ -175,15 +205,17 @@ public class WorldsManager implements IManager {
      * @param settings CreationSettings
      */
     public void createWorld(Player player, CreationSettings settings) {
-        String playerName = player.getName();
+        String playerName = player.getName().replaceAll("[^a-zA-Z0-9]", "");
         player.sendMessage(prefix + Messages.getMessage("attempt_create", "{world}", settings.getName()));
 
         if (Bukkit.getWorld(playerName) == null) {
-            WorldCreator creator = new WorldCreator(playerName);
-            creator.seed(settings.getSeed());
-            World world = creator.createWorld();
-            assert world != null;
-            DataWorld dataWorld = new DataWorld(world, player.getName(), settings.getName(), settings.getSeed(), null);
+            Bukkit.getOnlinePlayers().forEach(p ->  p.sendMessage(prefix + Messages.getMessage("world_creation_prevention", "{player}", player.getName())));
+            int seed = settings.getSeed();
+            World normal = createWorld(playerName, World.Environment.NORMAL, seed);
+            World nether = createWorld(playerName, World.Environment.NETHER, seed);
+            World end = createWorld(playerName, World.Environment.THE_END, seed);
+
+            DataWorld dataWorld = new DataWorld(normal, nether, end, player.getName(), settings.getName(), settings.getSeed(), null);
             worldsList.add(dataWorld);
             player.sendMessage(prefix + Messages.getMessage("world_created", "{world}", settings.getName()));
         } else {

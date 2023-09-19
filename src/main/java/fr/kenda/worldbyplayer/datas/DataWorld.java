@@ -18,6 +18,8 @@ import java.util.*;
 
 public class DataWorld {
     private final World world;
+    private final World nether;
+    private final World end;
     private final String owner;
     private final int seed;
     private final List<String> playersAllowed;
@@ -28,13 +30,17 @@ public class DataWorld {
      * After, the world is saved in file "worlds.yml"
      *
      * @param world          World in Bukkit
+     * @param nether          World nether for player
+     * @param end          World End
      * @param owner          String of owner
      * @param name           Name of world
      * @param seed           Seed of world
      * @param playersAllowed List of players Allowed
      */
-    public DataWorld(World world, String owner, String name, int seed, List<String> playersAllowed) {
+    public DataWorld(World world, World nether, World end, String owner, String name, int seed, List<String> playersAllowed) {
         this.world = world;
+        this.nether = nether;
+        this.end = end;
         this.owner = owner;
         this.name = name;
         this.seed = seed;
@@ -73,6 +79,13 @@ public class DataWorld {
         }
     }
 
+    public World getNether() {
+        return nether;
+    }
+
+    public World getEnd() {
+        return end;
+    }
 
     /**
      * Get if world exist in file
@@ -261,7 +274,7 @@ public class DataWorld {
     public void deleteWorld(World worldToDelete) {
         final String prefix = WorldByPlayer.getInstance().getPrefix();
         // Exclude all players from the world and teleport them to the main world (world 0)
-        for (Player player : worldToDelete.getPlayers()) {
+        for (Player player : getAllPlayers()) {
             Location location = LocationTransform.deserializeCoordinate("", Config.getString("lobby.coordinates"));
             location.setY(Objects.requireNonNull(location.getWorld()).getHighestBlockYAt((int) location.getX(), (int) location.getZ()) + 1.5);
             player.teleport(location); // Change "world" to the name of your main world
@@ -274,11 +287,19 @@ public class DataWorld {
 
         // Unload and remove the world from Bukkit
         Bukkit.unloadWorld(worldToDelete, false);
+        Bukkit.unloadWorld(getEnd(), false);
+        Bukkit.unloadWorld(getNether(), false);
         Bukkit.getWorlds().remove(worldToDelete);
+        Bukkit.getWorlds().remove(getEnd());
+        Bukkit.getWorlds().remove(getNether());
 
         // Delete the world folder from the server directory
         File worldFolder = worldToDelete.getWorldFolder();
+        File worldNetherFolder = getNether().getWorldFolder();
+        File worldEndFolder = getEnd().getWorldFolder();
         deleteWorldFolder(worldFolder);
+        deleteWorldFolder(worldEndFolder);
+        deleteWorldFolder(worldNetherFolder);
 
     }
 
@@ -322,5 +343,17 @@ public class DataWorld {
         long timeEnd = getTimeEndToMillis();
         return ETimeUnit.remainingTimeBetween(timeEnd, System.currentTimeMillis()) < warningDays;
 
+    }
+
+    public ArrayList<Player> getAllPlayers() {
+        ArrayList<Player> players = new ArrayList<>();
+
+        if(world.getPlayers().size() > 0)
+            players.addAll(world.getPlayers());
+        if(nether.getPlayers().size() > 0)
+            players.addAll(nether.getPlayers());
+        if(end.getPlayers().size() > 0)
+            players.addAll(end.getPlayers());
+        return players;
     }
 }

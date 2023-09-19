@@ -8,6 +8,12 @@ commands:
     aliases:
       - lobby
   world:
+    description: Show nether and end world
+    aliases:
+      - nether
+      - end
+      - worldteleport
+  worldconfig:
     description: Command to config your own world
     aliases:
       - worldgenerator

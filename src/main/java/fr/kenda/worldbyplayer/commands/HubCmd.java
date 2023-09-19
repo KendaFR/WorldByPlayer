@@ -38,7 +38,7 @@ public class HubCmd implements CommandExecutor {
             return false;
         }
         final FileConfiguration savedPlayers = WorldByPlayer.getInstance().getFileManager().getConfigFrom("saved_players");
-        SavePlayerUtils.saveLocation(player, player.getWorld(), savedPlayers);
+        SavePlayerUtils.savePlayerData(player, player.getWorld(), savedPlayers);
 
         player.teleport(Config.getLocationLobby());
         player.sendMessage(prefix + Messages.getMessage("back_to_lobby"));

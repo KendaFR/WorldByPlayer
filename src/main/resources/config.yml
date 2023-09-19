@@ -270,3 +270,15 @@ gui:
       material: CHEST
       lores:
         - "&aClick to clear inventory of player"
+  worldlist:
+    title: "&cWorlds menu"
+    background_glass: BLACK_STAINED_GLASS_PANE
+    world:
+      material: GRASS_BLOCK
+      name: "&aBack to world"
+    nether:
+      material: NETHER_BRICK
+      name: "&cGo to the nether"
+    end:
+      material: END_STONE
+      name: "&fGo to the end !"

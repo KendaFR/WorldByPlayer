@@ -5,9 +5,9 @@ import fr.kenda.worldbyplayer.datas.DataWorld;
 import fr.kenda.worldbyplayer.managers.WorldsManager;
 import fr.kenda.worldbyplayer.utils.Config;
 import fr.kenda.worldbyplayer.utils.ItemBuilder;
+import fr.kenda.worldbyplayer.utils.SavePlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -122,17 +122,17 @@ public class NavigationGui extends Gui {
 
         if (clickedSlot == freeSlot) {
             World free = Bukkit.getWorld(Config.getString("worlds.nameMap"));
-            assert free != null;
-            player.teleport(new Location(free, 0, free.getHighestBlockYAt(0, 0), 0));
-            return;
+            if(free == null) return;
+            final FileConfiguration savedPlayers = instance.getFileManager().getConfigFrom("saved_players");
+            SavePlayerUtils.loadDimension(player, free, savedPlayers);
         }
         if (clickedSlot == ownSlot) {
             if (!worldsManager.playerHasWorld(player)) {
                 instance.getCreationManager().setup(owner);
             } else {
                 DataWorld dataWorld = instance.getWorldManager().getDataWorldFromPlayerWorldOwner(owner);
-                World world = dataWorld.getWorld();
-                player.teleport(world.getSpawnLocation());
+                final FileConfiguration savedPlayers = instance.getFileManager().getConfigFrom("saved_players");
+                SavePlayerUtils.loadLocationInDimension(player, dataWorld.getWorld(), savedPlayers);
             }
             close();
             return;

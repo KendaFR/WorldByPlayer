@@ -11,6 +11,7 @@ public class CommandManager implements IManager {
     @Override
     public void register() {
         Bukkit.getPluginCommand("hub").setExecutor(new HubCmd());
+        Bukkit.getPluginCommand("worldconfig").setExecutor(new WorldConfigCmd());
         Bukkit.getPluginCommand("world").setExecutor(new WorldCmd());
         Bukkit.getPluginCommand("worldadmin").setExecutor(new WorldAdminCmd());
         Bukkit.getPluginCommand("menu").setExecutor(new NavigationCmd());

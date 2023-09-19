@@ -1,6 +1,7 @@
 package fr.kenda.worldbyplayer.utils;
 
 import fr.kenda.worldbyplayer.WorldByPlayer;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -28,51 +29,50 @@ public class SavePlayerUtils {
      * @param configuration Configuration file
      */
     public static void savePlayerData(final Player player, final World world, final FileConfiguration configuration) {
+        World mainWorld = world;
+        String dimension = "world";
+        if (world.getName().contains("_")) {
+            mainWorld = Bukkit.getWorld(world.getName().split("_")[0]);
+            dimension = world.getName().split("_")[1];
+            if (mainWorld == null) {
+                return;
+            }
+        }
+
         // Save inventory
-        saveInventory(player, world, configuration);
+        saveInventory(player, mainWorld, configuration);
+        saveHeal(player, mainWorld, configuration);
+        saveFood(player, mainWorld, configuration);
+        //saveLocationInDimension(player, mainWorld, dimension, configuration);
+
         // Save armor
-        saveArmor(player, world, configuration);
-
-        saveEffects(player, world, configuration);
-
-        saveGamemode(player, world, configuration);
-
-        saveExperience(player, world, configuration);
-
+        saveArmor(player, mainWorld, configuration);
+        saveEffects(player, mainWorld, configuration);
+        saveGamemode(player, mainWorld, configuration);
+        saveExperience(player, mainWorld, configuration);
+        saveDimension(player, mainWorld, dimension, configuration);
         save(configuration);
     }
 
-    /**
-     * Save a location of player
-     *
-     * @param player        Player
-     * @param world         world where he played
-     * @param configuration config file
-     */
-    public static void saveLocation(Player player, World world, FileConfiguration configuration) {
-        configuration.set(player.getName() + ".worlds." + world.getName() + ".location", LocationTransform.serializeCoordinate(player.getLocation()));
+    private static void saveFood(Player player, World mainWorld, FileConfiguration configuration) {
+        configuration.set(player.getName() + ".worlds." + mainWorld.getName() + ".food", player.getFoodLevel());
+        save(configuration);
     }
 
-    /**
-     * Load a location from file
-     *
-     * @param player        Player
-     * @param world         World where he played
-     * @param configuration copnfig file
-     */
-    public static void loadLocation(Player player, World world, FileConfiguration configuration) {
-        String locationKey = player.getName() + ".worlds." + world.getName() + ".location";
-        String loc = configuration.getString(locationKey);
-
-        Location location;
-        if (loc != null) {
-            location = LocationTransform.deserializeCoordinate(world.getName(), loc);
-        } else {
-            location = world.getSpawnLocation();
-        }
-        player.teleport(location);
+    private static void saveHeal(Player player, World mainWorld, FileConfiguration configuration) {
+        configuration.set(player.getName() + ".worlds." + mainWorld.getName() + ".heal", !player.isDead() ? player.getHealth() : 20);
+        save(configuration);
     }
 
+    public static void saveLocationInDimension(Player player, World mainWorld, String dimension, FileConfiguration configuration) {
+        configuration.set(player.getName() + ".worlds." + mainWorld.getName() + ".location." + dimension, LocationTransform.serializeCoordinate(player.getLocation()));
+        save(configuration);
+    }
+
+    public static void saveDimension(Player player, World world, String dimension, FileConfiguration configuration) {
+        configuration.set(player.getName() + ".worlds." + world.getName() + ".dimension", dimension);
+        save(configuration);
+    }
 
     /**
      * Load all player data from file
@@ -83,26 +83,62 @@ public class SavePlayerUtils {
      */
     public static void loadPlayerData(final Player player, final World world, final FileConfiguration configuration) {
 
-        String shortcut = player.getName() + ".worlds." + world.getName() + ".";
+        String worldName = world.getName().contains("_") ? world.getName().split("_")[0] : world.getName();
+        String shortcut = player.getName() + ".worlds." + worldName + ".";
+
+        //loadLocation(player, worldName, world.getName().contains("_") ? world.getName().split("_")[1] : "world", configuration);
+
         // Load inventory
         loadInventory(player.getInventory(), configuration.getString(shortcut + "inventory"));
 
         // Load armor
         loadArmor(player, configuration.getString(shortcut + "armor"));
 
-        loadEffects(player, world, configuration);
+        loadEffects(player, worldName, configuration);
 
         // Load gamemode
         String gamemode = configuration.getString(shortcut + "gamemode");
+
         if (gamemode != null)
             loadGamemode(player, GameMode.valueOf(gamemode));
         else
             loadGamemode(player, GameMode.SURVIVAL);
 
-        loadExperience(player, world, configuration);
-
-        loadLocation(player, world, configuration);
+        loadExperience(player, worldName, configuration);
+        loadHeal(player, worldName, configuration);
+        loadFood(player, worldName, configuration);
     }
+
+    private static void loadHeal(Player player, String worldName, FileConfiguration configuration) {
+        double heal = configuration.getDouble(player.getName() + ".worlds." + worldName + ".heal");
+        player.setHealth(heal);
+    }
+    private static void loadFood(Player player, String worldName, FileConfiguration configuration) {
+        int food = configuration.getInt(player.getName() + ".worlds." + worldName + ".food");
+        player.setFoodLevel(food);
+    }
+
+    public static void loadDimension(Player player, World world, FileConfiguration configuration) {
+        String playerKey = player.getName();
+        String worldName = world.getName();
+        String dimension = configuration.getString(playerKey + ".worlds." + worldName + ".dimension");
+
+        if (dimension == null) return;
+
+        if (dimension.equalsIgnoreCase("world")) {
+            Location teleport = new Location(world, 0, world.getHighestBlockYAt(0, 0), 0);
+            player.teleport(teleport);
+        } else {
+            World worldLoad = Bukkit.getWorld(worldName + "_" + dimension);
+            if (worldLoad != null) {
+                Location teleportLocation = new Location(worldLoad, 0, worldLoad.getHighestBlockYAt(0, 0), 0);
+                player.teleport(teleportLocation);
+            } else {
+                System.out.println("Error world load");
+            }
+        }
+    }
+
 
     /**
      * Save armor data
@@ -272,8 +308,8 @@ public class SavePlayerUtils {
      * @param world         world where he played
      * @param configuration config file
      */
-    private static void loadEffects(final Player player, final World world, final FileConfiguration configuration) {
-        List<Map<?, ?>> serializedEffects = configuration.getMapList(player.getName() + ".worlds." + world.getName() + ".effects");
+    private static void loadEffects(final Player player, final String world, final FileConfiguration configuration) {
+        List<Map<?, ?>> serializedEffects = configuration.getMapList(player.getName() + ".worlds." + world + ".effects");
 
         for (Map<?, ?> serializedEffect : serializedEffects) {
             PotionEffectType type = PotionEffectType.getByName((String) serializedEffect.get("type"));
@@ -309,10 +345,65 @@ public class SavePlayerUtils {
      * @param world         world where he played
      * @param configuration config file
      */
-    private static void loadExperience(final Player player, final World world, final FileConfiguration configuration) {
-        float experience = (float) configuration.getDouble(player.getName() + ".worlds." + world.getName() + ".experience", 0.0);
-        int level = configuration.getInt(player.getName() + ".worlds." + world.getName() + ".level", 0);
+    private static void loadExperience(final Player player, final String world, final FileConfiguration configuration) {
+        float experience = (float) configuration.getDouble(player.getName() + ".worlds." + world + ".experience", 0.0);
+        int level = configuration.getInt(player.getName() + ".worlds." + world + ".level", 0);
         player.setExp(experience);
         player.setLevel(level);
+    }
+
+    public static void loadLocationInDimension(Player player, World world, FileConfiguration savedPlayers) {
+        String nameWorld = world.getName().contains("_") ? world.getName().split("_")[0] : world.getName();
+        String dimension = savedPlayers.getString(player.getName() + ".worlds." + nameWorld + ".dimension");
+        if (dimension == null) { //En logique n'est jamais null
+            System.out.println("Je suis null");
+            World defaultWorld = Bukkit.getWorld(nameWorld);
+            if (defaultWorld == null) {
+                System.out.println("DefaultWorld is null");
+                return;
+            }
+            player.teleport(new Location(defaultWorld, 0, defaultWorld.getHighestBlockYAt(0, 0), 0));
+        } else {
+            String location = savedPlayers.getString(player.getName() + ".worlds." + nameWorld + ".location." + dimension);
+            Location loc = LocationTransform.deserializeCoordinate(dimension.equalsIgnoreCase("world") ? nameWorld : nameWorld + "_" + dimension, location);
+            player.teleport(loc);
+        }
+    }
+    public static void loadLocationInDimension(Player player, World world, int dimension, FileConfiguration savedPlayers) {
+        String nameWorld = world.getName().contains("_") ? world.getName().split("_")[0] : world.getName();
+        String locationKey;
+
+        switch (dimension) {
+            case 0:
+                locationKey = "world";
+                break;
+            case 1:
+                locationKey = "nether";
+                break;
+            case 2:
+                locationKey = "end";
+                break;
+            default:
+                throw new IllegalArgumentException("Dimension invalide : " + dimension);
+        }
+
+        String location = savedPlayers.getString(player.getName() + ".worlds." + nameWorld + ".location." + locationKey);
+        if (location == null) {
+            throw new IllegalArgumentException("Location unavailable for : " + player.getName() + ", dimension : " + dimension);
+        }
+
+        Location loc = LocationTransform.deserializeCoordinate(nameWorld + (dimension == 0 ? "" : "_" + locationKey), location);
+        player.teleport(loc);
+    }
+
+
+    public static void loadLocation(Player player, World currentWorld, FileConfiguration savedPlayers) {
+        String nameWorld = currentWorld.getName().contains("_") ? currentWorld.getName().split("_")[0] : currentWorld.getName();
+        String dimension = currentWorld.getName().contains("_") ? currentWorld.getName().split("_")[1] : "world";
+        if(dimension == null) return;
+        String locString = savedPlayers.getString(player.getName() + ".worlds." + nameWorld + ".location." + dimension);
+        if(locString == null){ player.teleport(currentWorld.getSpawnLocation()); return;}
+        Location loc = LocationTransform.deserializeCoordinate(player, locString);
+        player.teleport(loc);
     }
 }

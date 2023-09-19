@@ -48,7 +48,16 @@ public abstract class Gui implements Listener {
      * @param row number of row
      */
     public Gui(int row) {
-        this(null, row);
+        this(null, null, row);
+    }
+
+    /**
+     * Create inventory with row
+     *
+     * @param row number of row
+     */
+    public Gui(Player player, int row) {
+        this(null, player, row);
     }
 
     /**

@@ -1,6 +1,5 @@
 package fr.kenda.worldbyplayer.events;
 
-import fr.kenda.worldbyplayer.utils.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -14,7 +13,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class EventProtect implements Listener {
 
@@ -26,7 +24,7 @@ public class EventProtect implements Listener {
     @EventHandler
     public void onDrop(PlayerDropItemEvent e) {
         Player player = e.getPlayer();
-        World lobbyWorld = Bukkit.getWorld("world");
+        World lobbyWorld = Bukkit.getWorlds().get(0);
         e.setCancelled(player.getWorld() == lobbyWorld);
     }
 
@@ -39,7 +37,7 @@ public class EventProtect implements Listener {
     public void onPickup(EntityPickupItemEvent e) {
         Entity entity = e.getEntity();
         if (!(entity instanceof Player player)) return;
-        World lobbyWorld = Bukkit.getWorld("world");
+        World lobbyWorld = Bukkit.getWorlds().get(0);
         e.setCancelled(player.getWorld() == lobbyWorld);
     }
 
@@ -52,7 +50,7 @@ public class EventProtect implements Listener {
     public void onDamageByEntity(EntityDamageByEntityEvent e) {
         Entity entity = e.getEntity();
         if (!(entity instanceof Player player)) return;
-        World lobbyWorld = Bukkit.getWorld("world");
+        World lobbyWorld = Bukkit.getWorlds().get(0);
         e.setCancelled(player.getWorld() == lobbyWorld || !player.getWorld().getPVP());
     }
 
@@ -65,7 +63,7 @@ public class EventProtect implements Listener {
     public void onDamage(EntityDamageEvent e) {
         Entity entity = e.getEntity();
         if (!(entity instanceof Player player)) return;
-        World lobbyWorld = Bukkit.getWorld("world");
+        World lobbyWorld = Bukkit.getWorlds().get(0);
         e.setCancelled(player.getWorld() == lobbyWorld);
     }
 
@@ -78,7 +76,7 @@ public class EventProtect implements Listener {
     public void onFoodChange(FoodLevelChangeEvent e) {
         Entity entity = e.getEntity();
         if (!(entity instanceof Player player)) return;
-        World lobbyWorld = Bukkit.getWorld("world");
+        World lobbyWorld = Bukkit.getWorlds().get(0);
         e.setCancelled(player.getWorld() == lobbyWorld);
     }
 
@@ -90,7 +88,7 @@ public class EventProtect implements Listener {
     @EventHandler
     public void onBreak(BlockBreakEvent e) {
         Player player = e.getPlayer();
-        World lobbyWorld = Bukkit.getWorld("world");
+        World lobbyWorld = Bukkit.getWorlds().get(0);
         e.setCancelled(player.getWorld() == lobbyWorld);
     }
 
@@ -102,23 +100,8 @@ public class EventProtect implements Listener {
     @EventHandler
     public void onPlace(BlockPlaceEvent e) {
         Player player = e.getPlayer();
-        World lobbyWorld = Bukkit.getWorld("world");
+        World lobbyWorld = Bukkit.getWorlds().get(0);
         e.setCancelled(player.getWorld() == lobbyWorld);
     }
 
-    /**
-     * Manages the player's spawn system, whether it's in the hub, or in the world where he died
-     *
-     * @param e PlayerRespawnEvent
-     */
-    @EventHandler
-    public void onRespawn(PlayerRespawnEvent e) {
-        if (Config.getBoolean("respawn_in_lobby"))
-            e.setRespawnLocation(Bukkit.getWorlds().get(0).getSpawnLocation());
-        else {
-            Player player = e.getPlayer();
-            World world = player.getWorld();
-            e.setRespawnLocation(world.getSpawnLocation());
-        }
-    }
 }

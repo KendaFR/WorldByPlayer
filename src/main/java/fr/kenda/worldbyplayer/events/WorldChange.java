@@ -17,6 +17,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 
+import java.util.Arrays;
+
 public class WorldChange implements Listener {
 
     private final WorldByPlayer instance = WorldByPlayer.getInstance();
@@ -35,12 +37,22 @@ public class WorldChange implements Listener {
         final World currentWorld = player.getWorld();
         final World lobby = Bukkit.getWorlds().get(0);
         final String prefix = instance.getPrefix();
+        final String nameWorld = currentWorld.getName().contains("_") ? currentWorld.getName().split("_")[0] : currentWorld.getName();
+        final String fromWorld = from.getName().contains("_") ? from.getName().split("_")[0] : from.getName();
 
         final FileConfiguration savedPlayers = fileManager.getConfigFrom("saved_players");
 
+        if (nameWorld.equalsIgnoreCase(fromWorld)) {
+            String[] nameParts = currentWorld.getName().split("_");
+            Arrays.stream(nameParts).forEach(System.out::println);
+            int dim = nameParts.length == 1 ? 0 : (nameParts.length > 1 && nameParts[1].equalsIgnoreCase("nether")) ? 1 : 2;
+            System.out.println("Current dimension " + dim);
+            SavePlayerUtils.loadLocationInDimension(player, currentWorld, dim, savedPlayers);
+            return;
+        }
 
         //world player
-        if (currentWorld != lobby) {
+        if (!nameWorld.equalsIgnoreCase(lobby.getName())) {
             if (player.hasPermission(Permission.PERMISSION) && instance.getAdminManager().isInModeAdmin(player)) {
                 player.getInventory().clear();
                 player.setGameMode(GameMode.CREATIVE);
@@ -48,13 +60,19 @@ public class WorldChange implements Listener {
             } else {
                 player.getInventory().clear();
                 String worldFree = Config.getString("worlds.nameMap");
-                DataWorld dataWorld = worldsManager.getDataWorldFromPlayerWorldOwner(currentWorld.getName());
+                DataWorld dataWorld = null;
+                if (currentWorld.getName().contains("_"))
+                    dataWorld = instance.getWorldManager().getDataWorldFromWorldName(currentWorld.getName().contains("_") ? currentWorld.getName().split("_")[0] : currentWorld.getName());
+
                 player.sendMessage(prefix + Messages.getMessage("teleported_in", "{world}",
                         dataWorld == null ? worldFree : dataWorld.getName()));
 
-                if (savedPlayers != null)
+                if (savedPlayers != null) {
+                    SavePlayerUtils.loadLocation(player, currentWorld, savedPlayers);
                     SavePlayerUtils.loadPlayerData(player, currentWorld, savedPlayers);
-                if (!currentWorld.getName().equalsIgnoreCase(player.getName())) return;
+                }
+
+                if (!nameWorld.equalsIgnoreCase(player.getName())) return;
                 DataWorld dw = worldsManager.getDataWorldFromPlayerWorldOwner(player);
                 //is own world
                 if (dw != null && currentWorld == dw.getWorld())
@@ -78,7 +96,6 @@ public class WorldChange implements Listener {
             player.setFoodLevel(20);
             if (player.hasPermission(Permission.PERMISSION))
                 instance.getAdminManager().getAdminModeList().remove(player);
-
         }
     }
 }
