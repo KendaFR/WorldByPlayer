@@ -30,8 +30,8 @@ public class DataWorld {
      * After, the world is saved in file "worlds.yml"
      *
      * @param world          World in Bukkit
-     * @param nether          World nether for player
-     * @param end          World End
+     * @param nether         World nether for player
+     * @param end            World End
      * @param owner          String of owner
      * @param name           Name of world
      * @param seed           Seed of world
@@ -64,19 +64,26 @@ public class DataWorld {
                         deleteWorldFolder(file);
                     } else {
                         boolean deleted = file.delete();
-                        if (!deleted) {
-                            // Gérer le cas où la suppression du fichier a échoué.
-                            System.err.println("La suppression du fichier " + file.getAbsolutePath() + " a échoué.");
+                        if(!deleted){
+                            System.out.println("file " + file.getName() + " can't be deleted");
                         }
                     }
                 }
             }
             boolean deletedFolder = folder.delete();
             if (!deletedFolder) {
-                // Gérer le cas où la suppression du dossier a échoué.
-                System.err.println("La suppression du dossier " + folder.getAbsolutePath() + " a échoué.");
+                System.out.println("Folder " + folder.getName() + " can't be deleted");
             }
         }
+    }
+
+    /**
+     * Get the name of owner without special caracters
+     *
+     * @return String
+     */
+    public String getOwnerRegex() {
+        return owner.replaceAll("[^a-zA-Z0-9]", "");
     }
 
     public World getNether() {
@@ -345,14 +352,19 @@ public class DataWorld {
 
     }
 
+    /**
+     * Get all players connected
+     *
+     * @return Size
+     */
     public ArrayList<Player> getAllPlayers() {
         ArrayList<Player> players = new ArrayList<>();
 
-        if(world.getPlayers().size() > 0)
+        if (world.getPlayers().size() > 0)
             players.addAll(world.getPlayers());
-        if(nether.getPlayers().size() > 0)
+        if (nether.getPlayers().size() > 0)
             players.addAll(nether.getPlayers());
-        if(end.getPlayers().size() > 0)
+        if (end.getPlayers().size() > 0)
             players.addAll(end.getPlayers());
         return players;
     }

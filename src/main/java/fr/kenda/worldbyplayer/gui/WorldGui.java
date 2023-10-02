@@ -81,7 +81,7 @@ public class WorldGui extends Gui {
 
 
         World main = Bukkit.getWorld(mainWorld);
-        if(main == null) return;
+        if (main == null) return;
         switch (clickedSlot) {
             case 3 -> {
                 SavePlayerUtils.savePlayerData(owner, main, savedPlayers);

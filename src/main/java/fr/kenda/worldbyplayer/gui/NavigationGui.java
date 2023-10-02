@@ -122,9 +122,11 @@ public class NavigationGui extends Gui {
 
         if (clickedSlot == freeSlot) {
             World free = Bukkit.getWorld(Config.getString("worlds.nameMap"));
-            if(free == null) return;
+            if (free == null) return;
             final FileConfiguration savedPlayers = instance.getFileManager().getConfigFrom("saved_players");
             SavePlayerUtils.loadDimension(player, free, savedPlayers);
+            if (instance.getCreationManager().isInCreation(player))
+                instance.getCreationManager().remove(player);
         }
         if (clickedSlot == ownSlot) {
             if (!worldsManager.playerHasWorld(player)) {
@@ -153,6 +155,8 @@ public class NavigationGui extends Gui {
 
             accessGui.setSize(line);
             accessGui.create();
+            if (instance.getCreationManager().isInCreation(player))
+                instance.getCreationManager().remove(player);
         }
     }
 }

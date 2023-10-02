@@ -87,6 +87,7 @@ public class WorldsManager implements IManager {
             worldsList.add(dataWorld);
         }
     }
+
     private World createWorld(String name, World.Environment environment, int seed) {
         String worldName = switch (environment) {
             case THE_END -> name + "_end";
@@ -113,9 +114,9 @@ public class WorldsManager implements IManager {
         if (getFreeWorld() == null) {
             int seed = new Random().nextInt();
             Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("creating_world", "{world}", freeWorldName));
-             createWorld(freeWorldName, World.Environment.NORMAL, seed);
-             createWorld(freeWorldName, World.Environment.NETHER, seed);
-             createWorld(freeWorldName, World.Environment.THE_END, seed);
+            createWorld(freeWorldName, World.Environment.NORMAL, seed);
+            createWorld(freeWorldName, World.Environment.NETHER, seed);
+            createWorld(freeWorldName, World.Environment.THE_END, seed);
             Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("world_created", "{world}", freeWorldName));
         } else {
             Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("world_loaded", "{world}", freeWorldName));
@@ -171,10 +172,11 @@ public class WorldsManager implements IManager {
                 .findFirst()
                 .orElse(null);
     }
+
     /**
      * Get the Data world from a world name
      *
-     * @param worldName  world name to check
+     * @param worldName world name to check
      * @return DataWorld found or null
      */
     public DataWorld getDataWorldFromWorldName(String worldName) {
@@ -184,19 +186,6 @@ public class WorldsManager implements IManager {
                 .orElse(null);
     }
 
-
-    /**
-     * Return the dataWorld of player world
-     *
-     * @param playerName playerName
-     * @return DataWorld
-     */
-    public DataWorld getDataWorldFromPlayerWorldOwner(String playerName) {
-        for (DataWorld dataWorld : worldsList)
-            if (dataWorld.getOwner() != null && dataWorld.getOwner().equals(playerName))
-                return dataWorld;
-        return null;
-    }
 
     /**
      * Create world for player with settings
@@ -209,7 +198,7 @@ public class WorldsManager implements IManager {
         player.sendMessage(prefix + Messages.getMessage("attempt_create", "{world}", settings.getName()));
 
         if (Bukkit.getWorld(playerName) == null) {
-            Bukkit.getOnlinePlayers().forEach(p ->  p.sendMessage(prefix + Messages.getMessage("world_creation_prevention", "{player}", player.getName())));
+            Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(prefix + Messages.getMessage("world_creation_prevention", "{player}", player.getName())));
             int seed = settings.getSeed();
             World normal = createWorld(playerName, World.Environment.NORMAL, seed);
             World nether = createWorld(playerName, World.Environment.NETHER, seed);

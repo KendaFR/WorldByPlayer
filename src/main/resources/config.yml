@@ -194,6 +194,7 @@ gui:
       - "&ePV: {heal}"
       - "&eFood: {food}"
       - "&eGamemode: {gamemode}"
+      - "&eDimension: {dimension}"
     #material of gamerule inventory
     gamerule_material: DIRT
     #material of gamerule inventory
@@ -213,7 +214,7 @@ gui:
     #Name of item when no players are allowed to your world
     no_player_title: "&cNo players allowed"
     #Description of item
-    no_player_description: "&7You can add player with /world add <player>"
+    no_player_description: "&7You can add player with /wconfig add <player>"
     #material of item
     no_player_material: REDSTONE_BLOCK
     #material of setspawn inventory

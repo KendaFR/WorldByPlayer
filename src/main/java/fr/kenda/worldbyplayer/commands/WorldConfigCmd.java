@@ -8,7 +8,6 @@ import fr.kenda.worldbyplayer.utils.Config;
 import fr.kenda.worldbyplayer.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -41,18 +40,23 @@ public class WorldConfigCmd implements CommandExecutor {
             sender.sendMessage(prefix + "§cYou cannot make this command here.");
             return true;
         }
+        if (instance.getCreationManager().isInCreation(player)) {
+            player.sendMessage(prefix + Messages.getMessage("in_creation_world"));
+            return false;
+        }
         String nameWorld = player.getWorld().getName().contains("_") ? player.getWorld().getName().split("_")[0] : player.getWorld().getName();
 
         switch (args.length) {
             case 0 -> {
-                World world = player.getWorld();
-                if (!world.getName().contains(nameWorld)) {
-                    player.sendMessage(prefix + Messages.getMessage("not_in_own_world"));
-                    return false;
-                }
+                String playerNameRegex = player.getName().replaceAll("[^a-zA-Z0-9]", "");
+
                 DataWorld dataWorld = worldsManager.getDataWorldFromWorldName(nameWorld);
                 if (dataWorld == null) {
                     player.sendMessage(prefix + Messages.getMessage("no_world"));
+                    return false;
+                }
+                if (!dataWorld.getOwnerRegex().contains(playerNameRegex)) {
+                    player.sendMessage(prefix + Messages.getMessage("not_in_own_world"));
                     return false;
                 }
                 WorldConfigGui worldGui = new WorldConfigGui(player, 6);

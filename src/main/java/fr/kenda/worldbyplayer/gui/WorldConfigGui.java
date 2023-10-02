@@ -90,9 +90,12 @@ public class WorldConfigGui extends Gui {
         ArrayList<Player> playerName = dataWorld.getAllPlayers();
         for (Player p : playerName) {
             if (instance.getAdminManager().isInModeAdmin(p)) continue;
+            String nameWorld = p.getWorld().getName();
+            String dim = nameWorld.contains("_") ? nameWorld.split("_")[1] : "world";
             content[startMember] = new SkullBuilder(p).setLores(Config.getList(shortcut + "lores_player", "{heal}", String.valueOf((int) p.getHealth()),
                             "{food}", String.valueOf(p.getFoodLevel()),
-                            "{gamemode}", p.getGameMode().name()))
+                            "{gamemode}", p.getGameMode().name(),
+                            "{dimension}", dim))
                     .addLine("§c")
                     .addLine(Messages.getMessage("click_modify_player"))
                     .toItemStack();
@@ -365,7 +368,7 @@ public class WorldConfigGui extends Gui {
                     break;
                 case 5:
                     Location loc = player.getLocation();
-                    dataWorld.getWorld().setSpawnLocation(loc);
+                    player.getWorld().setSpawnLocation(loc);
                     player.sendMessage(prefix + Messages.getMessage("set_spawn", "{location}", LocationTransform.serializeCoordinate(loc)));
                     refreshInventory();
                     break;
@@ -402,9 +405,9 @@ public class WorldConfigGui extends Gui {
         switch (statusInventory) {
             case MEMBER -> {
                 int clickedTarget = clickedSlot - (separatorLine * 9);
-                if (clickedTarget >= Bukkit.getWorld(owner.getName()).getPlayers().size()) return;
+                if (clickedTarget >= dataWorld.getAllPlayers().size()) return;
 
-                Player clickedPlayer = Bukkit.getWorld(owner.getName()).getPlayers().get(clickedTarget);
+                Player clickedPlayer = dataWorld.getAllPlayers().get(clickedTarget);
                 if (clickedPlayer == null) break;
 
                 ClickType action = e.getClick();
@@ -603,8 +606,10 @@ public class WorldConfigGui extends Gui {
      * @return
      */
     private boolean isInWorldAndValid() {
+        String basedWorld = playerModify.getWorld().getName();
+        String world = basedWorld.contains("_") ? basedWorld.split("_")[0] : basedWorld;
         return playerModify != null &&
                 Bukkit.getPlayer(playerModifyName) != null &&
-                playerModify.getWorld().getName().equalsIgnoreCase(dataWorld.getWorld().getName());
+                playerModify.getWorld().getName().contains(world);
     }
 }

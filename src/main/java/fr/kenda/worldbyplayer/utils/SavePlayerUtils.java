@@ -65,7 +65,8 @@ public class SavePlayerUtils {
     }
 
     public static void saveLocationInDimension(Player player, World mainWorld, String dimension, FileConfiguration configuration) {
-        configuration.set(player.getName() + ".worlds." + mainWorld.getName() + ".location." + dimension, LocationTransform.serializeCoordinate(player.getLocation()));
+        String main = mainWorld.getName().contains("_") ? mainWorld.getName().split("_")[0] : mainWorld.getName();
+        configuration.set(player.getName() + ".worlds." + main + ".location." + dimension, LocationTransform.serializeCoordinate(player.getLocation()));
         save(configuration);
     }
 
@@ -111,11 +112,12 @@ public class SavePlayerUtils {
 
     private static void loadHeal(Player player, String worldName, FileConfiguration configuration) {
         double heal = configuration.getDouble(player.getName() + ".worlds." + worldName + ".heal");
-        player.setHealth(heal);
+        player.setHealth(heal == 0 ? 20 : heal);
     }
+
     private static void loadFood(Player player, String worldName, FileConfiguration configuration) {
         int food = configuration.getInt(player.getName() + ".worlds." + worldName + ".food");
-        player.setFoodLevel(food);
+        player.setFoodLevel(food == 0 ? 20 : food);
     }
 
     public static void loadDimension(Player player, World world, FileConfiguration configuration) {
@@ -133,8 +135,6 @@ public class SavePlayerUtils {
             if (worldLoad != null) {
                 Location teleportLocation = new Location(worldLoad, 0, worldLoad.getHighestBlockYAt(0, 0), 0);
                 player.teleport(teleportLocation);
-            } else {
-                System.out.println("Error world load");
             }
         }
     }
@@ -356,40 +356,32 @@ public class SavePlayerUtils {
         String nameWorld = world.getName().contains("_") ? world.getName().split("_")[0] : world.getName();
         String dimension = savedPlayers.getString(player.getName() + ".worlds." + nameWorld + ".dimension");
         if (dimension == null) { //En logique n'est jamais null
-            System.out.println("Je suis null");
             World defaultWorld = Bukkit.getWorld(nameWorld);
-            if (defaultWorld == null) {
-                System.out.println("DefaultWorld is null");
-                return;
-            }
+            if (defaultWorld == null) return;
             player.teleport(new Location(defaultWorld, 0, defaultWorld.getHighestBlockYAt(0, 0), 0));
         } else {
-            String location = savedPlayers.getString(player.getName() + ".worlds." + nameWorld + ".location." + dimension);
-            Location loc = LocationTransform.deserializeCoordinate(dimension.equalsIgnoreCase("world") ? nameWorld : nameWorld + "_" + dimension, location);
+            String dimensionLocation = savedPlayers.getString(player.getName() + ".worlds." + nameWorld + ".location." + dimension);
+            Location loc;
+            String worldDim = dimension.equalsIgnoreCase("world") ? nameWorld : nameWorld + "_" + dimension;
+            loc = LocationTransform.deserializeCoordinate(worldDim, Objects.requireNonNullElse(dimensionLocation, "0;0;0;0;0"));
             player.teleport(loc);
         }
     }
+
     public static void loadLocationInDimension(Player player, World world, int dimension, FileConfiguration savedPlayers) {
         String nameWorld = world.getName().contains("_") ? world.getName().split("_")[0] : world.getName();
-        String locationKey;
+        String locationKey = "";
 
         switch (dimension) {
-            case 0:
-                locationKey = "world";
-                break;
-            case 1:
-                locationKey = "nether";
-                break;
-            case 2:
-                locationKey = "end";
-                break;
-            default:
-                throw new IllegalArgumentException("Dimension invalide : " + dimension);
+            case 0 -> locationKey = "world";
+            case 1 -> locationKey = "nether";
+            case 2 -> locationKey = "end";
         }
 
         String location = savedPlayers.getString(player.getName() + ".worlds." + nameWorld + ".location." + locationKey);
         if (location == null) {
-            throw new IllegalArgumentException("Location unavailable for : " + player.getName() + ", dimension : " + dimension);
+            player.teleport(world.getSpawnLocation());
+            return;
         }
 
         Location loc = LocationTransform.deserializeCoordinate(nameWorld + (dimension == 0 ? "" : "_" + locationKey), location);
@@ -400,10 +392,19 @@ public class SavePlayerUtils {
     public static void loadLocation(Player player, World currentWorld, FileConfiguration savedPlayers) {
         String nameWorld = currentWorld.getName().contains("_") ? currentWorld.getName().split("_")[0] : currentWorld.getName();
         String dimension = currentWorld.getName().contains("_") ? currentWorld.getName().split("_")[1] : "world";
-        if(dimension == null) return;
+        if (dimension == null) return;
         String locString = savedPlayers.getString(player.getName() + ".worlds." + nameWorld + ".location." + dimension);
-        if(locString == null){ player.teleport(currentWorld.getSpawnLocation()); return;}
+        if (locString == null) {
+            player.teleport(currentWorld.getSpawnLocation());
+            return;
+        }
         Location loc = LocationTransform.deserializeCoordinate(player, locString);
         player.teleport(loc);
+    }
+
+    public static void resetPlayer(Player player, World world, FileConfiguration savedPlayers) {
+        String nameWorld = world.getName().contains("_") ? world.getName().split("_")[0] : world.getName();
+        savedPlayers.set(player.getName() + ".worlds." + nameWorld, null);
+        save(savedPlayers);
     }
 }

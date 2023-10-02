@@ -15,19 +15,24 @@ import org.jetbrains.annotations.NotNull;
 public class WorldCmd implements CommandExecutor {
     private final WorldByPlayer instance = WorldByPlayer.getInstance();
     private final String prefix = instance.getPrefix();
+
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if(!(commandSender instanceof Player player)){
+        if (!(commandSender instanceof Player player)) {
             commandSender.sendMessage(prefix + "§cYou cannot execute this command here");
             return false;
         }
-        if(player.getWorld() == Bukkit.getWorlds().get(0)){
+        if (instance.getCreationManager().isInCreation(player)) {
+            player.sendMessage(prefix + Messages.getMessage("in_creation_world"));
+            return false;
+        }
+        if (player.getWorld() == Bukkit.getWorlds().get(0)) {
             player.sendMessage(prefix + Messages.getMessage("not_in_own_world"));
             return false;
         }
         String nameWorld = player.getWorld().getName().split("_")[0];
         DataWorld dataWorld = instance.getWorldManager().getDataWorldFromWorldName(nameWorld);
-        if(dataWorld == null){
+        if (dataWorld == null) {
             player.sendMessage(prefix + Messages.getMessage("no_world"));
             return false;
         }

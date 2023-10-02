@@ -20,10 +20,12 @@ public class PlayerQuit implements Listener {
     public void onQuit(PlayerQuitEvent e) {
         final Player player = e.getPlayer();
 
-        if(player.getWorld() == Bukkit.getWorlds().get(0)) return;
+        if (player.getWorld() == Bukkit.getWorlds().get(0)) return;
 
         final FileConfiguration savedPlayers = WorldByPlayer.getInstance().getFileManager().getConfigFrom("saved_players");
         SavePlayerUtils.savePlayerData(player, player.getWorld(), savedPlayers);
+        String dim = player.getWorld().getName().contains("_") ? player.getWorld().getName().split("_")[1] : "world";
+        SavePlayerUtils.saveLocationInDimension(player, player.getWorld(), dim, savedPlayers);
 
     }
 }

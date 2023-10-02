@@ -17,8 +17,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 
-import java.util.Arrays;
-
 public class WorldChange implements Listener {
 
     private final WorldByPlayer instance = WorldByPlayer.getInstance();
@@ -44,9 +42,8 @@ public class WorldChange implements Listener {
 
         if (nameWorld.equalsIgnoreCase(fromWorld)) {
             String[] nameParts = currentWorld.getName().split("_");
-            Arrays.stream(nameParts).forEach(System.out::println);
             int dim = nameParts.length == 1 ? 0 : (nameParts.length > 1 && nameParts[1].equalsIgnoreCase("nether")) ? 1 : 2;
-            System.out.println("Current dimension " + dim);
+
             SavePlayerUtils.loadLocationInDimension(player, currentWorld, dim, savedPlayers);
             return;
         }
@@ -60,10 +57,8 @@ public class WorldChange implements Listener {
             } else {
                 player.getInventory().clear();
                 String worldFree = Config.getString("worlds.nameMap");
-                DataWorld dataWorld = null;
-                if (currentWorld.getName().contains("_"))
-                    dataWorld = instance.getWorldManager().getDataWorldFromWorldName(currentWorld.getName().contains("_") ? currentWorld.getName().split("_")[0] : currentWorld.getName());
-
+                String named = currentWorld.getName().contains("_") ? currentWorld.getName().split("_")[0] : currentWorld.getName();
+                DataWorld dataWorld = instance.getWorldManager().getDataWorldFromWorldName(named);
                 player.sendMessage(prefix + Messages.getMessage("teleported_in", "{world}",
                         dataWorld == null ? worldFree : dataWorld.getName()));
 
@@ -84,8 +79,9 @@ public class WorldChange implements Listener {
         //Lobby
         if (savedPlayers != null) {
             DataWorld dataWorld = worldsManager.getDataWorldFromWorld(from);
-            if (dataWorld != null && dataWorld.getPlayersAllowed().contains(player.getName()))
+            if (dataWorld != null && dataWorld.getPlayersAllowed().contains(player.getName())) {
                 SavePlayerUtils.savePlayerData(player, from, savedPlayers);
+            }
 
             PlayerJoin.giveLobbyInventory(player);
             player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));

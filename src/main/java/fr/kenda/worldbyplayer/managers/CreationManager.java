@@ -88,4 +88,9 @@ public class CreationManager {
             case SEED -> player.sendMessage(Messages.getMessage("choose_seed"));
         }
     }
+
+    public void remove(Player player) {
+        statusCreation.remove(player);
+        settingsByPlayer.remove(player);
+    }
 }

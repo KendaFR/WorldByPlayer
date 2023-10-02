@@ -60,7 +60,7 @@ public class AccessGui extends Gui {
             if (dataWorld.getPlayersAllowed().contains(owner.getName())) {
                 String nameOfWorld = dataWorld.getName();
                 String ownerData = dataWorld.getOwner();
-                List<String> lores = Config.getList(shortcut + "lores", "{owner}", ownerData, "{seed}", String.valueOf(dataWorld.getSeed()), "{creation}", dataWorld.getDateOfCreation(), "{online}", String.valueOf(dataWorld.getWorld().getPlayers().size()));
+                List<String> lores = Config.getList(shortcut + "lores", "{owner}", ownerData, "{seed}", String.valueOf(dataWorld.getSeed()), "{creation}", dataWorld.getDateOfCreation(), "{online}", String.valueOf(dataWorld.getAllPlayers().size()));
                 content[index] = new SkullBuilder(ownerData).setName(Config.getString(shortcut + "name", "{world_name}", nameOfWorld)).setLores(lores).toItemStack();
                 index++;
                 dataWorlds.add(dataWorld);

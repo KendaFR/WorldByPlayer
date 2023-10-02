@@ -13,13 +13,15 @@ commands:
       - nether
       - end
       - worldteleport
+      - wl
   worldconfig:
     description: Command to config your own world
     aliases:
       - worldgenerator
       - modify
       - worldmodify
-      - wl
+      - config
+      - wconfig
   worldadmin:
     description: Command to administrate world
     aliases:
