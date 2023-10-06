@@ -14,6 +14,10 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class OnRespawn implements Listener {
 
+    /**
+     * Reset player on die
+     * @param e DeathEvent
+     */
     @EventHandler
     public void onDie(PlayerDeathEvent e) {
         Player player = e.getEntity();

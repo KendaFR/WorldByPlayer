@@ -19,10 +19,20 @@ public class WorldGui extends Gui {
 
     private final WorldByPlayer instance = WorldByPlayer.getInstance();
 
+    /**
+     * Create WorldGUI
+     * @param title String
+     * @param player PLayer
+     * @param row int
+     */
     public WorldGui(String title, Player player, int row) {
         super(title, player, row);
     }
 
+    /**
+     * Main menu of GUI
+     * @return ItemStack[]
+     */
     @Override
     public ItemStack[] mainMenu() {
         ItemStack[] content = new ItemStack[size];
@@ -63,6 +73,10 @@ public class WorldGui extends Gui {
         return content;
     }
 
+    /**
+     * Event on click in inventory
+     * @param e CLickEvent
+     */
     @Override
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onClick(InventoryClickEvent e) {

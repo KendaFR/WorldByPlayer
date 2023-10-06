@@ -8,6 +8,9 @@ import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 
+/**
+ *
+ */
 public class CreationManager {
 
     private static final HashMap<Player, ECreationStatus> statusCreation = new HashMap<>();
@@ -35,7 +38,8 @@ public class CreationManager {
         statusCreation.remove(player);
         player.sendMessage(Messages.getMessage("end_creation", "{world_name}", settingsByPlayer.get(player).getName()));
         player.sendMessage(prefix + "§a§m===========================");
-        WorldByPlayer.getInstance().getWorldManager().createWorld(player, settingsByPlayer.get(player));
+        WorldByPlayer.getInstance().getWorldManager().startTimer(player, settingsByPlayer.get(player));
+        //WorldByPlayer.getInstance().getWorldManager().createWorld(player, settingsByPlayer.get(player));
         settingsByPlayer.remove(player);
 
     }
@@ -89,6 +93,10 @@ public class CreationManager {
         }
     }
 
+    /**
+     * Remove status creation
+     * @param player Player
+     */
     public void remove(Player player) {
         statusCreation.remove(player);
         settingsByPlayer.remove(player);

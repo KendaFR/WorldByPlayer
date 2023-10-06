@@ -4,6 +4,7 @@ import fr.kenda.worldbyplayer.WorldByPlayer;
 import fr.kenda.worldbyplayer.datas.CreationSettings;
 import fr.kenda.worldbyplayer.datas.DataWorld;
 import fr.kenda.worldbyplayer.schedulers.AutoPurgeScheduler;
+import fr.kenda.worldbyplayer.schedulers.TimerCreation;
 import fr.kenda.worldbyplayer.utils.Messages;
 import fr.kenda.worldbyplayer.utils.Permission;
 import org.bukkit.Bukkit;
@@ -185,8 +186,10 @@ public class WorldsManager implements IManager {
                 .findFirst()
                 .orElse(null);
     }
-
-
+    public void startTimer(Player player, CreationSettings creationSettings){
+        TimerCreation timerCreation = new TimerCreation(player, creationSettings, this);
+        timerCreation.runTaskTimer(instance, 20, 20);
+    }
     /**
      * Create world for player with settings
      *

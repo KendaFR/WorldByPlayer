@@ -54,22 +54,48 @@ public class SavePlayerUtils {
         save(configuration);
     }
 
+    /**
+     * SAve food of player
+     * @param player PLayer
+     * @param mainWorld WOrld
+     * @param configuration FIleCOnfig
+     */
     private static void saveFood(Player player, World mainWorld, FileConfiguration configuration) {
         configuration.set(player.getName() + ".worlds." + mainWorld.getName() + ".food", player.getFoodLevel());
         save(configuration);
     }
 
+    /**
+     * Save heal of player
+     * @param player PLayer
+     * @param mainWorld  World
+     * @param configuration FileCOnfig
+     */
     private static void saveHeal(Player player, World mainWorld, FileConfiguration configuration) {
         configuration.set(player.getName() + ".worlds." + mainWorld.getName() + ".heal", !player.isDead() ? player.getHealth() : 20);
         save(configuration);
     }
 
+    /**
+     * Save location of player
+     * @param player PLayer
+     * @param mainWorld WOrld
+     * @param dimension String
+     * @param configuration FIleCOnf
+     */
     public static void saveLocationInDimension(Player player, World mainWorld, String dimension, FileConfiguration configuration) {
         String main = mainWorld.getName().contains("_") ? mainWorld.getName().split("_")[0] : mainWorld.getName();
         configuration.set(player.getName() + ".worlds." + main + ".location." + dimension, LocationTransform.serializeCoordinate(player.getLocation()));
         save(configuration);
     }
 
+    /**
+     * Save Dimension
+     * @param player PLayer
+     * @param world World
+     * @param dimension String
+     * @param configuration FIleCOnfig
+     */
     public static void saveDimension(Player player, World world, String dimension, FileConfiguration configuration) {
         configuration.set(player.getName() + ".worlds." + world.getName() + ".dimension", dimension);
         save(configuration);
@@ -110,22 +136,43 @@ public class SavePlayerUtils {
         loadFood(player, worldName, configuration);
     }
 
+    /**
+     * Load heal
+     * @param player Player
+     * @param worldName String
+     * @param configuration FIleCOnfig
+     */
     private static void loadHeal(Player player, String worldName, FileConfiguration configuration) {
         double heal = configuration.getDouble(player.getName() + ".worlds." + worldName + ".heal");
         player.setHealth(heal == 0 ? 20 : heal);
     }
 
+    /**
+     * Load FOod
+     * @param player PLayer
+     * @param worldName String
+     * @param configuration FileCOnfig
+     */
     private static void loadFood(Player player, String worldName, FileConfiguration configuration) {
         int food = configuration.getInt(player.getName() + ".worlds." + worldName + ".food");
         player.setFoodLevel(food == 0 ? 20 : food);
     }
 
+    /**
+     * Load dimension
+     * @param player PLayer
+     * @param world String
+     * @param configuration FileCOnfig
+     */
     public static void loadDimension(Player player, World world, FileConfiguration configuration) {
         String playerKey = player.getName();
         String worldName = world.getName();
         String dimension = configuration.getString(playerKey + ".worlds." + worldName + ".dimension");
 
-        if (dimension == null) return;
+        if (dimension == null) {
+            player.teleport(world.getSpawnLocation());
+            return;
+        }
 
         if (dimension.equalsIgnoreCase("world")) {
             Location teleport = new Location(world, 0, world.getHighestBlockYAt(0, 0), 0);
@@ -368,6 +415,13 @@ public class SavePlayerUtils {
         }
     }
 
+    /**
+     * load location
+     * @param player Player
+     * @param world WOrld
+     * @param dimension String
+     * @param savedPlayers FileCOnfig
+     */
     public static void loadLocationInDimension(Player player, World world, int dimension, FileConfiguration savedPlayers) {
         String nameWorld = world.getName().contains("_") ? world.getName().split("_")[0] : world.getName();
         String locationKey = "";
@@ -388,7 +442,12 @@ public class SavePlayerUtils {
         player.teleport(loc);
     }
 
-
+    /**
+     * Load location
+     * @param player PLayer
+     * @param currentWorld WOrld
+     * @param savedPlayers FileCOnfig
+     */
     public static void loadLocation(Player player, World currentWorld, FileConfiguration savedPlayers) {
         String nameWorld = currentWorld.getName().contains("_") ? currentWorld.getName().split("_")[0] : currentWorld.getName();
         String dimension = currentWorld.getName().contains("_") ? currentWorld.getName().split("_")[1] : "world";
@@ -402,6 +461,12 @@ public class SavePlayerUtils {
         player.teleport(loc);
     }
 
+    /**
+     * Reset player in config
+     * @param player PLayer
+     * @param world XWorld
+     * @param savedPlayers FileCOnfig
+     */
     public static void resetPlayer(Player player, World world, FileConfiguration savedPlayers) {
         String nameWorld = world.getName().contains("_") ? world.getName().split("_")[0] : world.getName();
         savedPlayers.set(player.getName() + ".worlds." + nameWorld, null);

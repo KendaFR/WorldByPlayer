@@ -14,6 +14,8 @@ world-life: 30
 days-warning: 10
 #Option allowing the player to appear in the world where he died
 respawn_in_lobby: true
+#Timer before world created
+timer: 10
 
 #The default world that will act as a lobby
 lobby:

@@ -16,6 +16,14 @@ public class WorldCmd implements CommandExecutor {
     private final WorldByPlayer instance = WorldByPlayer.getInstance();
     private final String prefix = instance.getPrefix();
 
+    /**
+     * Command of /world
+     * @param commandSender Sender
+     * @param command cmd
+     * @param s S
+     * @param strings str
+     * @return boolean
+     */
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
         if (!(commandSender instanceof Player player)) {

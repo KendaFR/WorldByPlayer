@@ -116,6 +116,7 @@ public class NavigationGui extends Gui {
 
         if (e.getCurrentItem() == null) return;
 
+
         final int freeSlot = Config.getInt(shortcutConfig + "free.slot");
         final int ownSlot = Config.getInt(shortcutConfig + "ownworld.slot");
         final int accessSlot = Config.getInt(shortcutConfig + "access.slot");
@@ -127,6 +128,7 @@ public class NavigationGui extends Gui {
             SavePlayerUtils.loadDimension(player, free, savedPlayers);
             if (instance.getCreationManager().isInCreation(player))
                 instance.getCreationManager().remove(player);
+            return;
         }
         if (clickedSlot == ownSlot) {
             if (!worldsManager.playerHasWorld(player)) {

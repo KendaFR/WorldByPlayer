@@ -7,6 +7,9 @@ public class AutoPurgeScheduler implements Runnable {
 
     private int timer = ETimeUnit.DAYS.getToSecond();
 
+    /**
+     * Timer before auto purge
+     */
     @Override
     public void run() {
         if (timer == 0) {
