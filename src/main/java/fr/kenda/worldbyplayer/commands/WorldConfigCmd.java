@@ -44,18 +44,16 @@ public class WorldConfigCmd implements CommandExecutor {
             player.sendMessage(prefix + Messages.getMessage("in_creation_world"));
             return false;
         }
-        String nameWorld = player.getWorld().getName().contains("_") ? player.getWorld().getName().split("_")[0] : player.getWorld().getName();
-
         switch (args.length) {
             case 0 -> {
                 String playerNameRegex = player.getName().replaceAll("[^a-zA-Z0-9]", "");
 
-                DataWorld dataWorld = worldsManager.getDataWorldFromWorldName(nameWorld);
+                DataWorld dataWorld = worldsManager.getDataWorldFromPlayerWorldOwner(player);
                 if (dataWorld == null) {
                     player.sendMessage(prefix + Messages.getMessage("no_world"));
                     return false;
                 }
-                if (!dataWorld.getOwnerRegex().contains(playerNameRegex)) {
+                if (!player.getWorld().getName().equalsIgnoreCase(playerNameRegex)) {
                     player.sendMessage(prefix + Messages.getMessage("not_in_own_world"));
                     return false;
                 }

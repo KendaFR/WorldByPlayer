@@ -16,7 +16,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 enum WorldAdminStatus {
     MAIN_MENU, WORLDLIST
@@ -85,7 +84,7 @@ public class WorldAdmin extends Gui {
             else skull = new SkullBuilder(dataWorld.getOwner());
             content[slot++] = skull.setName(Config.getString(shortcutWorld + "name", "{worldName}", dataWorld.getName())).setLores(Config.getList(shortcutWorld + "lores",
                     "{owner}", dataWorld.getOwner(),
-                    "{online}", String.valueOf(Objects.requireNonNull(Bukkit.getWorld(dataWorld.getOwner())).getPlayers().size()),
+                    "{online}", String.valueOf(dataWorld.getAllPlayers().size()),
                     "{dateCreation}", dataWorld.getDateOfCreation())).toItemStack();
         }
 

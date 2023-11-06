@@ -64,7 +64,7 @@ public class DataWorld {
                         deleteWorldFolder(file);
                     } else {
                         boolean deleted = file.delete();
-                        if(!deleted){
+                        if (!deleted) {
                             System.out.println("file " + file.getName() + " can't be deleted");
                         }
                     }
@@ -78,18 +78,17 @@ public class DataWorld {
     }
 
     /**
-     * Get the name of owner without special caracters
-     *
-     * @return String
+     * Get the world nether
+     * @return World
      */
-    public String getOwnerRegex() {
-        return owner.replaceAll("[^a-zA-Z0-9]", "");
-    }
-
     public World getNether() {
         return nether;
     }
 
+    /**
+     * Get the  world end
+     * @return World
+     */
     public World getEnd() {
         return end;
     }

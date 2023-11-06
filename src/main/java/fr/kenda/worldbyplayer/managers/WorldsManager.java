@@ -161,6 +161,7 @@ public class WorldsManager implements IManager {
         return null;
     }
 
+
     /**
      * Get the Data world from a world
      *
@@ -186,10 +187,17 @@ public class WorldsManager implements IManager {
                 .findFirst()
                 .orElse(null);
     }
-    public void startTimer(Player player, CreationSettings creationSettings){
+
+    /**
+     * Start timer of creation world
+     * @param player Player
+     * @param creationSettings CreationSettings
+     */
+    public void startTimer(Player player, CreationSettings creationSettings) {
         TimerCreation timerCreation = new TimerCreation(player, creationSettings, this);
         timerCreation.runTaskTimer(instance, 20, 20);
     }
+
     /**
      * Create world for player with settings
      *
@@ -226,18 +234,23 @@ public class WorldsManager implements IManager {
         save(worldConfig, "worlds");
 
 
+        if (purgePlayerWorld(world)) return;
+        worldsList.removeIf(dataWorld -> dataWorld.getWorld() == world);
+
+    }
+
+    private static boolean purgePlayerWorld(World world) {
         FileConfiguration saved_players = WorldByPlayer.getInstance().getFileManager().getConfigFrom("saved_players");
         for (String key : saved_players.getKeys(false)) {
             ConfigurationSection worlds = saved_players.getConfigurationSection(key + ".worlds");
-            if (worlds == null) return;
+            if (worlds == null) return true;
             for (String worldName : worlds.getKeys(false)) {
                 if (worldName.equalsIgnoreCase(world.getName()))
                     saved_players.set(key + ".worlds." + worldName, null);
             }
         }
         save(saved_players, "saved_players");
-        worldsList.removeIf(dataWorld -> dataWorld.getWorld() == world);
-
+        return false;
     }
 
     /**
@@ -245,7 +258,25 @@ public class WorldsManager implements IManager {
      */
     public void startAutoPurge() {
         autoPurge(null);
+        autoPurgePlayer();
         Bukkit.getScheduler().runTaskTimer(instance, new AutoPurgeScheduler(), 20, 20);
+    }
+
+    private void autoPurgePlayer() {
+        List<String> nameWorld = new ArrayList<>();
+        FileConfiguration saved_players = WorldByPlayer.getInstance().getFileManager().getConfigFrom("saved_players");
+        for (String key : saved_players.getKeys(false)) {
+            ConfigurationSection worlds = saved_players.getConfigurationSection(key + ".worlds");
+            if(worlds == null)  { System.out.println("World is null"); return; }
+            for (String worldName : worlds.getKeys(false)) {
+                if (getDataWorldFromWorldName(worldName) == null) {
+                    if(!nameWorld.contains(worldName)) nameWorld.add(worldName);
+                    saved_players.set(key + ".worlds." + worldName, null);
+                }
+            }
+        }
+        save(saved_players, "saved_players");
+        Bukkit.getConsoleSender().sendMessage(prefix + Messages.getMessage("conflict_saved_players_world", "{count}", String.valueOf(nameWorld.size())));
     }
 
     /**

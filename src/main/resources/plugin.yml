@@ -3,10 +3,8 @@ version: '${project.version}'
 main: fr.kenda.worldbyplayer.WorldByPlayer
 api-version: 1.19
 commands:
-  hub:
+  lobby:
     description: return to main world
-    aliases:
-      - lobby
   world:
     description: Show nether and end world
     aliases:

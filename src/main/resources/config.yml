@@ -33,6 +33,9 @@ chat:
 navigation:
   #The type of the navigation item. You can found list here https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
   item: COMPASS
+  #Slot or navigation compass will appear in inventory
+  slot: 4
+  #Name of item
   name: "&cNavigation"
   lores:
     - "&cWith navigation, you"

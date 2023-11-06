@@ -125,6 +125,7 @@ public class NavigationGui extends Gui {
             World free = Bukkit.getWorld(Config.getString("worlds.nameMap"));
             if (free == null) return;
             final FileConfiguration savedPlayers = instance.getFileManager().getConfigFrom("saved_players");
+            SavePlayerUtils.SaveInventoryLobby(player);
             SavePlayerUtils.loadDimension(player, free, savedPlayers);
             if (instance.getCreationManager().isInCreation(player))
                 instance.getCreationManager().remove(player);
@@ -134,6 +135,7 @@ public class NavigationGui extends Gui {
             if (!worldsManager.playerHasWorld(player)) {
                 instance.getCreationManager().setup(owner);
             } else {
+                SavePlayerUtils.SaveInventoryLobby(player);
                 DataWorld dataWorld = instance.getWorldManager().getDataWorldFromPlayerWorldOwner(owner);
                 final FileConfiguration savedPlayers = instance.getFileManager().getConfigFrom("saved_players");
                 SavePlayerUtils.loadLocationInDimension(player, dataWorld.getWorld(), savedPlayers);

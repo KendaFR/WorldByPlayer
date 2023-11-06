@@ -13,14 +13,15 @@ public class TimerCreation extends BukkitRunnable {
     private final Player player;
     private final CreationSettings creationSettings;
     private final WorldsManager worldsManager;
-    private int timer;
     private final String prefix = WorldByPlayer.getInstance().getPrefix();
+    private int timer;
 
     /**
      * Constructor of timer
-     * @param player Player
+     *
+     * @param player           Player
      * @param creationSettings CreationSettings
-     * @param worldsManager WorldsManager
+     * @param worldsManager    WorldsManager
      */
     public TimerCreation(Player player, CreationSettings creationSettings, WorldsManager worldsManager) {
         this.player = player;

@@ -96,8 +96,10 @@ public class AccessGui extends Gui {
         if (dataWorlds.size() > 0) {
             DataWorld worldOfPlayer = dataWorlds.get(clickedSlot);
             if (worldOfPlayer == null) return;
+            SavePlayerUtils.SaveInventoryLobby(player);
             final FileConfiguration savedPlayers = WorldByPlayer.getInstance().getFileManager().getConfigFrom("saved_players");
             SavePlayerUtils.loadLocationInDimension(player, worldOfPlayer.getWorld(), savedPlayers);
+
         }
     }
 

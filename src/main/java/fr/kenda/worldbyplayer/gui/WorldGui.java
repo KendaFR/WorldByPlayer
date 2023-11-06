@@ -21,9 +21,10 @@ public class WorldGui extends Gui {
 
     /**
      * Create WorldGUI
-     * @param title String
+     *
+     * @param title  String
      * @param player PLayer
-     * @param row int
+     * @param row    int
      */
     public WorldGui(String title, Player player, int row) {
         super(title, player, row);
@@ -31,6 +32,7 @@ public class WorldGui extends Gui {
 
     /**
      * Main menu of GUI
+     *
      * @return ItemStack[]
      */
     @Override
@@ -75,6 +77,7 @@ public class WorldGui extends Gui {
 
     /**
      * Event on click in inventory
+     *
      * @param e CLickEvent
      */
     @Override

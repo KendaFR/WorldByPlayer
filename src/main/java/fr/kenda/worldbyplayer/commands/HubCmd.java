@@ -9,12 +9,12 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class HubCmd implements CommandExecutor {
     private final String prefix = WorldByPlayer.getInstance().getPrefix();
+
 
     /**
      * Command /hub
@@ -37,10 +37,7 @@ public class HubCmd implements CommandExecutor {
             player.sendMessage(prefix + Messages.getMessage("already_in_lobby"));
             return false;
         }
-        final FileConfiguration savedPlayers = WorldByPlayer.getInstance().getFileManager().getConfigFrom("saved_players");
-        SavePlayerUtils.savePlayerData(player, player.getWorld(), savedPlayers);
-        String dim = player.getWorld().getName().contains("_") ? player.getWorld().getName().split("_")[1] : "world";
-        SavePlayerUtils.saveLocationInDimension(player, player.getWorld(), dim, savedPlayers);
+        SavePlayerUtils.SavePlayerLocationInDimension(player);
 
         player.teleport(Config.getLocationLobby());
         player.sendMessage(prefix + Messages.getMessage("back_to_lobby"));

@@ -2,10 +2,7 @@ package fr.kenda.worldbyplayer.events;
 
 import fr.kenda.worldbyplayer.WorldByPlayer;
 import fr.kenda.worldbyplayer.datas.DataWorld;
-import fr.kenda.worldbyplayer.utils.Config;
-import fr.kenda.worldbyplayer.utils.ItemBuilder;
-import fr.kenda.worldbyplayer.utils.LocationTransform;
-import fr.kenda.worldbyplayer.utils.Messages;
+import fr.kenda.worldbyplayer.utils.*;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -42,7 +39,7 @@ public class PlayerJoin implements Listener {
 
         ItemStack nav = navigation.toItemStack();
         player.getInventory().clear();
-        player.getInventory().setItem(4, nav);
+        player.getInventory().setItem(Config.getInt("navigation.slot"), nav);
     }
 
     @SuppressWarnings("all")

@@ -18,10 +18,11 @@ public class WorldCmd implements CommandExecutor {
 
     /**
      * Command of /world
+     *
      * @param commandSender Sender
-     * @param command cmd
-     * @param s S
-     * @param strings str
+     * @param command       cmd
+     * @param s             S
+     * @param strings       str
      * @return boolean
      */
     @Override

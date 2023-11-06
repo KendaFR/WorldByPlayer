@@ -95,6 +95,7 @@ public class CreationManager {
 
     /**
      * Remove status creation
+     *
      * @param player Player
      */
     public void remove(Player player) {

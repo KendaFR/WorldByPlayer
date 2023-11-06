@@ -14,8 +14,10 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+
 
 public class WorldChange implements Listener {
 
@@ -28,7 +30,7 @@ public class WorldChange implements Listener {
      *
      * @param e PlayerChangedWorldEvent
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onWorldChange(PlayerChangedWorldEvent e) {
         final Player player = e.getPlayer();
         final World from = e.getFrom();
@@ -69,7 +71,7 @@ public class WorldChange implements Listener {
 
                 if (!nameWorld.equalsIgnoreCase(player.getName())) return;
                 DataWorld dw = worldsManager.getDataWorldFromPlayerWorldOwner(player);
-                //is own world
+                //its own world
                 if (dw != null && currentWorld == dw.getWorld())
                     dw.updateTimeLastLogin();
             }
@@ -83,7 +85,8 @@ public class WorldChange implements Listener {
                 SavePlayerUtils.savePlayerData(player, from, savedPlayers);
             }
 
-            PlayerJoin.giveLobbyInventory(player);
+            player.getInventory().clear();
+            SavePlayerUtils.LoadInventoryLobby(player);
             player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
             player.setExp(0);
             player.setLevel(0);

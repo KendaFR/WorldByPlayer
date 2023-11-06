@@ -21,6 +21,9 @@ import java.io.IOException;
 import java.util.*;
 
 public class SavePlayerUtils {
+
+    private static final Map<Player, ItemStack[]> savedInventoryWorld = new HashMap<>();
+
     /**
      * Save all data of player in config file
      *
@@ -56,8 +59,9 @@ public class SavePlayerUtils {
 
     /**
      * SAve food of player
-     * @param player PLayer
-     * @param mainWorld WOrld
+     *
+     * @param player        PLayer
+     * @param mainWorld     WOrld
      * @param configuration FIleCOnfig
      */
     private static void saveFood(Player player, World mainWorld, FileConfiguration configuration) {
@@ -67,8 +71,9 @@ public class SavePlayerUtils {
 
     /**
      * Save heal of player
-     * @param player PLayer
-     * @param mainWorld  World
+     *
+     * @param player        PLayer
+     * @param mainWorld     World
      * @param configuration FileCOnfig
      */
     private static void saveHeal(Player player, World mainWorld, FileConfiguration configuration) {
@@ -78,9 +83,10 @@ public class SavePlayerUtils {
 
     /**
      * Save location of player
-     * @param player PLayer
-     * @param mainWorld WOrld
-     * @param dimension String
+     *
+     * @param player        PLayer
+     * @param mainWorld     WOrld
+     * @param dimension     String
      * @param configuration FIleCOnf
      */
     public static void saveLocationInDimension(Player player, World mainWorld, String dimension, FileConfiguration configuration) {
@@ -91,9 +97,10 @@ public class SavePlayerUtils {
 
     /**
      * Save Dimension
-     * @param player PLayer
-     * @param world World
-     * @param dimension String
+     *
+     * @param player        PLayer
+     * @param world         World
+     * @param dimension     String
      * @param configuration FIleCOnfig
      */
     public static void saveDimension(Player player, World world, String dimension, FileConfiguration configuration) {
@@ -138,8 +145,9 @@ public class SavePlayerUtils {
 
     /**
      * Load heal
-     * @param player Player
-     * @param worldName String
+     *
+     * @param player        Player
+     * @param worldName     String
      * @param configuration FIleCOnfig
      */
     private static void loadHeal(Player player, String worldName, FileConfiguration configuration) {
@@ -149,8 +157,9 @@ public class SavePlayerUtils {
 
     /**
      * Load FOod
-     * @param player PLayer
-     * @param worldName String
+     *
+     * @param player        PLayer
+     * @param worldName     String
      * @param configuration FileCOnfig
      */
     private static void loadFood(Player player, String worldName, FileConfiguration configuration) {
@@ -160,8 +169,9 @@ public class SavePlayerUtils {
 
     /**
      * Load dimension
-     * @param player PLayer
-     * @param world String
+     *
+     * @param player        PLayer
+     * @param world         String
      * @param configuration FileCOnfig
      */
     public static void loadDimension(Player player, World world, FileConfiguration configuration) {
@@ -417,9 +427,10 @@ public class SavePlayerUtils {
 
     /**
      * load location
-     * @param player Player
-     * @param world WOrld
-     * @param dimension String
+     *
+     * @param player       Player
+     * @param world        WOrld
+     * @param dimension    String
      * @param savedPlayers FileCOnfig
      */
     public static void loadLocationInDimension(Player player, World world, int dimension, FileConfiguration savedPlayers) {
@@ -444,7 +455,8 @@ public class SavePlayerUtils {
 
     /**
      * Load location
-     * @param player PLayer
+     *
+     * @param player       PLayer
      * @param currentWorld WOrld
      * @param savedPlayers FileCOnfig
      */
@@ -463,13 +475,54 @@ public class SavePlayerUtils {
 
     /**
      * Reset player in config
-     * @param player PLayer
-     * @param world XWorld
+     *
+     * @param player       PLayer
+     * @param world        XWorld
      * @param savedPlayers FileCOnfig
      */
     public static void resetPlayer(Player player, World world, FileConfiguration savedPlayers) {
         String nameWorld = world.getName().contains("_") ? world.getName().split("_")[0] : world.getName();
         savedPlayers.set(player.getName() + ".worlds." + nameWorld, null);
         save(savedPlayers);
+    }
+
+    /**
+     * Save the location of player in dimension
+     *
+     * @param player Player
+     */
+    public static void SavePlayerLocationInDimension(Player player) {
+        final FileConfiguration savedPlayers = WorldByPlayer.getInstance().getFileManager().getConfigFrom("saved_players");
+        SavePlayerUtils.savePlayerData(player, player.getWorld(), savedPlayers);
+        String dim = player.getWorld().getName().contains("_") ? player.getWorld().getName().split("_")[1] : "world";
+        SavePlayerUtils.saveLocationInDimension(player, player.getWorld(), dim, savedPlayers);
+    }
+
+    /**
+     * Save inventory of lobby (prevent bug with other plugin)
+     * @param player Player
+     */
+    public static void SaveInventoryLobby(Player player) {
+        savedInventoryWorld.putIfAbsent(player, player.getInventory().getContents());
+    }
+
+    /**
+     * Remove player in cache
+     * @param player Player
+     */
+    public static void RemoveInventoryLobby(Player player) {
+        ItemStack[] inventory = savedInventoryWorld.get(player);
+        if (inventory != null)
+            savedInventoryWorld.remove(player);
+    }
+
+    /**
+     * Load Inventory of lobby
+     * @param player Player
+     */
+    public static void LoadInventoryLobby(Player player) {
+        ItemStack[] inventory = savedInventoryWorld.get(player);
+        if (inventory != null)
+            player.getInventory().setContents(inventory);
     }
 }

@@ -1,9 +1,7 @@
 package fr.kenda.worldbyplayer.events;
 
-import fr.kenda.worldbyplayer.WorldByPlayer;
 import fr.kenda.worldbyplayer.utils.SavePlayerUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,10 +20,8 @@ public class PlayerQuit implements Listener {
 
         if (player.getWorld() == Bukkit.getWorlds().get(0)) return;
 
-        final FileConfiguration savedPlayers = WorldByPlayer.getInstance().getFileManager().getConfigFrom("saved_players");
-        SavePlayerUtils.savePlayerData(player, player.getWorld(), savedPlayers);
-        String dim = player.getWorld().getName().contains("_") ? player.getWorld().getName().split("_")[1] : "world";
-        SavePlayerUtils.saveLocationInDimension(player, player.getWorld(), dim, savedPlayers);
+        SavePlayerUtils.SavePlayerLocationInDimension(player);
+        SavePlayerUtils.RemoveInventoryLobby(player);
 
     }
 }

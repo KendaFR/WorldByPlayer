@@ -16,6 +16,7 @@ public class OnRespawn implements Listener {
 
     /**
      * Reset player on die
+     *
      * @param e DeathEvent
      */
     @EventHandler
